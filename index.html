@@ -494,9 +494,11 @@ const CLOUD={
   async afterLogin(){
     const u=this.user; const ref=this.db.collection("users").doc(u.uid); let snap=null; try{ snap=await ref.get(); }catch(e){ this.error=this.msg(e); return; }
     const remote=snap.exists?snap.data():null;
+    let teacher=false; try{ const t=await this.db.collection("teachers").doc(u.email||"-").get(); teacher=t.exists; }catch(e){}
     if(remote&&remote.state&&(!ST.updated||remote.state.updated>ST.updated)&&(remote.state.fullName||!ST.fullName)){ const keep={pin:ST.pin,textCache:ST.textCache}; ST=Object.assign(DEFAULT_STATE(),remote.state,keep); if(!ST.fullName&&u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; } save(); }
-    else { if(!ST.fullName&&u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; } await this.push(true); }
-    try{ const t=await this.db.collection("teachers").doc(u.email||"-").get(); if(t.exists){ ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); } }catch(e){}
+    if(!ST.fullName&&u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; }
+    if(teacher){ ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; } else if(ST.role==="teacher"&&!ST.pinUnlocked) ST.role="student";
+    save(); await this.push(true);
     await this.pullShared();
   },
   schedulePush(){ if(!this.user||!this.db) return; clearTimeout(this.pushT); this.pushT=setTimeout(()=>this.push(),2500); },
@@ -654,7 +656,7 @@ function wireRecorder(id,{onDone,recognize=false,onText}={}){
   const btn=$("#"+id+"Btn"), T=$("#"+id+"T"), M=$("#"+id+"M"); let rec=null, sr=null;
   if(!Audio_.canRecord()){ btn.disabled=true; $("#"+id+"Out").innerHTML=`<div class="note bad">التسجيل غير متاح هنا. افتحي ملف التطبيق في متصفح Chrome أو Edge على الحاسب أو الجوال (وليس داخل صفحة claude.ai).</div>`; return; }
   btn.onclick=async()=>{
-    if(rec){ btn.disabled=true; if(sr)sr.stop(); const blob=await rec.stop(); rec=null; btn.classList.remove("on"); btn.disabled=false; M.style.width="0"; if(blob) drawWave(blob,$("#"+id+"W")); onDone&&onDone(blob, sr?sr.text:""); sr=null; return; }
+    if(rec){ btn.disabled=true; if(sr)sr.stop(); const blob=await rec.stop(); rec=null; btn.classList.remove("on"); btn.disabled=false; M.style.width="0"; if(blob) drawWave(blob,$("#"+id+"W")); onDone&&onDone(blob, sr?sr.text:"", sr?sr.error:(makeRecognizer?"":"unsupported")); sr=null; return; }
     try{ rec=new Recorder({onLevel:v=>M.style.width=(v*100)+"%",onTick:t=>T.textContent=`${String(Math.floor(t/60)).padStart(2,"0")}:${String(Math.floor(t%60)).padStart(2,"0")}`}); await rec.start(); btn.classList.add("on");
       if(recognize){ sr=makeRecognizer((txt,fin)=>onText&&onText(txt,fin)); if(sr)sr.start(); }
     }catch(e){ rec=null; $("#"+id+"Out").innerHTML=`<div class="note bad">لم يُسمح باستخدام الميكروفون. اسمحي للمتصفح بالوصول إلى الميكروفون ثم أعيدي المحاولة.</div>`; }
@@ -778,7 +780,7 @@ VIEWS.practice=async function(arg){
     box.innerHTML=`<div class="card"><div class="eyebrow">سورة ${SURAH_NAMES[s-1]} ${a1===a2?`الآية ${a1}`:`الآيات ${a1}–${a2}`}</div>${ayahHtml(ayahs)}${playerHtml(ref)}</div>
     <div class="card"><h3>تلاوتك</h3><p class="small muted">استمعي للمرجع أولًا، ثم سجّلي تلاوتك للآيات نفسها. يحلّل التطبيق: الكلمات (بالتعرّف على الكلام إن توفر)، ومقادير المدود والغنن مقارنةً بالمرجع، والوقفات.</p>${recorderHtml("pr0","سجّلي التلاوة كاملة ثم أوقفي التسجيل.")}<div id="live" class="small muted"></div><div id="result"></div></div>`;
     wirePlayer(ref);
-    wireRecorder("pr0",{recognize:true,onText:(t)=>{ $("#live").textContent=t?"سمعت: "+t:""; },onDone:async(blob,text)=>{
+    wireRecorder("pr0",{recognize:true,onText:(t)=>{ $("#live").textContent=t?"سمعت: "+t:""; },onDone:async(blob,text,srErr)=>{
       const out=$("#pr0Out"); out.innerHTML=audioTag(blob); const res=$("#result"); res.innerHTML=`<div class="note info">جارٍ التحليل… (قد يستغرق ثوانٍ)</div>`;
       const notes=[]; let wordPct=null;
       // 1) مقارنة الكلمات
@@ -789,7 +791,7 @@ VIEWS.practice=async function(arg){
         if(missed.length){ const names=missed.slice(0,6).map(m=>`«${words[m.i]}»${m.near?" (سُمعت: "+m.near+")":""}`).join("، "); notes.push({k:missed.length>2?"bad":"warn",t:`كلمات لم تُسمع صحيحة أو سقطت: ${names}${missed.length>6?" وغيرها":""}. قد يكون ذلك لحنًا جليًا في الحروف أو الحركات، أو ضعف التقاط الميكروفون.`}); }
         else notes.push({k:"good",t:"جميع الكلمات سُمعت مطابقة لنص الآيات."});
         if(extra.length) notes.push({k:"warn",t:`كلمات زائدة سُمعت: ${extra.slice(0,5).join("، ")}.`});
-      } else notes.push({k:"info",t:"لم يعمل التعرّف على الكلام (يحتاج متصفح Chrome واتصالًا بالإنترنت)، فاعتمد التحليل على الصوت فقط."});
+      } else notes.push({k:"info",t:srErr==="not-allowed"||srErr==="service-not-allowed"?"لم يُسمح بالتعرّف على الكلام؛ اسمحي للميكروفون والتعرف على الكلام من إعدادات المتصفح.":srErr==="network"?"تعذّر التعرّف على الكلام لضعف الاتصال بالإنترنت؛ اعتمد التحليل على الصوت فقط.":srErr==="no-speech"?"لم يُلتقط كلام واضح؛ اقرئي بصوت أعلى وقرب الميكروفون.":"التعرّف على الكلام غير متاح في هذا المتصفح (استخدمي Chrome على أندرويد أو Safari على آيفون)؛ اعتمد التحليل على الصوت فقط."});
       // 2) مقارنة صوتية
       let stuSig=null, refSig=null; try{ stuSig=await Audio_.decode(blob); }catch(e){}
       try{ refSig=await decodeReference(ref); }catch(e){}
@@ -931,7 +933,7 @@ VIEWS.progress=function(){
   const list=$("#attList"); atts.forEach(async a=>{ const d=document.createElement("div"); d.className="q"; const blob=await DB.get("att:"+a.id); d.innerHTML=`<div class="row between"><b>${esc(a.label)}</b><span class="pill ${a.score>=ST.passPct?"good":a.score>=55?"warn":"bad"}">${a.score??"—"}٪</span></div><p class="small muted">${fmtDate(a.date)}</p>${blob?audioTag(blob):""}<details><summary class="small">الملاحظات</summary><ul class="clean small">${(a.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details><div class="row" style="margin-top:6px"><button class="btn danger sm" data-del>حذف</button></div>`; d.querySelector("[data-del]").onclick=async()=>{ ST.attempts=ST.attempts.filter(x=>x.id!==a.id); await DB.del("att:"+a.id); save(); render(); }; list.appendChild(d); });
 };
 VIEWS.teacher=async function(){
-  if(!isTeacher()){ view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><div class="card stack"><h2>وضع الأستاذة</h2><p class="small muted">هذا الوضع لأستاذة الحلقة. ${ST.pin?"أدخلي الرمز السري.":"لم يُعيَّن رمز بعد؛ عيّني رمزًا سريًا لتفعيل الوضع على هذا الجهاز."}</p><label class="f">${ST.pin?"الرمز السري":"رمز سري جديد"}<input type="password" id="pinIn" inputmode="numeric"></label><button class="btn" id="pinBtn">${ST.pin?"دخول":"تعيين الرمز والدخول"}</button></div>`; $("#back").onclick=()=>go("more"); $("#pinBtn").onclick=()=>{ const p=$("#pinIn").value.trim(); if(!p){toast("أدخلي الرمز");return;} if(ST.pin&&p!==ST.pin){toast("الرمز غير صحيح");return;} if(!ST.pin)ST.pin=p; ST.role="teacher"; save(); render(); }; return; }
+  if(!isTeacher()){ view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><div class="card stack"><h2>وضع الأستاذة</h2><p class="small muted">هذا الوضع لأستاذة الحلقة. ${ST.pin?"أدخلي الرمز السري.":"لم يُعيَّن رمز بعد؛ عيّني رمزًا سريًا لتفعيل الوضع على هذا الجهاز."}</p><label class="f">${ST.pin?"الرمز السري":"رمز سري جديد"}<input type="password" id="pinIn" inputmode="numeric"></label><button class="btn" id="pinBtn">${ST.pin?"دخول":"تعيين الرمز والدخول"}</button></div>`; $("#back").onclick=()=>go("more"); $("#pinBtn").onclick=()=>{ const p=$("#pinIn").value.trim(); if(!p){toast("أدخلي الرمز");return;} if(ST.pin&&p!==ST.pin){toast("الرمز غير صحيح");return;} if(!ST.pin)ST.pin=p; ST.role="teacher"; ST.pinUnlocked=true; save(); render(); }; return; }
   const refKeys=await DB.keys("ref:"); const letterKeys=await DB.keys("letter:");
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button><button class="btn sec sm" id="toStudent">التحويل إلى وضع الطالبة</button></div><h1>وضع الأستاذة</h1>
   <div class="card stack"><h3>تسجيل قراءتك المرجعية للآيات</h3><p class="small muted">تُحفظ على هذا الجهاز وتُستخدم مرجعًا لمقارنة تلاوة الطالبات عند اختيار «قراءة الأستاذة». سجّلي كل آية على حدة بقدر مدودها وغننها المعتبر. المسجَّل حتى الآن: ${refKeys.length} آية.</p>
