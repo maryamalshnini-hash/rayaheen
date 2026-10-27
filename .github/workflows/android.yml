@@ -1,0 +1,47 @@
+name: Build Android APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Prepare web assets
+        run: |
+          mkdir -p app/www
+          cp index.html manifest.webmanifest sw.js icon-*.png app/www/
+      - name: Install Capacitor and sync
+        working-directory: app
+        run: |
+          npm ci || npm install
+          npx cap sync android
+      - name: Build debug APK
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Rename APK
+        run: cp app/android/app/build/outputs/apk/debug/app-debug.apk rayaheen.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rayaheen-apk
+          path: rayaheen.apk
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: رياحين — أحدث إصدار أندرويد
+          body: "ملف APK لتثبيت تطبيق رياحين على أندرويد. حمّلي rayaheen.apk ثم افتحيه على الجوال."
+          files: rayaheen.apk
+          prerelease: false
