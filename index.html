@@ -384,10 +384,13 @@ function makeRecognizer(onResult){
   const Cap=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.SpeechRecognition;
   if(Cap){ let final="",handle=null; return {start:async()=>{ try{ const p=await Cap.requestPermissions(); if(p&&p.speechRecognition&&p.speechRecognition!=="granted")return; handle=await Cap.addListener("partialResults",d=>{ if(d&&d.matches&&d.matches[0]){ final=d.matches[0]; onResult(final,false); } }); await Cap.start({language:"ar-SA",partialResults:true,popup:false,maxResults:1}); }catch(e){} },stop:async()=>{ try{ await Cap.stop(); if(handle)handle.remove(); }catch(e){} onResult(final,true); },get text(){return final;}}; }
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR)return null;
-  const r=new SR(); r.lang="ar-SA"; r.continuous=true; r.interimResults=true; r.maxAlternatives=1; let final="";
-  r.onresult=e=>{ let interim=""; for(let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if(e.results[i].isFinal) final+=" "+t; else interim+=" "+t; } onResult((final+" "+interim).trim(),false); };
-  r.onend=()=>onResult(final.trim(),true); r.onerror=()=>{};
-  return {start:()=>{try{r.start()}catch(e){}},stop:()=>{try{r.stop()}catch(e){}},get text(){return final.trim()}};
+  let final="",interim="",active=false,lastErr="",r=null;
+  const mk=()=>{ const x=new SR(); x.lang="ar-SA"; x.continuous=true; x.interimResults=true; x.maxAlternatives=1;
+    x.onresult=e=>{ interim=""; for(let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if(e.results[i].isFinal) final+=" "+t; else interim+=" "+t; } onResult((final+" "+interim).trim(),false); };
+    x.onerror=e=>{ lastErr=e.error||""; };
+    x.onend=()=>{ if(active&&lastErr!=="not-allowed"&&lastErr!=="service-not-allowed"){ try{ r=mk(); r.start(); }catch(e){} } else onResult(final.trim(),true); };
+    return x; };
+  return {start:()=>{ active=true; lastErr=""; try{ r=mk(); r.start(); }catch(e){} },stop:()=>{ active=false; try{ r&&r.stop(); }catch(e){} setTimeout(()=>onResult(final.trim(),true),300); },get text(){return final.trim();},get error(){return lastErr;}};
 }
 // ---- مسجّل ----
 class Recorder{
@@ -493,6 +496,7 @@ const CLOUD={
     const remote=snap.exists?snap.data():null;
     if(remote&&remote.state&&(!ST.updated||remote.state.updated>ST.updated)&&(remote.state.fullName||!ST.fullName)){ const keep={pin:ST.pin,textCache:ST.textCache}; ST=Object.assign(DEFAULT_STATE(),remote.state,keep); if(!ST.fullName&&u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; } save(); }
     else { if(!ST.fullName&&u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; } await this.push(true); }
+    try{ const t=await this.db.collection("teachers").doc(u.email||"-").get(); if(t.exists){ ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); } }catch(e){}
     await this.pullShared();
   },
   schedulePush(){ if(!this.user||!this.db) return; clearTimeout(this.pushT); this.pushT=setTimeout(()=>this.push(),2500); },
@@ -534,13 +538,15 @@ function accountView(){
     ${isTeacher()?`<details open><summary>ربط Firebase (للأستاذة، مرة واحدة)</summary><ol class="small" style="padding-inline-start:1.2em;line-height:1.9"><li>افتحي <b>console.firebase.google.com</b> وأنشئي مشروعًا.</li><li>Authentication ← Sign-in method: فعّلي <b>Google</b> و<b>Email/Password</b>. وفي Settings ← Authorized domains أضيفي نطاق استضافة التطبيق.</li><li>Firestore Database ← Create (production) ثم Rules: الصقي القواعد من ملف <b>firebase-rules.txt</b> في مجلد التطبيق. وكذلك Storage ← Rules.</li><li>في Firestore أنشئي مجموعة <b>teachers</b> ووثيقة باسمها = بريدك الإلكتروني (لتصبحي أستاذة معتمدة).</li><li>Project settings ← Your apps ← Web app ← انسخي <b>firebaseConfig</b> والصقيه هنا.</li></ol>
     <label class="f">إعدادات firebaseConfig (JSON)<textarea id="fbCfg" dir="ltr" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea></label><button class="btn" id="fbSave">حفظ الربط</button><p class="small muted">ولتعمل لدى الطالبات دون لصق: ضعي الإعدادات في سطر <code>FIREBASE_CONFIG</code> داخل ملف التطبيق قبل رفعه.</p></details>`:`<p class="small muted">اطلبي من الأستاذة ربط التطبيق بـ Firebase أو استخدمي نسخة التطبيق المرفوعة من الحلقة.</p>`}</div>`;
     $("#back").onclick=()=>go("more"); const b=$("#fbSave"); if(b)b.onclick=()=>{ let t=$("#fbCfg").value.trim(); try{ t=t.replace(/^(const|var|let)\s+\w+\s*=\s*/,"").replace(/;\s*$/,""); const j=(new Function("return ("+t+")"))(); if(!j.apiKey||!j.projectId)throw 0; CLOUD.setConfig(j); }catch(e){ toast("الإعدادات غير صالحة"); } }; return; }
-  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><div id="accBox" class="card stack"><p class="muted">جارٍ الاتصال بالسحابة…</p></div>`; $("#back").onclick=()=>go("more");
+  view.innerHTML=`<div class="row between">${CLOUD.user?`<button class="btn sec sm" id="back">→ المزيد</button>`:`<span class="brand" style="font-family:var(--display);font-size:1.3rem">رياحين</span>`}</div><div id="accBox" class="card stack"><p class="muted">جارٍ الاتصال بالسحابة…</p></div>`; const bk=$("#back"); if(bk) bk.onclick=()=>go("more");
   CLOUD.load().then(ok=>{ const box=$("#accBox"); if(!box)return; if(!ok){ box.innerHTML=`<div class="note bad">${esc(CLOUD.error||"تعذّر تحميل Firebase (تحققي من الإنترنت)")}</div><button class="btn danger sm" id="fbClear">إلغاء الربط</button>`; $("#fbClear").onclick=()=>CLOUD.setConfig(null); return; }
-    if(CLOUD.user){ const u=CLOUD.user; box.innerHTML=`<h1>الحساب</h1><div class="row between"><div><b>${esc(ST.fullName||u.displayName||"")}</b><div class="small muted">${esc(u.email||"")}${ST.halaqa?" · "+esc(ST.halaqa):""}</div></div><span class="pill good">متصل ومتزامن</span></div>
+    if(CLOUD.user&&!ST.fullName){ const u=CLOUD.user; if(u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; }
+      box.innerHTML=`<h1>أكملي بياناتك</h1><p class="small muted">مرحبًا ${esc(u.email||"")}. هذه البيانات تظهر للأستاذة وفي تقاريرك.</p>${profileFormHtml()}<button class="btn" id="profSave">حفظ والبدء</button>`; wireProfileForm(); $("#profSave").onclick=()=>{ if(!readProfileForm())return; save(); CLOUD.push(true); go("home"); }; return; }
+    if(CLOUD.user){ const u=CLOUD.user; box.innerHTML=`<h1>الحساب</h1><div class="row between"><div><b>${esc(ST.fullName||u.displayName||"")}</b><div class="small muted">${esc(u.email||"")}${ST.halaqa?" · "+esc(ST.halaqa):""}</div></div><span class="pill good">${ST.role==="teacher"?"أستاذة معتمدة":"متصل ومتزامن"}</span></div>
       ${CLOUD.error?`<div class="note warn">${esc(CLOUD.error)}</div>`:""}<p class="small muted">تُحفظ بياناتك وتقدمك في السحابة تلقائيًا، وتصلك الواجبات والتصحيح من الأستاذة مباشرة. ${ST.halaqa?"":"اكتبي اسم الحلقة في الإعدادات (نفس الاسم عند الأستاذة) لتصلك واجباتها."}</p>
       <div class="row"><button class="btn sec" id="syncNow">مزامنة الآن</button>${isTeacher()?`<button class="btn" data-go="cloudteacher">لوحة الأستاذة السحابية</button>`:""}<button class="btn danger" id="signOut">تسجيل الخروج</button></div>`;
       $("#syncNow").onclick=async()=>{ await CLOUD.push(true); await CLOUD.pullShared(); toast(CLOUD.error||"تمت المزامنة"); render(); }; $("#signOut").onclick=async()=>{ await CLOUD.signOut(); render(); }; box.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)); return; }
-    box.innerHTML=`<h1>تسجيل الدخول</h1><p class="small muted">سجّلي الدخول لتُحفظ بياناتك في السحابة وتتواصلي مع الأستاذة.</p>
+    box.innerHTML=`<div class="hero" style="margin-bottom:6px"><div><div class="eyebrow">حلقة رياحين</div><h1>تسجيل الدخول</h1><p class="small muted">سجّلي الدخول لتُحفظ بياناتك وتصلك واجبات الأستاذة وتصحيحها.</p></div>${ART.mushaf}</div>
       <button class="btn" id="gBtn" style="background:#fff;color:#222;border:1px solid var(--line)"><svg viewBox="0 0 48 48" width="20" height="20" style="stroke:none"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.7 24c0-1.6.3-3.1.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg> الدخول بحساب Google</button>
       ${location.protocol==="file:"?`<p class="small muted">الدخول بجوجل يعمل في نسخة التطبيق المرفوعة على الإنترنت؛ من الملف المحلي استخدمي البريد وكلمة المرور.</p>`:""}
       <div class="eyebrow" style="margin-top:6px">أو بالبريد الإلكتروني</div>
@@ -549,7 +555,7 @@ function accountView(){
     const msg=(t,k="bad")=>{ $("#accMsg").innerHTML=t?`<div class="note ${k}">${esc(t)}</div>`:""; };
     $("#gBtn").onclick=async()=>{ try{ msg("جارٍ فتح نافذة جوجل…","info"); await CLOUD.signInGoogle(); }catch(e){ msg(CLOUD.msg(e)); } };
     $("#inBtn").onclick=async()=>{ try{ msg("جارٍ الدخول…","info"); await CLOUD.signInEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
-    $("#upBtn").onclick=async()=>{ try{ if(!ST.fullName){ msg("اكتبي بياناتك (الاسم الرباعي والحلقة) في الإعدادات أولًا ثم أنشئي الحساب"); return; } msg("جارٍ إنشاء الحساب…","info"); await CLOUD.signUpEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
+    $("#upBtn").onclick=async()=>{ try{ msg("جارٍ إنشاء الحساب…","info"); await CLOUD.signUpEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
     $("#rsBtn").onclick=async()=>{ try{ await CLOUD.reset($("#em").value.trim()); msg("أُرسلت رسالة إعادة التعيين إلى بريدك","good"); }catch(e){ msg(CLOUD.msg(e)); } };
   });
 }
@@ -579,7 +585,7 @@ const DB={
   async del(k){ try{ const d=await this.open(); return new Promise(res=>{ const t=d.transaction("blobs","readwrite"); t.objectStore("blobs").delete(k); t.oncomplete=()=>res(); }); }catch(e){} },
   async keys(prefix){ try{ const d=await this.open(); return new Promise(res=>{ const r=d.transaction("blobs").objectStore("blobs").getAllKeys(); r.onsuccess=()=>res((r.result||[]).filter(k=>String(k).startsWith(prefix))); r.onerror=()=>res([]); }); }catch(e){ return []; } }
 };
-const DEFAULT_STATE=()=>({name:"",fullName:"",halaqa:"",teacherName:"",track:"both",hifzAmount:"نصف وجه",reviewAmount:"أربع صفحات",role:"student",pin:"",reciter:"akhdar",passPct:80,requireTeacher:false,
+const DEFAULT_STATE=()=>({name:"",fullName:"",halaqa:"",teacherName:"",track:"both",hifzAmount:"نصف وجه",reviewAmount:"أربع صفحات",role:"student",pin:"1400",reciter:"akhdar",passPct:80,requireTeacher:false,
   done:{},quiz:{},levelTests:{},attempts:[],homework:[],submissions:[],customAudio:"",textCache:{},letterRefs:[],seenIntro:false});
 let ST=DEFAULT_STATE();
 function load(){ try{ const s=localStorage.getItem("ry_state"); if(s) ST=Object.assign(DEFAULT_STATE(),JSON.parse(s)); }catch(e){} }
@@ -662,7 +668,14 @@ let route="home", routeArg=null;
 function go(r,arg){ route=r; routeArg=arg; try{ if(r!==route||true) location.hash=r.replace(/[^a-z-]/gi,""); }catch(e){} render(); document.querySelector("main").scrollTop=0; }
 window.addEventListener("hashchange",()=>{ const h=location.hash.replace("#",""); if(h&&h!==route&&VIEWS[h]){ route=h; routeArg=null; render(); } });
 $("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(b.dataset.go); });
+function gate(){
+  if(!CLOUD.config()) return false; if(route==="account"||route==="about") return false;
+  if(CLOUD.user) return false;
+  if(!CLOUD.ready){ view.innerHTML=`<div class="card stack" style="text-align:center;padding:40px 16px"><h2>رياحين</h2><p class="muted">جارٍ الاتصال…</p>${CLOUD.error?`<div class="note bad">${esc(CLOUD.error)}</div><div class="row" style="justify-content:center"><button class="btn" onclick="location.reload()">إعادة المحاولة</button>${ST.fullName?`<button class="btn sec" id="offlineBtn">متابعة دون اتصال</button>`:""}</div>`:""}</div>`; const ob=$("#offlineBtn"); if(ob) ob.onclick=()=>{ CLOUD.offline=true; render(); }; if(!CLOUD.busy&&!CLOUD.error) CLOUD.load().then(()=>render()); return !CLOUD.offline; }
+  route="account"; return false;
+}
 function render(){
+  if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
   const tabOf={lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
@@ -678,7 +691,7 @@ function wireProfileForm(){ const t=$("#trackIn"); if(t) t.onchange=()=>{ $("#am
 function readProfileForm(){ const f=$("#fullIn").value.trim(); if(!f){ toast("اكتبي الاسم الرباعي"); return false; } ST.fullName=f; ST.name=f.split(/\s+/)[0]; ST.halaqa=$("#halaqaIn").value.trim(); ST.teacherName=$("#teacherIn").value.trim(); ST.track=$("#trackIn").value; ST.hifzAmount=$("#hifzAmtIn").value.trim(); ST.reviewAmount=$("#revAmtIn").value.trim(); return true; }
 // ===== الرئيسية =====
 VIEWS.home=function(){
-  if(!ST.name){ view.innerHTML=`<div class="card stack"><h1>أهلًا بك في رياحين</h1><p class="lesson-body">تطبيق لتعلّم أحكام التجويد وتطبيقها صوتيًا، على ترتيب كتاب «هدي المجيد في أحكام التجويد» للمهندسة هدى العمروسي. تتدرجين في ثلاثة مستويات ثم مستوى الإتقان، وفي كل درس شرح وأمثلة وتدريب صوتي واختبار.</p>
+  if(!ST.fullName&&!ST.name){ view.innerHTML=`<div class="card stack"><h1>أهلًا بك في رياحين</h1><p class="lesson-body">تطبيق لتعلّم أحكام التجويد وتطبيقها صوتيًا، على ترتيب كتاب «هدي المجيد في أحكام التجويد» للمهندسة هدى العمروسي. تتدرجين في ثلاثة مستويات ثم مستوى الإتقان، وفي كل درس شرح وأمثلة وتدريب صوتي واختبار.</p>
     ${profileFormHtml()}
     <label class="f">أنا<select id="roleIn"><option value="student">طالبة</option><option value="teacher">أستاذة الحلقة</option></select></label>
     <button class="btn" id="startBtn">ابدئي</button></div>`;
@@ -903,6 +916,7 @@ VIEWS.more=function(){
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="progress"><h3>تقدّمي وسجلّي</h3><p class="small muted">المحاولات المحفوظة ونتائج الاختبارات وتصديرها للأستاذة.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="teacher"><h3>وضع الأستاذة</h3><p class="small muted">تسجيل القراءة المرجعية للآيات والحروف، واعتماد المستويات، وتصدير التصحيح.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="settings"><h3>الإعدادات</h3><p class="small muted">القارئ المرجعي، نسبة الاجتياز، النسخ الاحتياطي.</p></button>
+    <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>تحميل تطبيق أندرويد (APK)</h3><p class="small muted">حمّلي الملف وافتحيه على الجوال لتثبيت رياحين. لآيفون: افتحي الرابط في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="about"><h3>عن التطبيق</h3><p class="small muted">طريقة الاستخدام، والمصدر العلمي، وحدود التصحيح الآلي.</p></button></div>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 };
