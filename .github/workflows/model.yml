@@ -17,6 +17,7 @@ jobs:
         run: |
           git clone --depth 1 --branch 2.17.2 https://github.com/xenova/transformers.js.git tjs
           pip install -q -r tjs/scripts/requirements.txt
+          pip install -q 'numpy<2'
       - name: Convert tarteel-ai/whisper-tiny-ar-quran
         run: |
           cd tjs && python -m scripts.convert --quantize --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
