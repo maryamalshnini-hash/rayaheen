@@ -22,8 +22,19 @@ jobs:
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Convert tarteel-ai/whisper-tiny-ar-quran
         run: |
-          cd tjs && python -m scripts.convert --quantize --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
+          cd tjs && python -m scripts.convert --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
           ls -la models/tarteel-ai/whisper-tiny-ar-quran models/tarteel-ai/whisper-tiny-ar-quran/onnx
+      - name: Quantize (int8)
+        run: |
+          python - <<'PY'
+          from onnxruntime.quantization import quantize_dynamic, QuantType
+          import os
+          d='tjs/models/tarteel-ai/whisper-tiny-ar-quran/onnx'
+          for f in ['encoder_model','decoder_model_merged']:
+              src=f'{d}/{f}.onnx'; dst=f'{d}/{f}_quantized.onnx'
+              quantize_dynamic(src,dst,weight_type=QuantType.QUInt8,per_channel=False,reduce_range=False,extra_options={'EnableSubgraph':True})
+              print(f, os.path.getsize(src)//1e6, '->', os.path.getsize(dst)//1e6, 'MB')
+          PY
       - name: Copy needed files
         run: |
           D=models/whisper-tiny-ar-quran; rm -rf $D; mkdir -p $D/onnx
