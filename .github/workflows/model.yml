@@ -17,7 +17,9 @@ jobs:
         run: |
           git clone --depth 1 --branch 2.17.2 https://github.com/xenova/transformers.js.git tjs
           pip install -q -r tjs/scripts/requirements.txt
-          pip install -q 'numpy<2'
+          pip install -q 'numpy<2' onnxscript
+          pip install -q torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Convert tarteel-ai/whisper-tiny-ar-quran
         run: |
           cd tjs && python -m scripts.convert --quantize --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
