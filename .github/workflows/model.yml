@@ -1,0 +1,35 @@
+name: Build Quran ASR model (ONNX)
+on:
+  workflow_dispatch:
+  push:
+    paths: [".github/workflows/model.yml"]
+permissions:
+  contents: write
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install converter
+        run: |
+          git clone --depth 1 --branch 2.17.2 https://github.com/xenova/transformers.js.git tjs
+          pip install -q -r tjs/scripts/requirements.txt
+      - name: Convert tarteel-ai/whisper-tiny-ar-quran
+        run: |
+          cd tjs && python -m scripts.convert --quantize --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
+          ls -la models/tarteel-ai/whisper-tiny-ar-quran models/tarteel-ai/whisper-tiny-ar-quran/onnx
+      - name: Copy needed files
+        run: |
+          D=models/whisper-tiny-ar-quran; rm -rf $D; mkdir -p $D/onnx
+          S=tjs/models/tarteel-ai/whisper-tiny-ar-quran
+          for f in config.json generation_config.json tokenizer.json tokenizer_config.json preprocessor_config.json vocab.json merges.txt normalizer.json special_tokens_map.json added_tokens.json; do [ -f $S/$f ] && cp $S/$f $D/; done
+          cp $S/onnx/encoder_model_quantized.onnx $D/onnx/
+          cp $S/onnx/decoder_model_merged_quantized.onnx $D/onnx/
+          du -sh $D/onnx/*
+      - name: Commit model
+        run: |
+          git config user.name "rayaheen-bot"; git config user.email "bot@rayaheen"
+          git add models && git commit -m "نموذج التعرف القرآني (whisper-tiny-ar-quran, ONNX)" && git push
