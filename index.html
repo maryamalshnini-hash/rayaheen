@@ -1,35 +1,35 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#cdbdf0"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1f7a6d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap">
 <style>
 /* Layout: one-screen app, RTL. Fixed top bar + bottom tab bar, scrolling main. Lessons read as a book page; tools (recording) as instrument panels. */
 :root{
-  --bg:#f7f4fb; --surface:#ffffff; --surface2:#f1ecf8; --line:#e3dcef;
-  --fg:#3a3550; --muted:#7b7492; --accent:#8fcfb9; --accent-deep:#3f9a7d; --accent-fg:#1d3b32; --accent-soft:#dff4ec;
-  --gold:#f5c98a; --gold-soft:#fdeedb;
-  --good:#4fae8a; --warn:#e3a85a; --bad:#e07a8a; --good-soft:#dff3ea; --warn-soft:#fdf0dc; --bad-soft:#fbe1e6;
-  --pink:#f6b8cf; --sky:#b9d9f5; --lilac:#cdbdf0; --mint:#bfe9d7; --peach:#fbd3b8;
-  --hdr1:#cdbdf0; --hdr2:#bfe9d7; --hdr3:#fbd3b8;
+  --bg:#f8f6f0; --surface:#ffffff; --surface2:#f1ede3; --line:#e2dccd;
+  --fg:#1f2a28; --muted:#6b746f; --accent:#1f7a6d; --accent-deep:#135c52; --accent-fg:#ffffff; --accent-soft:#dcefea;
+  --gold:#c9a24d; --gold-soft:#f6ecd2;
+  --good:#2e8b62; --warn:#c98a1e; --bad:#c7483f; --good-soft:#e0f2e8; --warn-soft:#fbf0d6; --bad-soft:#f9e0dd;
+  --pink:#d98c9a; --sky:#5aa3c9; --lilac:#8f7fc4; --mint:#7fc3ad; --peach:#e3a46f;
+  --hdr1:#1f7a6d; --hdr2:#1f7a6d; --hdr3:#2d9683;
   --quran:"Amiri Quran","Amiri","Scheherazade New","Noto Naskh Arabic",serif;
   --display:"Amiri","Noto Naskh Arabic",serif;
   --ui:"Tajawal","Noto Sans Arabic",system-ui,sans-serif;
   --radius:14px; --shadow:0 1px 2px rgba(20,40,30,.06),0 6px 18px rgba(20,40,30,.06);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#1f1b2e; --surface:#2a2540; --surface2:#332d4d; --line:#45405e;
-  --fg:#efeaf8; --muted:#b5adcb; --accent:#7fc9ae; --accent-deep:#9fdcc5; --accent-fg:#102a22; --accent-soft:#2b4a40;
-  --gold:#f0c389; --gold-soft:#4a3b26;
-  --good:#7fd3b0; --warn:#f0bf79; --bad:#f09aa8; --good-soft:#27443a; --warn-soft:#4a3a22; --bad-soft:#4b2a33;
-  --pink:#e9a9c3; --sky:#9fc3e8; --lilac:#b9a7e6; --mint:#9fd9c3; --peach:#edbc9f;
-  --hdr1:#4a3f73; --hdr2:#2e5a4b; --hdr3:#6b4a3a;
+  --bg:#131d1b; --surface:#1b2725; --surface2:#22312e; --line:#324441;
+  --fg:#eef3f1; --muted:#9fb0ab; --accent:#4fb8a4; --accent-deep:#7fd3c2; --accent-fg:#0d1f1b; --accent-soft:#1f3f39;
+  --gold:#d9b865; --gold-soft:#3d3419;
+  --good:#5fc48f; --warn:#e0b05a; --bad:#ef7f76; --good-soft:#1c3b2c; --warn-soft:#423416; --bad-soft:#4a2320;
+  --pink:#e39fae; --sky:#7cc0e0; --lilac:#b3a5e0; --mint:#8fd4c0; --peach:#eab989;
+  --hdr1:#16403a; --hdr2:#16403a; --hdr3:#1f5a50;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#1f1b2e; --surface:#2a2540; --surface2:#332d4d; --line:#45405e;
-  --fg:#efeaf8; --muted:#b5adcb; --accent:#7fc9ae; --accent-deep:#9fdcc5; --accent-fg:#102a22; --accent-soft:#2b4a40;
-  --gold:#f0c389; --gold-soft:#4a3b26;
-  --good:#7fd3b0; --warn:#f0bf79; --bad:#f09aa8; --good-soft:#27443a; --warn-soft:#4a3a22; --bad-soft:#4b2a33;
-  --pink:#e9a9c3; --sky:#9fc3e8; --lilac:#b9a7e6; --mint:#9fd9c3; --peach:#edbc9f;
-  --hdr1:#4a3f73; --hdr2:#2e5a4b; --hdr3:#6b4a3a;
+  --bg:#131d1b; --surface:#1b2725; --surface2:#22312e; --line:#324441;
+  --fg:#eef3f1; --muted:#9fb0ab; --accent:#4fb8a4; --accent-deep:#7fd3c2; --accent-fg:#0d1f1b; --accent-soft:#1f3f39;
+  --gold:#d9b865; --gold-soft:#3d3419;
+  --good:#5fc48f; --warn:#e0b05a; --bad:#ef7f76; --good-soft:#1c3b2c; --warn-soft:#423416; --bad-soft:#4a2320;
+  --pink:#e39fae; --sky:#7cc0e0; --lilac:#b3a5e0; --mint:#8fd4c0; --peach:#eab989;
+  --hdr1:#16403a; --hdr2:#16403a; --hdr3:#1f5a50;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:16px;line-height:1.6;direction:rtl}
@@ -40,20 +40,20 @@ h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.
 h1{font-size:1.7rem}h2{font-size:1.4rem}h3{font-size:1.15rem}
 p{margin:0}
 .app{height:100%;display:flex;flex-direction:column}
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path d='M24 4l5 9 10-2-2 10 9 5-9 5 2 10-10-2-5 9-5-9-10 2 2-10-9-5 9-5-2-10 10 2z' fill='none' stroke='rgba(255,255,255,.35)' stroke-width='1.2'/></svg>"),linear-gradient(120deg,var(--hdr1),var(--hdr2) 55%,var(--hdr3));color:var(--fg);padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path d='M24 4l5 9 10-2-2 10 9 5-9 5 2 10-10-2-5 9-5-9-10 2 2-10-9-5 9-5-2-10 10 2z' fill='none' stroke='rgba(255,255,255,.35)' stroke-width='1.2'/></svg>"),linear-gradient(120deg,var(--hdr1),var(--hdr3));color:#fff;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px}
 .top .brand{font-family:var(--display);font-size:1.35rem;font-weight:700;letter-spacing:.5px}
 .top .sub{font-size:.8rem;opacity:.85}
 .top .spacer{flex:1}
-.top .who{font-size:.85rem;background:rgba(255,255,255,.55);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.top .who{font-size:.85rem;background:rgba(255,255,255,.18);color:#fff;padding:4px 10px;border-radius:999px;white-space:nowrap}
 main{flex:1;overflow:auto;padding-block:18px 90px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 .tabs{position:fixed;bottom:0;left:0;right:0;z-index:9;background:var(--surface);box-shadow:0 -4px 16px rgba(60,40,90,.06);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px))}
 .tabs button{flex:1;background:none;border:0;padding:9px 2px 11px;color:var(--muted);font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border-top:3px solid transparent}
 .tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.tabs button.on{color:var(--accent-deep);border-top-color:var(--lilac);background:linear-gradient(180deg,var(--surface2),transparent)}
-.tabs button{font-size:.68rem}
+.tabs button.on{color:var(--accent-deep);border-top-color:var(--accent)}
+.tabs button{font-size:.74rem}
 .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent-soft);border-radius:18px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);min-width:0}
 .card.soft{background:var(--surface2);box-shadow:none}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .row.between{justify-content:space-between}
@@ -89,9 +89,9 @@ ul.clean li{margin-block:4px}
 .ex{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline}
 .ex .word{font-family:var(--quran);font-size:1.5rem;color:var(--accent)}
 .level-head{display:flex;gap:14px;align-items:center}
-.level-head .n{font-family:var(--display);font-size:2.2rem;color:#4a3550;background:linear-gradient(135deg,var(--lilac),var(--pink));border-radius:14px;padding:4px 8px;line-height:1;min-width:44px;text-align:center}
+.level-head .n{font-family:var(--display);font-size:2.2rem;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;padding:4px 8px;line-height:1;min-width:44px;text-align:center}
 .progress{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
-.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--mint),var(--lilac),var(--peach));border-radius:99px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:99px}
 .lock{opacity:.55}
 .lesson-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;text-align:right;width:100%}
 .lesson-item:hover{border-color:var(--accent)}
@@ -100,7 +100,7 @@ ul.clean li{margin-block:4px}
 .lesson-item .mark{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;background:var(--surface2);color:var(--muted);flex:none}
 .lesson-item .mark.done{background:var(--mint);color:#1d3b32}
 .rec{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px}
-.recbtn{width:88px;height:88px;border-radius:50%;border:5px solid var(--accent-soft);background:var(--pink);color:#5a2a3c;display:grid;place-items:center;cursor:pointer;transition:transform .15s}
+.recbtn{width:88px;height:88px;border-radius:50%;border:5px solid var(--accent-soft);background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .15s}
 .recbtn svg{width:34px;height:34px;fill:currentColor}
 .recbtn.on{background:var(--bad);border-color:var(--bad-soft);animation:pulse 1.2s infinite}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
@@ -142,14 +142,14 @@ audio{width:100%;max-width:420px}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.92rem}
 .kv dt{color:var(--muted)}.kv dd{margin:0}
 @media (max-width:520px){.quran{font-size:1.6rem}.top .sub{display:none}}
-.hero{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:linear-gradient(135deg,var(--surface2),var(--accent-soft) 50%,var(--gold-soft));border-radius:var(--radius);padding:16px;border:1px solid var(--line)}
+.hero{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;background:linear-gradient(135deg,var(--accent-soft),var(--gold-soft));border-radius:var(--radius);padding:16px;border:1px solid var(--line)}
 .hero svg{width:150px;height:auto;max-width:100%}
 .art{width:64px;height:64px;flex:none}
 .art svg{width:100%;height:100%}
 .cardart{display:flex;gap:12px;align-items:center}
 .cardart .art{width:54px;height:54px}
 .lvcolor-1{--lc:var(--sky)}.lvcolor-2{--lc:var(--accent)}.lvcolor-3{--lc:var(--lilac)}.lvcolor-4{--lc:var(--gold)}
-.card.lv{border-top-color:var(--lc)}
+.card.lv{border-right:4px solid var(--lc)}
 .player{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface2);border-radius:12px;padding:10px}
 .player .ctl{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;cursor:pointer;font-size:1.1rem}
 .player .ctl.sec{background:var(--surface);border:1px solid var(--line);color:var(--fg)}
@@ -157,6 +157,15 @@ audio{width:100%;max-width:420px}
 .player label{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted)}
 .player .now{font-size:.85rem;color:var(--accent);font-weight:700;min-width:80px}
 @media (max-width:520px){.hero{grid-template-columns:1fr}.hero svg{width:120px;margin:0 auto}}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.quick button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:14px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:.9rem;box-shadow:var(--shadow)}
+.quick button .art{width:40px;height:40px}
+.quick button:hover{border-color:var(--accent)}
+.quick button .cnt{font-size:.72rem;color:var(--muted);font-weight:400}
+.todo{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface2)}
+.todo .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none}
+.todo.done .dot{background:var(--good)}
+@media (max-width:420px){.quick{grid-template-columns:repeat(3,1fr)}.quick button{font-size:.8rem;padding:10px 4px}}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -167,12 +176,9 @@ audio{width:100%;max-width:420px}
   <main><div class="wrap" id="view"></div></main>
   <nav class="tabs" id="tabs" aria-label="التنقل">
     <button data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg>الرئيسية</button>
-    <button data-go="levels"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 14h10M4 9h16M4 4h7"/></svg>المستويات</button>
-    <button data-go="listen"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="17" y="13" width="4" height="6" rx="1"/></svg>الاستماع</button>
-    <button data-go="practice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>التدريب</button>
     <button data-go="hifz"><svg viewBox="0 0 24 24"><path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3zM4 17a3 3 0 0 1 3-3h12M9 8h6"/></svg>الحفظ</button>
-    <button data-go="makharij"><svg viewBox="0 0 24 24"><path d="M4 18c3-10 13-10 16 0M8 14c1.5-3 6.5-3 8 0"/><circle cx="12" cy="7" r="1.5"/></svg>المخارج</button>
-    <button data-go="homework"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13H6zM14 3v6h6M9 13h6M9 17h6"/></svg>الواجبات</button>
+    <button data-go="listen"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="17" y="13" width="4" height="6" rx="1"/></svg>الاستماع</button>
+    <button data-go="levels"><svg viewBox="0 0 24 24"><path d="M4 19h16M4 14h10M4 9h16M4 4h7"/></svg>التجويد</button>
     <button data-go="more"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>المزيد</button>
   </nav>
 </div>
@@ -232,13 +238,13 @@ const LEVELS=[
 const ART={
   mushaf:`<svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <defs><linearGradient id="gPg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fffdf5"/><stop offset="1" stop-color="#f3e9c9"/></linearGradient>
-    <linearGradient id="gCv" x1="0" x2="1"><stop offset="0" stop-color="#8fcfb9"/><stop offset="1" stop-color="#b9a7e6"/></linearGradient>
+    <linearGradient id="gCv" x1="0" x2="1"><stop offset="0" stop-color="#1f7a6d"/><stop offset="1" stop-color="#2d9683"/></linearGradient>
     <linearGradient id="gRh" x1="0" x2="1"><stop offset="0" stop-color="#b9772c"/><stop offset="1" stop-color="#e2a757"/></linearGradient></defs>
     <g opacity=".9"><circle cx="100" cy="60" r="58" fill="#fdeedb"/><g stroke="#f5c98a" stroke-width="2" opacity=".7"><line x1="100" y1="0" x2="100" y2="14"/><line x1="40" y1="60" x2="54" y2="60"/><line x1="146" y1="60" x2="160" y2="60"/><line x1="58" y1="18" x2="68" y2="28"/><line x1="142" y1="18" x2="132" y2="28"/></g></g>
     <path d="M30 128 L100 112 L170 128 L170 134 L100 118 L30 134 Z" fill="url(#gRh)"/><path d="M62 134 L58 146 L142 146 L138 134 Z" fill="#a9642a"/>
     <path d="M38 52 Q100 36 100 48 L100 118 Q100 106 38 118 Z" fill="url(#gCv)"/><path d="M162 52 Q100 36 100 48 L100 118 Q100 106 162 118 Z" fill="url(#gCv)"/>
     <path d="M44 56 Q98 42 98 52 L98 112 Q98 102 44 112 Z" fill="url(#gPg)"/><path d="M156 56 Q102 42 102 52 L102 112 Q102 102 156 112 Z" fill="url(#gPg)"/>
-    <g stroke="#8fcfb9" stroke-width="2" stroke-linecap="round" opacity=".8"><path d="M54 64 Q75 58 90 60"/><path d="M54 72 Q75 66 90 68"/><path d="M54 80 Q75 74 90 76"/><path d="M54 88 Q75 82 90 84"/><path d="M54 96 Q72 90 84 92"/><path d="M110 60 Q125 58 146 64"/><path d="M110 68 Q125 66 146 72"/><path d="M110 76 Q125 74 146 80"/><path d="M110 84 Q125 82 146 88"/><path d="M116 92 Q128 90 146 96"/></g>
+    <g stroke="#1f7a6d" stroke-width="2" stroke-linecap="round" opacity=".7"><path d="M54 64 Q75 58 90 60"/><path d="M54 72 Q75 66 90 68"/><path d="M54 80 Q75 74 90 76"/><path d="M54 88 Q75 82 90 84"/><path d="M54 96 Q72 90 84 92"/><path d="M110 60 Q125 58 146 64"/><path d="M110 68 Q125 66 146 72"/><path d="M110 76 Q125 74 146 80"/><path d="M110 84 Q125 82 146 88"/><path d="M116 92 Q128 90 146 96"/></g>
     <path d="M100 48 L100 118" stroke="#c9b27a" stroke-width="2"/>
     <path d="M100 20 l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#f5c98a"/></svg>`,
   star:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M32 4l6 12 13-2-3 13 12 7-12 7 3 13-13-2-6 12-6-12-13 2 3-13-12-7 12-7-3-13 13 2z" fill="var(--lc,var(--gold))" opacity=".9"/><circle cx="32" cy="32" r="9" fill="#fff" opacity=".85"/></svg>`,
@@ -657,7 +663,8 @@ function go(r,arg){ route=r; routeArg=arg; try{ if(r!==route||true) location.has
 window.addEventListener("hashchange",()=>{ const h=location.hash.replace("#",""); if(h&&h!==route&&VIEWS[h]){ route=h; routeArg=null; render(); } });
 $("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(b.dataset.go); });
 function render(){
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||(route==="lesson"&&b.dataset.go==="levels")||(route==="leveltest"&&b.dataset.go==="levels")||(["settings","teacher","progress","about"].includes(route)&&b.dataset.go==="more")));
+  const tabOf={lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
 }
@@ -679,24 +686,31 @@ VIEWS.home=function(){
   const cl=currentLevel(); const L=LEVELS[Math.min(cl,4)-1]; const ls=cl<=4?lessonsOf(cl):[]; const doneN=ls.filter(l=>ST.done[l.id]).length;
   const next=ls.find(l=>!ST.done[l.id]); const last=ST.attempts.slice(-3).reverse(); const hw=ST.homework.filter(h=>!ST.submissions.find(s=>s.hwId===h.id));
   const tr=ST.track==="tilawa"?"تصحيح التلاوة والتجويد":ST.track==="hifz"?"حفظ ومراجعة":"حفظ ومراجعة وتصحيح تلاوة";
+  const T=(ST.hifz&&ST.hifz.plan)?todayTasks():null; const hzDone=T?T.tasks.filter(taskDone).length:0; const hzTotal=T?T.tasks.length:0;
+  const hour=new Date().getHours(); const greet=hour<12?"صباح الخير":hour<18?"مساء الخير":"مساء النور";
   view.innerHTML=`
-  <div class="card soft"><div class="row between"><div><b>${esc(ST.fullName||ST.name)}</b><div class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${ST.teacherName?"الأستاذة "+esc(ST.teacherName)+" · ":""}${tr}${ST.track!=="tilawa"&&ST.hifzAmount?` · حفظ ${esc(ST.hifzAmount)}`:""}${ST.track!=="tilawa"&&ST.reviewAmount?` · مراجعة ${esc(ST.reviewAmount)}`:""}</div></div><button class="btn sec sm" data-go="settings">تعديل</button></div></div>
-  <div class="hero"><div><div class="eyebrow">رياحين</div><h1>تعلّمي، احفظي، وجوّدي</h1><p class="small muted">منهج التجويد على كتاب «هدي المجيد»، وحفظ على برنامج «بالقرآن نحيا»، وتصحيح تلاوة بالتسجيل.</p></div>${ART.mushaf}</div>
-  <div class="card lv lvcolor-${Math.min(cl,4)}"><div class="eyebrow">موضعك الآن</div>${cl<=4?`<div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
-    <div class="progress" style="margin-top:10px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted">أتممتِ ${doneN} من ${ls.length} دروس</p>
-    <div class="row" style="margin-top:10px">${next?`<button class="btn" id="goNext">متابعة: ${esc(next.title)}</button>`:`<button class="btn gold" id="goTest">اختبار اجتياز ${esc(L.title)}</button>`}<button class="btn sec" id="goLv">كل المستويات</button></div>`:
-    `<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`}</div>
-  <div class="grid">
-    <div class="card stack cardart" style="--lc:var(--sky)"><div class="art">${ART.ear}</div><div><h3>الاستماع</h3><p class="small muted">بصوت الشيخ إبراهيم الأخضر، مع التكرار والسرعة.</p><button class="btn sec sm" data-go="listen">استمعي</button></div></div>
-    <div class="card stack cardart" style="--lc:var(--pink)"><div class="art">${ART.mic}</div><div><h3>التدريب الصوتي</h3><p class="small muted">سجّلي وقارني بالقارئ أو الأستاذة.</p><button class="btn sec sm" data-go="practice">ابدئي</button></div></div>
-    <div class="card stack cardart" style="--lc:var(--good)"><div class="art">${ART.hifz}</div><div><h3>حفظ القرآن</h3><p class="small muted">${ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?`اليوم ${ST.hifz.day+1} من برنامج بالقرآن نحيا.`:`محفوظ ${ST.hifz.memorized.length} مقطعًا.`):"ضعي خطة الحفظ وسمّعي يوميًا."}</p><button class="btn sec sm" data-go="hifz">افتحي</button></div></div>
-    <div class="card stack cardart" style="--lc:var(--lilac)"><div class="art">${ART.lips}</div><div><h3>مخارج الحروف</h3><p class="small muted">انطقي كل حرف من مخرجه ويقارنه التطبيق.</p><button class="btn sec sm" data-go="makharij">تدرّبي</button></div></div>
-    <div class="card stack cardart" style="--lc:var(--gold)"><div class="art">${ART.sheet}</div><div><h3>الواجبات</h3><p class="small muted">${hw.length?`لديك ${hw.length} واجب لم يُسلَّم.`:"لا واجبات معلّقة."}</p><button class="btn sec sm" data-go="homework">افتحي</button></div></div>
+  <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p></div>${ART.mushaf}</div>
+  <div class="card"><div class="row between"><h3>مهامك اليوم</h3><span class="small muted">${fmtDate(Date.now())}</span></div>
+    <div class="stack" style="margin-top:10px">
+      ${T?(T.finished?`<div class="todo done"><span class="dot"></span><span>أتممتِ برنامج الحفظ كاملًا</span></div>`:`<div class="todo ${hzDone===hzTotal&&hzTotal?"done":""}"><span class="dot"></span><span style="flex:1">الحفظ والمراجعة: ${hzDone} من ${hzTotal} مهام</span><button class="btn sm" data-go="hifz">${hzDone===hzTotal&&hzTotal?"عرض":"ابدئي"}</button></div>`):`<div class="todo"><span class="dot"></span><span style="flex:1">لم تُضبط خطة الحفظ بعد</span><button class="btn sm sec" data-go="hifz">ضبط الخطة</button></div>`}
+      ${cl<=4?`<div class="todo ${!next?"done":""}"><span class="dot"></span><span style="flex:1">التجويد: ${next?`درس «${esc(next.title)}»`:`اختبار اجتياز ${esc(L.title)}`}</span><button class="btn sm sec" id="${next?"goNext":"goTest"}">افتحي</button></div>`:""}
+      ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
+    </div></div>
+  <div class="quick">
+    <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
+    <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
+    <button data-go="hifz" style="--lc:var(--good)"><span class="art">${ART.hifz}</span>الحفظ<span class="cnt">${T?(T.progressText.split("·")[0].trim()):"الخطة"}</span></button>
+    <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} في المستوى ${cl}`:"مكتمل"}</span></button>
+    <button data-go="makharij" style="--lc:var(--lilac)"><span class="art">${ART.lips}</span>المخارج<span class="cnt">29 حرفًا</span></button>
+    <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
   </div>
+  ${cl<=4?`<div class="card lv lvcolor-${cl}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="eyebrow">مستواك في التجويد</div><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
+    <div class="progress" style="margin-top:10px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted">أتممتِ ${doneN} من ${ls.length} دروس</p></div>`:
+    `<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`}
   ${last.length?`<div class="card"><div class="eyebrow">آخر محاولاتك</div><div class="stack" style="margin-top:8px">${last.map(a=>`<div class="row between"><span>${esc(a.label)}</span><span class="pill ${a.score>=ST.passPct?"good":a.score>=55?"warn":"bad"}">${a.score??"—"}٪</span></div>`).join("")}</div></div>`:""}
-  <p class="small muted">المادة العلمية مرتبة على أبواب كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي، مكتبة الرشد، ط6 1431هـ).</p>`;
+  <p class="small muted">المادة العلمية على كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي)، والحفظ على برنامج «بالقرآن نحيا».</p>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-  const gn=$("#goNext"); if(gn) gn.onclick=()=>go("lesson",next.id); const gt=$("#goTest"); if(gt) gt.onclick=()=>go("leveltest",cl); $("#goLv").onclick=()=>go("levels");
+  const gn=$("#goNext"); if(gn) gn.onclick=()=>go("lesson",next.id); const gt=$("#goTest"); if(gt) gt.onclick=()=>go("leveltest",cl);
 };
 
 // ===== المستويات =====
@@ -882,6 +896,9 @@ VIEWS.leveltest=async function(lv){
 // ===== المزيد: الإعدادات، وضع الأستاذة، التقدم =====
 VIEWS.more=function(){
   view.innerHTML=`<h1>المزيد</h1><div class="grid">
+    <button class="card stack" style="text-align:right;cursor:pointer" data-go="practice"><h3>تصحيح التلاوة</h3><p class="small muted">سجّلي أي آيات وقارنيها بالقارئ أو الأستاذة.</p></button>
+    <button class="card stack" style="text-align:right;cursor:pointer" data-go="makharij"><h3>مخارج الحروف</h3><p class="small muted">تدريب نطق الحروف الـ29 مع المقارنة.</p></button>
+    <button class="card stack" style="text-align:right;cursor:pointer" data-go="homework"><h3>الواجبات</h3><p class="small muted">واجبات الأستاذة وتسليمها وتصحيحها.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="account"><h3>الحساب والمزامنة</h3><p class="small muted">${cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول بجوجل أو البريد وحفظ البيانات في السحابة."}</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="progress"><h3>تقدّمي وسجلّي</h3><p class="small muted">المحاولات المحفوظة ونتائج الاختبارات وتصديرها للأستاذة.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="teacher"><h3>وضع الأستاذة</h3><p class="small muted">تسجيل القراءة المرجعية للآيات والحروف، واعتماد المستويات، وتصدير التصحيح.</p></button>
