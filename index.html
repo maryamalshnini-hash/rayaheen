@@ -484,7 +484,10 @@ const CLOUD={
     }catch(e){ this.error=e.message||String(e); return false; } finally{ this.busy=false; }
   },
   msg(e){ const c=(e&&e.code)||""; const m={"auth/invalid-email":"البريد غير صحيح","auth/user-not-found":"لا يوجد حساب بهذا البريد","auth/wrong-password":"كلمة المرور غير صحيحة","auth/invalid-credential":"البريد أو كلمة المرور غير صحيحة","auth/email-already-in-use":"البريد مستخدم من قبل","auth/weak-password":"كلمة المرور ضعيفة (6 أحرف على الأقل)","auth/popup-closed-by-user":"أُغلقت نافذة جوجل قبل الإكمال","auth/unauthorized-domain":"هذا النطاق غير مُصرَّح به في Firebase (أضيفيه في Authentication ← Settings ← Authorized domains)","auth/operation-not-allowed":"طريقة الدخول غير مفعّلة في Firebase Console","permission-denied":"لا صلاحية (راجعي قواعد Firestore)","auth/network-request-failed":"لا اتصال بالإنترنت"}; return m[c]||(e&&e.message)||"حدث خطأ"; },
-  async signInGoogle(){ await this.load(); const p=new firebase.auth.GoogleAuthProvider(); if(location.protocol==="file:") throw {code:"auth/unauthorized-domain"}; try{ await this.auth.signInWithPopup(p); }catch(e){ if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment") await this.auth.signInWithRedirect(p); else throw e; } },
+  async signInGoogle(){ await this.load(); const p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account"}); if(location.protocol==="file:") throw {code:"auth/unauthorized-domain"};
+    const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||window.matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+    if(mobile){ await this.auth.signInWithRedirect(p); return; }
+    try{ await this.auth.signInWithPopup(p); }catch(e){ if(["auth/popup-blocked","auth/operation-not-supported-in-this-environment","auth/cancelled-popup-request","auth/popup-closed-by-user","auth/web-storage-unsupported"].includes(e.code)) await this.auth.signInWithRedirect(p); else throw e; } },
   async signInEmail(email,pw){ await this.load(); await this.auth.signInWithEmailAndPassword(email,pw); },
   async signUpEmail(email,pw){ await this.load(); const r=await this.auth.createUserWithEmailAndPassword(email,pw); if(ST.fullName) await r.user.updateProfile({displayName:ST.fullName}); },
   async reset(email){ await this.load(); await this.auth.sendPasswordResetEmail(email); },
@@ -555,7 +558,7 @@ function accountView(){
       <label class="f">البريد<input type="text" id="em" dir="ltr" inputmode="email" autocomplete="email"></label><label class="f">كلمة المرور<input type="password" id="pw" dir="ltr" autocomplete="current-password"></label>
       <div class="row"><button class="btn" id="inBtn">دخول</button><button class="btn sec" id="upBtn">إنشاء حساب جديد</button><button class="btn sec sm" id="rsBtn">نسيت كلمة المرور</button></div><div id="accMsg"></div>`;
     const msg=(t,k="bad")=>{ $("#accMsg").innerHTML=t?`<div class="note ${k}">${esc(t)}</div>`:""; };
-    $("#gBtn").onclick=async()=>{ try{ msg("جارٍ فتح نافذة جوجل…","info"); await CLOUD.signInGoogle(); }catch(e){ msg(CLOUD.msg(e)); } };
+    $("#gBtn").onclick=async()=>{ try{ msg("جارٍ الانتقال إلى صفحة جوجل…","info"); await CLOUD.signInGoogle(); }catch(e){ msg(CLOUD.msg(e)+" — جرّبي زر الدخول مرة أخرى أو استخدمي البريد وكلمة المرور."); } };
     $("#inBtn").onclick=async()=>{ try{ msg("جارٍ الدخول…","info"); await CLOUD.signInEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
     $("#upBtn").onclick=async()=>{ try{ msg("جارٍ إنشاء الحساب…","info"); await CLOUD.signUpEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
     $("#rsBtn").onclick=async()=>{ try{ await CLOUD.reset($("#em").value.trim()); msg("أُرسلت رسالة إعادة التعيين إلى بريدك","good"); }catch(e){ msg(CLOUD.msg(e)); } };
