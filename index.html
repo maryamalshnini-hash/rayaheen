@@ -498,6 +498,29 @@ function listenView(arg){ return (async function(arg){
   }
 })(arg); }
 
+// ===== الحضور والتقييم الأسبوعي =====
+// تُحتسب «اليوم منجز» إذا دخلت الطالبة التطبيق وأنجزت جميع مهام اليوم (الحفظ والمراجعة إن وُجدت خطة، وإلا أي نشاط تعليمي).
+// الأسبوع يبدأ السبت. 4 أيام فأكثر: متميزة · 3: مثالية · 2 فأقل: غائبة.
+const ATT={
+  key(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); },
+  map(){ ST.attendance=ST.attendance||{}; return ST.attendance; },
+  enter(){ const m=this.map(); const k=this.key(); if(!m[k]){ m[k]={entered:true,done:false}; save(); } },
+  recheck(){ const m=this.map(); const k=this.key(); const rec=m[k]||(m[k]={entered:true,done:false}); const before=rec.done;
+    let done=false; if(ST.hifz&&ST.hifz.plan){ const T=todayTasks(); done=!!(T&&(T.finished||(T.tasks.length&&T.tasks.every(taskDone)))); }
+    else { const today=new Date().toDateString(); done=ST.attempts.some(a=>new Date(a.date).toDateString()===today)||Object.values(ST.quiz||{}).length>0&&!!ST.lastQuizDay&&ST.lastQuizDay===today; }
+    rec.done=done; if(done!==before) save(); return done; },
+  weekStart(d){ d=d||new Date(); const x=new Date(d); x.setHours(0,0,0,0); const dow=x.getDay(); const diff=(dow+1)%7; x.setDate(x.getDate()-diff); return x; }, // السبت
+  week(d){ const s=this.weekStart(d); const m=this.map(); const days=[]; for(let i=0;i<7;i++){ const x=new Date(s); x.setDate(s.getDate()+i); const k=this.key(x); days.push({k,date:x,entered:!!(m[k]&&m[k].entered),done:!!(m[k]&&m[k].done)}); } return days; },
+  rating(n){ return n>=4?{t:"متميزة",k:"good"}:n===3?{t:"مثالية",k:"acc"}:{t:"غائبة",k:"bad"}; },
+  summary(d){ const w=this.week(d); const done=w.filter(x=>x.done).length; const entered=w.filter(x=>x.entered).length; return {done,entered,rating:this.rating(done),days:w}; },
+  history(nWeeks){ const out=[]; for(let i=0;i<nWeeks;i++){ const d=new Date(); d.setDate(d.getDate()-7*i); const s=this.summary(d); out.push({start:this.weekStart(d),done:s.done,entered:s.entered,rating:s.rating}); } return out; }
+};
+const DAY_NAMES=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+function attendanceCardHtml(){ const s=ATT.summary(); return `<div class="card"><div class="row between"><h3>حضورك هذا الأسبوع</h3><span class="pill ${s.rating.k}">${s.rating.t}</span></div>
+  <p class="small muted">يُحتسب اليوم إذا دخلتِ التطبيق وأنجزتِ جميع مهامه. 4 أيام فأكثر: متميزة · 3 أيام: مثالية · يومان فأقل: غائبة.</p>
+  <div class="row" style="gap:6px;margin-top:8px;justify-content:space-between">${s.days.map(d=>`<div style="text-align:center;flex:1;min-width:36px"><div style="width:30px;height:30px;border-radius:50%;margin:0 auto;display:grid;place-items:center;font-size:.8rem;font-weight:700;background:${d.done?"var(--good)":d.entered?"var(--warn-soft)":"var(--surface2)"};color:${d.done?"#fff":"var(--muted)"}">${d.done?"✓":d.entered?"•":""}</div><div class="small muted" style="font-size:.68rem">${DAY_NAMES[d.date.getDay()]}</div></div>`).join("")}</div>
+  <p class="small" style="margin-top:8px">أيام منجزة: <b>${s.done}</b> من 7 · أيام دخول: ${s.entered}</p></div>`; }
+
 // ===== السحابة: Firebase (تسجيل الدخول بجوجل والبريد، Firestore، Storage) =====
 // ضعي إعدادات مشروعك هنا (من Firebase Console ← Project settings ← Your apps ← Config)
 const FIREBASE_CONFIG = {"apiKey":"AIzaSyCnYvTcWLjyBaFlNtpaIXAnhE43kUglenY","authDomain":"rayahen-a5294.firebaseapp.com","projectId":"rayahen-a5294","storageBucket":"rayahen-a5294.firebasestorage.app","messagingSenderId":"543236976622","appId":"1:543236976622:web:8b961237361835ed4168ff"}; /* مثال:
@@ -533,7 +556,7 @@ const CLOUD={
   async signUpEmail(email,pw){ await this.load(); const r=await this.auth.createUserWithEmailAndPassword(email,pw); if(ST.fullName) await r.user.updateProfile({displayName:ST.fullName}); },
   async reset(email){ await this.load(); await this.auth.sendPasswordResetEmail(email); },
   async signOut(){ if(this.auth) await this.auth.signOut(); this.user=null; },
-  profile(){ return {uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,updated:Date.now()}; },
+  profile(){ return {uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,weekDone:ATT.summary().done,weekEntered:ATT.summary().entered,weekRating:ATT.summary().rating.t,weekStart:ATT.weekStart().getTime(),attendance:ST.attendance||{},updated:Date.now()}; },
   stateSlim(){ const s=Object.assign({},ST); delete s.textCache; delete s.pin; return s; },
   async afterLogin(){
     const u=this.user; const ref=this.db.collection("users").doc(u.uid); let snap=null; try{ snap=await ref.get(); }catch(e){ this.error=this.msg(e); return; }
@@ -614,7 +637,7 @@ async function cloudTeacherView(){
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ الحساب</button><span class="pill acc">${esc(ST.halaqa||"بلا حلقة")}</span></div><h1>لوحة الأستاذة</h1><div id="ctBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`; $("#back").onclick=()=>go("account");
   if(!cloudOn()){ $("#ctBox").innerHTML=`<div class="note warn">سجّلي الدخول أولًا.</div>`; return; }
   try{ const [students,subs]=await Promise.all([CLOUD.students(),CLOUD.submissions()]); const box=$("#ctBox");
-    box.innerHTML=`<div class="card"><h3>طالبات الحلقة (${students.length})</h3><p class="small muted">كل من كتبت اسم الحلقة «${esc(ST.halaqa)}» في بياناتها.</p><div class="scroller"><table class="table"><tr><th>الطالبة</th><th>المسار</th><th>الدروس</th><th>المستويات</th><th>الحفظ</th><th>آخر نشاط</th><th></th></tr>${students.map(s=>`<tr><td><b>${esc(s.fullName||s.name||"")}</b><div class="small muted">${esc(s.email||"")}</div></td><td>${s.track==="tilawa"?"تصحيح تلاوة":s.track==="hifz"?"حفظ":"حفظ وتصحيح"}</td><td>${s.doneCount??0}</td><td>${[1,2,3,4].map(l=>(s.levelTests&&s.levelTests[l]&&s.levelTests[l].passed)?"✓":(s.levelTests&&s.levelTests[l]&&s.levelTests[l].pendingApproval)?"⏳":"·").join(" ")}</td><td>${s.hifzMode==="nahya"?`اليوم ${(s.hifzDay||0)+1}`:s.hifzMode==="custom"?`${s.hifzDay||0} مقطعًا`:"—"}</td><td class="small">${s.updated?fmtDate(s.updated):"—"}</td><td><button class="btn sec sm" data-hz="${s.uid}">سجل الحفظ</button> <button class="btn sec sm" data-ap="${s.uid}">اعتماد مستوى</button></td></tr>`).join("")||`<tr><td colspan="7" class="muted">لا طالبات بعد.</td></tr>`}</table></div><div id="ctSub"></div></div>
+    box.innerHTML=`<div class="card"><h3>طالبات الحلقة (${students.length})</h3><p class="small muted">كل من كتبت اسم الحلقة «${esc(ST.halaqa)}» في بياناتها.</p><div class="scroller"><table class="table"><tr><th>الطالبة</th><th>المسار</th><th>الدروس</th><th>المستويات</th><th>الحفظ</th><th>الحضور الأسبوعي</th><th>آخر نشاط</th><th></th></tr>${students.map(s=>`<tr><td><b>${esc(s.fullName||s.name||"")}</b><div class="small muted">${esc(s.email||"")}</div></td><td>${s.track==="tilawa"?"تصحيح تلاوة":s.track==="hifz"?"حفظ":"حفظ وتصحيح"}</td><td>${s.doneCount??0}</td><td>${[1,2,3,4].map(l=>(s.levelTests&&s.levelTests[l]&&s.levelTests[l].passed)?"✓":(s.levelTests&&s.levelTests[l]&&s.levelTests[l].pendingApproval)?"⏳":"·").join(" ")}</td><td>${s.hifzMode==="nahya"?`اليوم ${(s.hifzDay||0)+1}`:s.hifzMode==="custom"?`${s.hifzDay||0} مقطعًا`:"—"}</td><td>${s.weekRating?`<span class="pill ${s.weekRating==="متميزة"?"good":s.weekRating==="مثالية"?"acc":"bad"}">${s.weekRating}</span> <span class="small muted">${s.weekDone??0} أيام</span>`:"—"}</td><td class="small">${s.updated?fmtDate(s.updated):"—"}</td><td><button class="btn sec sm" data-hz="${s.uid}">سجل الحفظ</button> <button class="btn sec sm" data-ap="${s.uid}">اعتماد مستوى</button></td></tr>`).join("")||`<tr><td colspan="7" class="muted">لا طالبات بعد.</td></tr>`}</table></div><div id="ctSub"></div></div>
     <div class="card"><h3>التسليمات (${subs.length})</h3><div class="stack" id="subList">${subs.length?"":`<p class="muted small">لا تسليمات بعد.</p>`}</div></div>`;
     const sl=$("#subList"); subs.forEach(sb=>{ const d=document.createElement("div"); d.className="q stack"; d.innerHTML=`<div class="row between"><b>${esc(sb.studentName)}</b><span class="small muted">${sb.kind==="homework"?"واجب":sb.kind==="hifz"?"تسميع حفظ":"تلاوة"} · ${esc(sb.hwTitle||"")} · ${fmtDate(sb.date)}${sb.autoScore!=null?` · تقدير آلي ${sb.autoScore}٪`:""}</span></div><div data-au><button class="btn sec sm" data-load>تحميل التسجيل</button></div>${sb.notes&&sb.notes.length?`<details><summary class="small">ملاحظات التطبيق</summary><ul class="clean small">${sb.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details>`:""}
       <div class="row">${[["makh","المخارج"],["mad","المدود"],["ghn","الغنن"],["waqf","الوقف والابتداء"]].map(([k,n])=>`<label class="f">${n}<select data-r="${k}">${[5,4,3,2,1].map(v=>`<option ${v===((sb.rubric||{})[k]??4)?"selected":""}>${v}</option>`).join("")}</select></label>`).join("")}</div>
@@ -725,6 +748,7 @@ function gate(){
   route="account"; return false;
 }
 function render(){
+  try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
   const tabOf={lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
@@ -759,6 +783,7 @@ VIEWS.home=function(){
       ${cl<=4?`<div class="todo ${!next?"done":""}"><span class="dot"></span><span style="flex:1">التجويد: ${next?`درس «${esc(next.title)}»`:`اختبار اجتياز ${esc(L.title)}`}</span><button class="btn sm sec" id="${next?"goNext":"goTest"}">افتحي</button></div>`:""}
       ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
     </div></div>
+  ${attendanceCardHtml()}
   <div class="quick">
     <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
     <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
@@ -802,7 +827,7 @@ VIEWS.lesson=function(id){
   $("#back").onclick=()=>go("levels"); const p=$("#prevL"); if(p)p.onclick=()=>go("lesson",ls[idx-1].id); const n=$("#nextL"); if(n)n.onclick=()=>go("lesson",ls[idx+1].id); const t=$("#toTest"); if(t)t.onclick=()=>go("leveltest",l.level);
   if(l.practice&&l.practice.length){ const sel=i=>{ document.querySelectorAll("#prList .opt").forEach(b=>b.classList.toggle("sel",+b.dataset.p===i)); $("#prCur").textContent=l.practice[i]; }; sel(0); document.querySelectorAll("#prList .opt").forEach(b=>b.onclick=()=>sel(+b.dataset.p));
     wireRecorder("pr0",{onDone:async blob=>{ const out=$("#pr0Out"); out.innerHTML=audioTag(blob)+`<span class="small muted" id="pr0A">جارٍ التحليل…</span>`; try{ const sig=await Audio_.decode(blob); const S=extractFeatures(sig); const regs=sustainedRegions(S.frames,S.hopSec,0.3); const mc=l.timing&&l.timing.maddCounts; let t=`مدة الصوت ${S.voicedSec.toFixed(1)} ث · مواضع ممدودة: ${regs.length}${regs.length?" (أطولها "+Math.max(...regs.map(r=>r.sec)).toFixed(1)+" ث)":""}`; if(mc&&regs.length){ const longest=Math.max(...regs.map(r=>r.sec)); const perH=longest/mc; if(perH<0.12) t+=" — المد يبدو أقصر من مقداره، أطيلي قليلًا."; else if(perH>0.3) t+=" — المد يبدو أطول من مقداره."; } $("#pr0A").textContent=t; }catch(e){ $("#pr0A").textContent=""; } }}); }
-  renderQuiz($("#quizBox"),l.quiz||[],{onFinish:pct=>{ ST.quiz[l.id]=pct; if(pct>=ST.passPct){ ST.done[l.id]=true; toast("أحسنتِ! أُنجز الدرس."); } else toast("راجعي الدرس ثم أعيدي الاختبار."); save(); }});
+  renderQuiz($("#quizBox"),l.quiz||[],{onFinish:pct=>{ ST.quiz[l.id]=pct; ST.lastQuizDay=new Date().toDateString(); if(pct>=ST.passPct){ ST.done[l.id]=true; toast("أحسنتِ! أُنجز الدرس."); } else toast("راجعي الدرس ثم أعيدي الاختبار."); save(); }});
 };
 function renderQuiz(box,qs,{onFinish,shuffle=false,label="تصحيح"}={}){
   const list=shuffle?qs.slice().sort(()=>Math.random()-.5):qs; const ans=new Array(list.length).fill(null);
