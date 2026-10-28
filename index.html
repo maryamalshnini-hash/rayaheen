@@ -220,6 +220,20 @@ audio{width:100%;max-width:420px}
 .seg{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink)}.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .attgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.attgrid div{aspect-ratio:1;border-radius:6px;background:var(--surface2);display:grid;place-items:center;font-size:.65rem;color:var(--muted)}.attgrid .d{background:var(--good);color:#fff}.attgrid .e{background:var(--warn-soft)}
 @media (max-width:600px){.hero svg{width:84px}.hero{grid-template-columns:1fr auto}}
+
+/* الشهادة */
+.cert2{background:linear-gradient(135deg,#fbf8f0,#eef5f2);padding:14px;border-radius:12px;color:#2b3a36}
+.cert2-frame{border:4px double #c9a24d;padding:22px 18px;text-align:center;border-radius:6px;position:relative}
+.cert2-brand{font-family:var(--display);font-size:2rem;color:#1f7a6d;font-weight:700}.cert2-sub{font-size:.8rem;color:#6b7a76}
+.cert2-title{font-family:var(--display);font-size:1.9rem;color:#c9a24d;margin-top:14px}.cert2-lv{font-family:var(--display);font-size:1.35rem;color:#1f7a6d;font-weight:700}
+.cert2-p{margin:10px 0;font-size:.95rem}.cert2-name{font-family:var(--display);font-size:2.1rem;color:#1f7a6d;font-weight:700;margin:6px 0}
+.cert2-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:22px;flex-wrap:wrap}
+.cert2-foot>div{flex:1;min-width:120px;text-align:center}
+.cert2-sign img{height:70px;max-width:220px;object-fit:contain;display:block;margin:0 auto 4px}.cert2-sigline{width:160px;border-bottom:2px solid #9aa8a3;margin:0 auto 40px}
+.stamp{width:110px;height:110px;border:4px double #b23a3a;border-radius:50%;color:#b23a3a;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-10deg);margin:0 auto;opacity:.88;line-height:1.2}
+.stamp span{font-family:var(--display);font-weight:800;font-size:1.2rem}.stamp small{font-size:.62rem;max-width:90px}.stamp em{font-style:normal;font-size:.65rem;font-weight:700;border-top:1px solid #b23a3a;margin-top:3px;padding-top:2px}
+.cert2-serial{position:absolute;bottom:6px;left:12px;font-size:.65rem;color:#9aa8a3;direction:ltr}
+@media print{ body.printing-cert *{visibility:hidden} body.printing-cert #certCard,body.printing-cert #certCard *{visibility:visible} body.printing-cert #certCard{position:fixed;inset:0;margin:0;border-radius:0} }
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -652,7 +666,7 @@ const CLOUD={
   isMine(u){ if(u.role==="teacher") return false; if(u.teacherEmail&&this.user&&u.teacherEmail.toLowerCase()===(this.user.email||"").toLowerCase()) return true; if(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa)) return true; const t=this.normName(u.teacherName); if(!t) return false; return this.myNames().some(n=>t===n||t.includes(n)||n.includes(t)); },
   // غرفة المعلمات (عالمي): كل معلمة لها بطاقة عامة
   async registerTeacher(){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,created:Date.now()},{merge:true}); ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); await this.saveTeacherProfile(); },
-  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",updated:Date.now()},{merge:true}); },
+  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",signature:ST.signature||"",updated:Date.now()},{merge:true}); },
   async teachersList(){ const q=await this.db.collection("teachers").get(); return q.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name).sort((a,b)=>(b.updated||0)-(a.updated||0)); },
   async joinTeacher(t){ ST.teacherEmail=t.email; ST.teacherName=t.name; if(t.halaqa) ST.halaqa=t.halaqa; save(); await this.push(true); await this.pullShared(); },
   async students(){ const q=await this.db.collection("users").get(); return q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>this.isMine(u)); },
@@ -804,7 +818,7 @@ function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
   try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
-  const tabOf={assistant:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  const tabOf={assistant:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -825,6 +839,7 @@ VIEWS.home=function(){
     <label class="f">أنا<select id="roleIn"><option value="student">طالبة</option><option value="teacher">أستاذة الحلقة</option></select></label>
     <button class="btn" id="startBtn">ابدئي</button></div>`;
     wireProfileForm(); $("#startBtn").onclick=()=>{ if(!readProfileForm())return; ST.role=$("#roleIn").value; save(); render(); }; return; }
+  if(isTeacher()){ teacherHome(); return; }
   const cl=currentLevel(); const L=LEVELS[Math.min(cl,4)-1]; const ls=cl<=4?lessonsOf(cl):[]; const doneN=ls.filter(l=>ST.done[l.id]).length;
   const next=ls.find(l=>!ST.done[l.id]); const last=ST.attempts.slice(-3).reverse(); const hw=ST.homework.filter(h=>!ST.submissions.find(s=>s.hwId===h.id));
   const tr=ST.track==="tilawa"?"تصحيح التلاوة والتجويد":ST.track==="hifz"?"حفظ ومراجعة":"حفظ ومراجعة وتصحيح تلاوة";
@@ -834,8 +849,7 @@ VIEWS.home=function(){
   view.innerHTML=`
   <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p>
     <div class="row" style="margin-top:8px;gap:10px;align-items:center"><div class="ring" style="--p:${pct}"><div>${pct}٪</div></div><div class="small"><b>${totalDone}</b> من ${totalLessons} درسًا<br><span class="muted">${streakDays()} يومًا متتاليًا · ${B.filter(b=>b.on).length}/${B.length} شارات</span></div></div></div>${ART.mushaf}</div>
-  ${isTeacher()?`<div class="card" style="border-color:var(--accent)"><div class="row between"><div><h3>👩‍🏫 لوحة المعلمة</h3><p class="small muted">تابعي كل طالبة: مستواها، حضورها، تسجيلاتها، وإجاباتها.</p></div><button class="btn" data-go="cloudteacher">افتحي اللوحة</button></div></div>`:""}
-  <div class="tiles"><div class="tile ${att.rating.k}"><b>${att.done}</b><span>أيام منجزة هذا الأسبوع</span></div><div class="tile"><b>${ST.attempts.length}</b><span>تلاوات مسجّلة</span></div><div class="tile gold"><b>${gamesSummary().total}</b><span>نقاط الألعاب</span></div><div class="tile"><b>${cl<=4?cl:"✓"}</b><span>المستوى الحالي</span></div></div>
+
   <div class="card"><div class="row between"><h3>مهامك اليوم</h3><span class="small muted">${fmtDate(Date.now())}</span></div>
     <div class="stack" style="margin-top:10px">
       ${T?(T.finished?`<div class="todo done"><span class="dot"></span><span>أتممتِ برنامج الحفظ كاملًا</span></div>`:`<div class="todo ${hzDone===hzTotal&&hzTotal?"done":""}"><span class="dot"></span><span style="flex:1">الحفظ والمراجعة: ${hzDone} من ${hzTotal} مهام</span><button class="btn sm" data-go="hifz">${hzDone===hzTotal&&hzTotal?"عرض":"ابدئي"}</button></div>`):`<div class="todo"><span class="dot"></span><span style="flex:1">لم تُضبط خطة الحفظ بعد</span><button class="btn sm sec" data-go="hifz">ضبط الخطة</button></div>`}
@@ -844,7 +858,6 @@ VIEWS.home=function(){
       ${!isTeacher()&&cloudOn()&&!ST.teacherEmail?`<div class="todo"><span class="dot" style="background:var(--sky)"></span><span style="flex:1">انضمّي إلى معلمتك من غرفة المعلمات</span><button class="btn sm sec" data-go="teachers">غرفة المعلمات</button></div>`:""}
       ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
     </div></div>
-  ${attendanceCardHtml()}
   <div class="quick">
     <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
     <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
@@ -853,10 +866,9 @@ VIEWS.home=function(){
     <button data-go="makharij" style="--lc:var(--lilac)"><span class="art">${ART.lips}</span>المخارج<span class="cnt">29 حرفًا</span></button>
     <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
     <button data-go="games" style="--lc:var(--warn)"><span class="art" style="font-size:2rem;line-height:40px">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
-    <button data-go="assistant" style="--lc:var(--accent)"><span class="art" style="font-size:2rem;line-height:40px">💬</span>المساعد الذكي<span class="cnt">اسألي</span></button>
-    <button data-go="progress" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">📈</span>تقدّمي<span class="cnt">الشارات والسجل</span></button>
+    <button data-go="progress" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">📈</span>تقدّمي<span class="cnt">${att.rating.t} · ${B.filter(b=>b.on).length} شارات</span></button>
   </div>
-  <div class="card"><div class="row between"><h3>شاراتك</h3><span class="small muted">${B.filter(b=>b.on).length} من ${B.length}</span></div><div class="badges" style="margin-top:8px">${B.map(b=>`<div class="badge ${b.on?"":"off"}" title="${esc(b.d)}"><span class="ic">${b.ic}</span><span>${esc(b.t)}</span></div>`).join("")}</div></div>
+
   ${cl<=4?`<div class="card lv lvcolor-${cl}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="eyebrow">مستواك في التجويد</div><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
     <div class="progress" style="margin-top:10px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted">أتممتِ ${doneN} من ${ls.length} دروس</p></div>`:
     `<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`}
@@ -866,6 +878,21 @@ VIEWS.home=function(){
   const gn=$("#goNext"); if(gn) gn.onclick=()=>go("lesson",next.id); const gt=$("#goTest"); if(gt) gt.onclick=()=>go("leveltest",cl);
 };
 
+// ===== رئيسية المعلمة =====
+function teacherHome(){ const hour=new Date().getHours(); const greet=hour<12?"صباح الخير":hour<18?"مساء الخير":"مساء النور";
+  view.innerHTML=`<div class="hero"><div><div class="eyebrow">${greet} · معلمة</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa):"لم تكتبي اسم حلقتك بعد"}${cloudOn()?" · متصلة":" · غير متصلة"}</p></div>${ART.book}</div>
+  <div class="quick">
+    <button data-go="cloudteacher" style="--lc:var(--accent)"><span class="art" style="font-size:2rem;line-height:40px">👩‍🏫</span>طالباتي<span class="cnt">التقدم والحضور والتسجيلات</span></button>
+    <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">إنشاء ونشر</span></button>
+    <button data-go="teachers" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">🏫</span>غرفة المعلمات<span class="cnt">بطاقتك</span></button>
+    <button data-go="levels" style="--lc:var(--good)"><span class="art">${ART.book}</span>المنهج<span class="cnt">${LESSONS.length} درسًا</span></button>
+    <button data-go="teacher" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>قراءتي المرجعية<span class="cnt">تسجيل الآيات والحروف</span></button>
+    <button data-go="settings" style="--lc:var(--lilac)"><span class="art" style="font-size:2rem;line-height:40px">✍️</span>التوقيع والبطاقة<span class="cnt">للشهادات</span></button>
+  </div>
+  ${!cloudOn()?`<div class="note warn">سجّلي الدخول لتظهر طالباتك وتسجيلاتهن.</div>`:""}
+  ${!ST.signature?`<div class="card"><div class="row between"><div><h3>توقيعك على الشهادات</h3><p class="small muted">أضيفي توقيعك مرة واحدة ليظهر مع ختم رياحين على شهادات طالباتك.</p></div><button class="btn sm" data-go="settings">إضافة</button></div></div>`:""}
+  <p class="small muted">المادة العلمية على كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي)، والحفظ على برنامج «بالقرآن نحيا».</p>`;
+  view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)); }
 // ===== الشارات والتتابع =====
 function streakDays(){ const m=ST.attendance||{}; let n=0; const d=new Date(); for(let i=0;i<365;i++){ const k=ATT.key(d); if(m[k]&&m[k].entered) n++; else if(i>0) break; d.setDate(d.getDate()-1); } return n; }
 function badgesList(){ const done=Object.keys(ST.done).length; const lt=ST.levelTests||{}; const rec=ST.attempts.length; const good=ST.attempts.filter(a=>a.score>=ST.passPct).length; const g=gamesSummary(); const st=streakDays(); const hz=ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):0;
@@ -1085,8 +1112,8 @@ VIEWS.leveltest=async function(lv){
       const parts=[wordPct,ac].filter(x=>x!=null); const sc=parts.length?Math.round(parts.reduce((a,b)=>a+b,0)/parts.length):null; scores[k-1]=sc; await DB.put(`lt:${lv}:${s}:${a1}`,blob);
       rr.insertAdjacentHTML("afterbegin",`<div class="row"><span class="pill ${sc==null?"":sc>=ST.passPct?"good":"warn"}">تقدير هذا المقطع: ${sc==null?"—":sc+"٪"}</span></div>`);
       const got=scores.filter(x=>x!=null); if(got.length===L.recite.length){ stage.recite=Math.round(got.reduce((a,b)=>a+b,0)/got.length); commit(); } }}); }
-  function commit(){ const t=ST.levelTests[lv]||{}; Object.assign(t,{mcq:stage.mcq,recite:stage.recite,date:Date.now()}); const ok=stage.mcq!=null&&stage.recite!=null&&stage.mcq>=ST.passPct&&stage.recite>=ST.passPct; if(ok&&!ST.requireTeacher) t.passed=true; if(ok&&ST.requireTeacher) t.pendingApproval=true; ST.levelTests[lv]=t; save(); verdict(); }
-  function verdict(){ const t=ST.levelTests[lv]||{}; const v=$("#verdict"); if(t.passed){ v.innerHTML=`<div class="cert"><h2>مبارك</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ ${esc(L.title)}${lv<4?" وفُتح لك المستوى التالي.":"؛ أتممتِ منهج رياحين كاملًا."}</p>${lv<4?`<button class="btn gold" style="margin-top:10px" id="nextLv">إلى ${esc(LEVELS[lv].title)}</button>`:""}</div>`; const b=$("#nextLv"); if(b)b.onclick=()=>go("levels"); }
+  function commit(){ const t=ST.levelTests[lv]||{}; Object.assign(t,{mcq:stage.mcq,recite:stage.recite,date:Date.now()}); const ok=stage.mcq!=null&&stage.recite!=null&&stage.mcq>=ST.passPct&&stage.recite>=ST.passPct; if(ok&&!ST.requireTeacher){ t.passed=true; t.passedAt=t.passedAt||Date.now(); } if(ok&&ST.requireTeacher) t.pendingApproval=true; ST.levelTests[lv]=t; save(); verdict(); }
+  function verdict(){ const t=ST.levelTests[lv]||{}; const v=$("#verdict"); if(t.passed){ v.innerHTML=`<div class="cert"><h2>مبارك</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ ${esc(L.title)}${lv<4?" وفُتح لك المستوى التالي.":"؛ أتممتِ منهج رياحين كاملًا."}</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn gold" id="certBtn">🎓 شهادة الإتمام</button>${lv<4?`<button class="btn sec" id="nextLv">إلى ${esc(LEVELS[lv].title)}</button>`:""}</div></div>`; const b=$("#nextLv"); if(b)b.onclick=()=>go("levels"); $("#certBtn").onclick=()=>go("certificate",lv); }
     else if(t.pendingApproval){ v.innerHTML=`<div class="note info">نتائجك مكتملة وتنتظر اعتماد الأستاذة. صدّري نتيجتك من صفحة «المزيد ← تقدمي» وأرسليها لها.</div>`; }
     else if(stage.mcq!=null&&stage.recite!=null){ v.innerHTML=`<div class="note warn">لم تُحقّق نسبة الاجتياز بعد (النظري ${stage.mcq}٪، التلاوة ${stage.recite}٪). راجعي دروس المستوى وأعيدي الاختبار.</div>`; }
     else v.innerHTML=`<p class="small muted">أكملي الجزأين لتظهر النتيجة.</p>`; }
@@ -1095,29 +1122,26 @@ VIEWS.leveltest=async function(lv){
 
 // ===== المزيد: الإعدادات، وضع الأستاذة، التقدم =====
 VIEWS.more=function(){
-  view.innerHTML=`<h1>المزيد</h1><div class="grid">
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="practice"><h3>تصحيح التلاوة</h3><p class="small muted">سجّلي أي آيات وقارنيها بالقارئ أو الأستاذة.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="makharij"><h3>مخارج الحروف</h3><p class="small muted">تدريب نطق الحروف الـ29 مع المقارنة.</p></button>
-    ${isTeacher()?`<button class="card stack" style="text-align:right;cursor:pointer;border-color:var(--accent)" data-go="cloudteacher"><h3>👩‍🏫 لوحة المعلمة</h3><p class="small muted">تقدّم كل طالبة ومستواها وحضورها وغيابها والاستماع لتسجيلاتها وتصحيحها.</p></button>`:""}
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="teachers"><h3>🏫 غرفة المعلمات</h3><p class="small muted">${ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إلى حلقتها، مع رقمها وبريدها."}</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="games"><h3>🎮 ألعاب التجويد</h3><p class="small muted">ست ألعاب سريعة: أحكام النون والميم، المدود، المخارج، الصفات، اللام والراء.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="assistant"><h3>المساعد الذكي</h3><p class="small muted">اسألي عن أي حكم تجويد أو عن درسك أو خطأ في تلاوتك.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="homework"><h3>الواجبات</h3><p class="small muted">واجبات الأستاذة وتسليمها وتصحيحها.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="account"><h3>الحساب والمزامنة</h3><p class="small muted">${cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول بجوجل أو البريد وحفظ البيانات في السحابة."}</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="progress"><h3>تقدّمي وسجلّي</h3><p class="small muted">المحاولات المحفوظة ونتائج الاختبارات وتصديرها للأستاذة.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="teacher"><h3>وضع الأستاذة</h3><p class="small muted">تسجيل القراءة المرجعية للآيات والحروف، واعتماد المستويات، وتصدير التصحيح.</p></button>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="settings"><h3>الإعدادات</h3><p class="small muted">القارئ المرجعي، نسبة الاجتياز، النسخ الاحتياطي.</p></button>
-    <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>تحميل تطبيق أندرويد (APK)</h3><p class="small muted">حمّلي الملف وافتحيه على الجوال لتثبيت رياحين. لآيفون: افتحي الرابط في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>
-    <button class="card stack" style="text-align:right;cursor:pointer" data-go="about"><h3>عن التطبيق</h3><p class="small muted">طريقة الاستخدام، والمصدر العلمي، وحدود التصحيح الآلي.</p></button></div>`;
+  const item=(go_,ic,t,d,extra="")=>`<button class="card stack" style="text-align:right;cursor:pointer;${extra}" data-go="${go_}"><h3>${ic} ${t}</h3><p class="small muted">${d}</p></button>`;
+  const sec=(t,items)=>`<div class="eyebrow" style="margin:14px 0 6px">${t}</div><div class="grid">${items.join("")}</div>`;
+  const T=isTeacher();
+  view.innerHTML=`<h1>المزيد</h1>
+  ${T?sec("المتابعة",[item("cloudteacher","👩‍🏫","طالباتي","تقدّم كل طالبة ومستواها وحضورها والاستماع لتسجيلاتها","border-color:var(--accent)"),item("homework","📝","الواجبات","إنشاء واجبات ونشرها وتصحيحها"),item("teachers","🏫","غرفة المعلمات","بطاقتك كما تراها الطالبات"),item("teacher","🎙️","قراءتي المرجعية","تسجيل الآيات والحروف لتقارن بها الطالبات")]):""}
+  ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")]))}
+  ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("about","ℹ️","عن التطبيق","طريقة الاستخدام والمصدر العلمي")])}
+  <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit;margin-top:12px;display:block" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>📱 تحميل تطبيق أندرويد (APK)</h3><p class="small muted">لآيفون: افتحي الموقع في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 };
 VIEWS.progress=function(){
-  const atts=ST.attempts.slice().reverse();
-  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><h1>تقدّم ${esc(ST.name)}</h1>
-  <div class="card"><h3>المستويات</h3><div class="scroller"><table class="table"><tr><th>المستوى</th><th>الدروس</th><th>النظري</th><th>التلاوة</th><th>الحالة</th></tr>${LEVELS.map(L=>{ const ls=lessonsOf(L.n); const t=ST.levelTests[L.n]||{}; return `<tr><td>${esc(L.title)}</td><td>${ls.filter(l=>ST.done[l.id]).length}/${ls.length}</td><td>${t.mcq??"—"}</td><td>${t.recite??"—"}</td><td>${t.passed?`<span class="pill good">مجتاز</span>`:t.pendingApproval?`<span class="pill warn">بانتظار الاعتماد</span>`:levelUnlocked(L.n)?`<span class="pill acc">مفتوح</span>`:`<span class="pill">مقفل</span>`}</td></tr>`; }).join("")}</table></div>
+  const atts=ST.attempts.slice().reverse(); const att=ATT.summary(); const B=badgesList(); const totalDone=Object.keys(ST.done).length;
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><h1>تقدّم ${esc(ST.name)}</h1>
+  <div class="tiles"><div class="tile"><b>${totalDone}</b><span>درسًا من ${LESSONS.length}</span></div><div class="tile ${att.rating.k}"><b>${att.done}</b><span>أيام منجزة هذا الأسبوع</span></div><div class="tile"><b>${streakDays()}</b><span>يوم متتالٍ</span></div><div class="tile"><b>${ST.attempts.length}</b><span>تلاوات مسجّلة</span></div><div class="tile gold"><b>${gamesSummary().total}</b><span>نقاط الألعاب</span></div></div>
+  <div class="card"><h3>الشهادات والمستويات</h3><div class="stack" style="margin-top:8px">${LEVELS.map(L=>{ const ls=lessonsOf(L.n); const t=ST.levelTests[L.n]||{}; const dn=ls.filter(l=>ST.done[l.id]).length; return `<div class="row between" style="gap:8px"><div style="flex:1;min-width:0"><b>${esc(L.title)}</b> <span class="small muted">${ls.length?dn+"/"+ls.length+" دروس":"اختبار شامل"}${t.mcq!=null?" · نظري "+t.mcq+"٪":""}${t.recite!=null?" · تلاوة "+t.recite+"٪":""}</span>${ls.length?`<div class="lvbar" style="margin-top:4px"><i style="width:${Math.round(dn/ls.length*100)}%"></i></div>`:""}</div>${t.passed?`<button class="btn gold sm" data-cert="${L.n}">🎓 الشهادة</button>`:t.pendingApproval?`<span class="pill warn">بانتظار الاعتماد</span>`:levelUnlocked(L.n)?`<span class="pill acc">مفتوح</span>`:`<span class="pill">مقفل</span>`}</div>`; }).join("")}</div>
+  ${attendanceCardHtml()}
+
     <div class="row" style="margin-top:10px"><button class="btn sec sm" id="expRes">تصدير نتائجي للأستاذة</button></div></div>
   <div class="card"><h3>المحاولات المحفوظة (${atts.length})</h3><div class="stack" style="margin-top:8px" id="attList">${atts.length?"":`<p class="muted small">لا محاولات محفوظة.</p>`}</div></div>`;
-  $("#back").onclick=()=>go("more");
+  $("#back").onclick=()=>history.length>1?history.back():go("more"); view.querySelectorAll("[data-cert]").forEach(b=>b.onclick=()=>go("certificate",+b.dataset.cert));
   $("#expRes").onclick=()=>downloadsSave(`نتائج-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-results",student:ST.fullName||ST.name,halaqa:ST.halaqa,teacher:ST.teacherName,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,done:ST.done,quiz:ST.quiz,attempts:ST.attempts})],{type:"application/json"}));
   const list=$("#attList"); atts.forEach(async a=>{ const d=document.createElement("div"); d.className="q"; const blob=await DB.get("att:"+a.id); d.innerHTML=`<div class="row between"><b>${esc(a.label)}</b><span class="pill ${a.score>=ST.passPct?"good":a.score>=55?"warn":"bad"}">${a.score??"—"}٪</span></div><p class="small muted">${fmtDate(a.date)}</p>${blob?audioTag(blob):""}<details><summary class="small">الملاحظات</summary><ul class="clean small">${(a.notes||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details><div class="row" style="margin-top:6px"><button class="btn danger sm" data-del>حذف</button></div>`; d.querySelector("[data-del]").onclick=async()=>{ ST.attempts=ST.attempts.filter(x=>x.id!==a.id); await DB.del("att:"+a.id); save(); render(); }; list.appendChild(d); });
 };
@@ -1142,7 +1166,8 @@ VIEWS.teacher=async function(){
 };
 VIEWS.settings=function(){
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><h1>الإعدادات</h1>
-  <div class="card stack"><h3>بيانات الطالبة</h3>${profileFormHtml()}</div>
+  <div class="card stack"><h3>${isTeacher()?"بطاقة المعلمة":"بيانات الطالبة"}</h3>${profileFormHtml()}</div>
+  ${isTeacher()?signaturePadHtml():""}
   <div class="card stack"><h3>التدريب والاختبارات</h3>
     <label class="f">القارئ المرجعي الافتراضي<select id="rc">${RECITERS.map(r=>`<option value="${r.id}" ${r.id===ST.reciter?"selected":""}>${r.name}</option>`).join("")}</select></label>
     <label class="f">نسبة اجتياز الدروس والمستويات (٪)<input type="number" id="pp" min="50" max="100" value="${ST.passPct}"></label>
@@ -1153,7 +1178,7 @@ VIEWS.settings=function(){
     <button class="btn" id="sv">حفظ</button></div>
   <div class="card stack"><h3>نسخة احتياطية</h3><p class="small muted">تُحفظ بياناتك في هذا المتصفح فقط. صدّري نسخة كاملة (مع التسجيلات) لنقلها إلى جهاز آخر.</p><div class="row"><button class="btn sec" id="bk">تصدير نسخة كاملة</button><button class="btn sec" id="rs">استعادة نسخة</button><button class="btn danger" id="reset">مسح كل البيانات</button></div></div>`;
   $("#back").onclick=()=>go("more");
-  wireProfileForm();
+  wireProfileForm(); if(isTeacher()){ wireSignaturePad(); ["trackIn","teacherIn"].forEach(id=>{ const el=$("#"+id); if(el) el.closest("label").hidden=true; }); const ar=$("#amountRow"); if(ar) ar.hidden=true; }
   $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aliasIn")) ST.teacherAlias=$("#aliasIn").value.trim(); if(isTeacher()&&$("#bioIn")) ST.bio=$("#bioIn").value.trim(); if(isTeacher()&&cloudOn()) CLOUD.saveTeacherProfile().catch(()=>{}); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
   $("#bk").onclick=async()=>{ const d=await DB.open().catch(()=>null); const blobs={}; if(d){ const keys=await new Promise(res=>{ const r=d.transaction("blobs").objectStore("blobs").getAllKeys(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); }); for(const k of keys){ const b=await DB.get(k); if(b) blobs[k]=await blobToB64(b); } } downloadsSave(`رياحين-نسخة-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-backup",state:ST,blobs})],{type:"application/json"})); };
   $("#rs").onclick=async()=>{ const f=await pickFile(".json"); if(!f)return; try{ const j=JSON.parse(await f.text()); if(j.type!=="rayaheen-backup")throw 0; ST=Object.assign(DEFAULT_STATE(),j.state); for(const k in (j.blobs||{})) await DB.put(k,b64ToBlob(j.blobs[k])); save(); toast("استُعيدت النسخة"); go("home"); }catch(e){ toast("الملف ليس نسخة صالحة"); } };
@@ -1510,5 +1535,70 @@ VIEWS.teachers=async function(){
     $("#tList").querySelectorAll("[data-join]").forEach(b=>b.onclick=async()=>{ const t=list.find(x=>x.email===b.dataset.join); b.disabled=true; try{ if(ST.teacherEmail&&ST.teacherEmail.toLowerCase()===t.email.toLowerCase()){ ST.teacherEmail=""; ST.teacherName=""; save(); await CLOUD.push(true); toast("أُلغي الانضمام"); } else { await CLOUD.joinTeacher(t); toast("انضممتِ إلى "+t.name+" — ستصلك واجباتها"); } }catch(e){ toast(CLOUD.msg(e)); } draw($("#tSearch").value); }); };
   draw(""); $("#tSearch").oninput=()=>draw($("#tSearch").value);
 };
+
+// ===== شهادات إتمام المستويات + توقيع/ختم المعلمة =====
+const CERT_W=1400, CERT_H=990;
+async function teacherSignature(){ // توقيع المعلمة: من حسابها إن كانت هي، أو من بطاقة معلمة الطالبة
+  if(isTeacher()&&ST.signature) return {sig:ST.signature,name:ST.fullName||ST.name,halaqa:ST.halaqa};
+  if(ST.teacherSig&&ST.teacherSig.email===ST.teacherEmail&&Date.now()-ST.teacherSig.at<86400000) return ST.teacherSig;
+  if(!cloudOn()) return {sig:"",name:ST.teacherName,halaqa:ST.halaqa};
+  try{ let d=null; if(ST.teacherEmail){ d=await CLOUD.db.collection("teachers").doc(ST.teacherEmail).get(); }
+    if((!d||!d.exists)&&ST.teacherName){ const all=await CLOUD.teachersList(); const n=CLOUD.normName(ST.teacherName); const t=all.find(x=>CLOUD.normName(x.name)===n||CLOUD.normName(x.alias)===n); if(t) d={exists:true,data:()=>t}; }
+    const x=d&&d.exists?d.data():{}; ST.teacherSig={email:ST.teacherEmail,sig:x.signature||"",name:x.name||ST.teacherName,halaqa:x.halaqa||ST.halaqa,at:Date.now()}; save(); return ST.teacherSig; }catch(e){ return {sig:"",name:ST.teacherName,halaqa:ST.halaqa}; }
+}
+function certDates(ts){ try{ return [new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura",{day:"numeric",month:"long",year:"numeric"}).format(new Date(ts))+" هـ", new Intl.DateTimeFormat("ar",{day:"numeric",month:"long",year:"numeric"}).format(new Date(ts))+" م"]; }catch(e){ return [fmtDate(ts),""]; } }
+function certDate(ts){ return certDates(ts).filter(Boolean).join(" — "); }
+function certHtml(lv,T){ const L=LEVELS[lv-1]; const t=ST.levelTests[lv]||{}; const when=t.passedAt||t.date||Date.now(); const student=ST.fullName||ST.name; const teacher=T.name||ST.teacherName||"—";
+  return `<div class="cert2" id="certCard"><div class="cert2-frame"><div class="cert2-top"><div class="cert2-brand">رياحين</div><div class="cert2-sub">تعليم التجويد وفق كتاب «هدي المجيد في أحكام التجويد»</div></div>
+    <div class="cert2-title">شهادة إتمام</div><div class="cert2-lv">${esc(L.title)}</div>
+    <p class="cert2-p">تشهد إدارة ${T.halaqa||ST.halaqa?"حلقة "+esc(T.halaqa||ST.halaqa):"رياحين"} بأن الطالبة</p>
+    <div class="cert2-name">${esc(student)}</div>
+    <p class="cert2-p">قد أتمّت دروس ${esc(L.title)} في أحكام التجويد واجتازت اختباره${t.mcq!=null?` بنسبة ${t.mcq}٪ في النظري`:""}${t.recite!=null?` و${t.recite}٪ في التلاوة`:""}، سائلين الله لها التوفيق والقبول.</p>
+    <div class="cert2-foot"><div class="cert2-date"><span class="small muted">التاريخ</span><div>${certDate(when)}</div></div>
+      <div class="cert2-sign">${T.sig?`<img src="${T.sig}" alt="توقيع">`:`<div class="cert2-sigline"></div>`}<div><span class="small muted">المعلمة</span> <b>${esc(teacher)}</b></div></div>
+      <div class="cert2-stamp"><div class="stamp"><span>رياحين</span><small>${esc((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22))}</small><em>مُعتمدة</em></div></div></div>
+    <div class="cert2-serial">رقم الشهادة: RY-${lv}-${String(when).slice(-6)}</div></div></div>`; }
+VIEWS.certificate=async function(lv){
+  lv=+lv||1; const t=ST.levelTests[lv]||{}; const L=LEVELS[lv-1];
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button><span class="pill ${t.passed?"good":"warn"}">${t.passed?"مستوى مجتاز":"لم يُجتز بعد"}</span></div><h1>شهادة ${esc(L.title)}</h1><div id="certBox"><p class="muted">جارٍ التجهيز…</p></div>`;
+  $("#back").onclick=()=>history.length>1?history.back():go("progress");
+  if(!t.passed){ $("#certBox").innerHTML=`<div class="card"><p>تُمنح الشهادة بعد اجتياز اختبار ${esc(L.title)} واعتماده من المعلمة.</p><button class="btn" id="goT">إلى اختبار المستوى</button></div>`; $("#goT").onclick=()=>go("leveltest",lv); return; }
+  const T=await teacherSignature();
+  $("#certBox").innerHTML=`${certHtml(lv,T)}<div class="row" style="margin-top:12px;justify-content:center"><button class="btn" id="certPng">⬇ حفظ كصورة</button><button class="btn sec" id="certPrint">🖨 طباعة / PDF</button>${!T.sig?`<span class="small muted">${isTeacher()?"أضيفي توقيعك من الإعدادات ليظهر هنا.":"ستظهر صورة توقيع المعلمة عندما تضيفه."}</span>`:""}</div>`;
+  $("#certPrint").onclick=()=>{ document.body.classList.add("printing-cert"); window.print(); setTimeout(()=>document.body.classList.remove("printing-cert"),500); };
+  $("#certPng").onclick=async()=>{ try{ const blob=await certToPng(lv,T); downloadsSave(`شهادة-${(ST.name||"").replace(/\s+/g,"-")}-المستوى-${lv}.png`,blob); }catch(e){ toast("تعذّر إنشاء الصورة: "+(e.message||e)); } };
+};
+function certToPng(lv,T){ return new Promise(async(res,rej)=>{ try{ const L=LEVELS[lv-1]; const t=ST.levelTests[lv]||{}; const when=t.passedAt||t.date||Date.now(); const cv=document.createElement("canvas"); cv.width=CERT_W; cv.height=CERT_H; const g=cv.getContext("2d"); g.direction="rtl"; g.textAlign="center";
+  const grad=g.createLinearGradient(0,0,CERT_W,CERT_H); grad.addColorStop(0,"#fbf8f0"); grad.addColorStop(1,"#eef5f2"); g.fillStyle=grad; g.fillRect(0,0,CERT_W,CERT_H);
+  g.strokeStyle="#c9a24d"; g.lineWidth=6; g.strokeRect(40,40,CERT_W-80,CERT_H-80); g.lineWidth=2; g.strokeRect(58,58,CERT_W-116,CERT_H-116);
+  // زخرفة نجمية خفيفة
+  g.save(); g.globalAlpha=.07; g.fillStyle="#1f7a6d"; for(let i=0;i<9;i++){ star(g,120+i*145,120,34); star(g,120+i*145,CERT_H-120,34); } g.restore();
+  const X=CERT_W/2; g.fillStyle="#1f7a6d"; g.font="bold 64px Amiri, 'Noto Naskh Arabic', serif"; g.fillText("رياحين",X,150);
+  g.fillStyle="#6b7a76"; g.font="24px 'Noto Naskh Arabic', Amiri, serif"; g.fillText("تعليم التجويد وفق كتاب «هدي المجيد في أحكام التجويد»",X,195);
+  g.fillStyle="#c9a24d"; g.font="bold 58px Amiri, serif"; g.fillText("شهادة إتمام",X,290); g.fillStyle="#1f7a6d"; g.font="bold 44px Amiri, serif"; g.fillText(L.title,X,350);
+  g.fillStyle="#2b3a36"; g.font="28px 'Noto Naskh Arabic', Amiri, serif"; g.fillText(`تشهد إدارة ${T.halaqa||ST.halaqa?"حلقة "+(T.halaqa||ST.halaqa):"رياحين"} بأن الطالبة`,X,420);
+  g.fillStyle="#1f7a6d"; g.font="bold 70px Amiri, serif"; g.fillText(ST.fullName||ST.name,X,515);
+  g.fillStyle="#2b3a36"; g.font="28px 'Noto Naskh Arabic', Amiri, serif"; wrap(g,`قد أتمّت دروس ${L.title} في أحكام التجويد واجتازت اختباره${t.mcq!=null?` بنسبة ${t.mcq}٪ في النظري`:""}${t.recite!=null?` و${t.recite}٪ في التلاوة`:""}، سائلين الله لها التوفيق والقبول.`,X,585,1100,44);
+  // التذييل
+  g.font="22px 'Noto Naskh Arabic', serif"; g.fillStyle="#6b7a76"; g.fillText("التاريخ",X+420,800); g.fillStyle="#2b3a36"; g.font="24px 'Noto Naskh Arabic', serif"; const [dh,dg]=certDates(when); g.fillText(dh,X+420,840); g.fillText(dg,X+420,876);
+  g.fillStyle="#6b7a76"; g.font="22px 'Noto Naskh Arabic', serif"; g.fillText("المعلمة",X,880); g.fillStyle="#2b3a36"; g.font="bold 28px Amiri, serif"; g.fillText(T.name||ST.teacherName||"—",X,918);
+  if(T.sig){ await new Promise(r=>{ const im=new Image(); im.onload=()=>{ const w=300,h=110; g.drawImage(im,X-w/2,745,w,h); r(); }; im.onerror=r; im.src=T.sig; }); } else { g.strokeStyle="#9aa8a3"; g.lineWidth=2; g.beginPath(); g.moveTo(X-150,860); g.lineTo(X+150,860); g.stroke(); }
+  // الختم
+  const sx=X-430, sy=840; g.save(); g.translate(sx,sy); g.rotate(-0.2); g.strokeStyle="#b23a3a"; g.lineWidth=5; g.globalAlpha=.85; g.beginPath(); g.arc(0,0,95,0,Math.PI*2); g.stroke(); g.lineWidth=2; g.beginPath(); g.arc(0,0,82,0,Math.PI*2); g.stroke(); g.fillStyle="#b23a3a"; g.font="bold 34px Amiri, serif"; g.fillText("رياحين",0,-8); g.font="18px 'Noto Naskh Arabic', serif"; g.fillText((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22),0,24); g.font="bold 16px 'Noto Naskh Arabic', serif"; g.fillText("مُعتمدة",0,52); g.restore();
+  g.fillStyle="#9aa8a3"; g.font="16px monospace"; g.direction="ltr"; g.textAlign="left"; g.fillText(`RY-${lv}-${String(when).slice(-6)}`,80,CERT_H-72);
+  cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png"); }catch(e){ rej(e); } });
+  function star(g,x,y,r){ g.beginPath(); for(let i=0;i<16;i++){ const a=i*Math.PI/8; const rr=i%2?r*.55:r; g.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr); } g.closePath(); g.fill(); }
+  function wrap(g,text,x,y,maxW,lh){ const words=text.split(" "); let line=""; for(const w of words){ const test=line?line+" "+w:w; if(g.measureText(test).width>maxW&&line){ g.fillText(line,x,y); y+=lh; line=w; } else line=test; } if(line) g.fillText(line,x,y); } }
+// ===== لوحة توقيع المعلمة =====
+function signaturePadHtml(){ return `<div class="card stack"><h3>توقيعك وختمك على الشهادات</h3><p class="small muted">ارسمي توقيعك بالإصبع أو الفأرة؛ يظهر مع ختم رياحين على شهادات إتمام المستويات لطالباتك.</p>
+  ${ST.signature?`<div class="row" style="align-items:center;gap:10px"><img src="${ST.signature}" alt="توقيع" style="height:70px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px"><span class="pill good">محفوظ</span></div>`:""}
+  <canvas id="sigPad" width="600" height="200" style="width:100%;max-width:600px;height:auto;background:#fff;border:1px dashed var(--line);border-radius:10px;touch-action:none"></canvas>
+  <div class="row"><button class="btn sm" id="sigSave" type="button">حفظ التوقيع</button><button class="btn sec sm" id="sigClear" type="button">مسح</button>${ST.signature?`<button class="btn danger sm" id="sigDel" type="button">حذف التوقيع المحفوظ</button>`:""}</div></div>`; }
+function wireSignaturePad(){ const cv=$("#sigPad"); if(!cv) return; const g=cv.getContext("2d"); g.lineWidth=3.5; g.lineCap="round"; g.lineJoin="round"; g.strokeStyle="#1b2a4a"; let drawing=false,empty=true; const pos=e=>{ const r=cv.getBoundingClientRect(); const p=e.touches?e.touches[0]:e; return {x:(p.clientX-r.left)*cv.width/r.width,y:(p.clientY-r.top)*cv.height/r.height}; };
+  const start=e=>{ drawing=true; empty=false; const p=pos(e); g.beginPath(); g.moveTo(p.x,p.y); e.preventDefault(); }; const move=e=>{ if(!drawing) return; const p=pos(e); g.lineTo(p.x,p.y); g.stroke(); e.preventDefault(); }; const end=()=>{ drawing=false; };
+  cv.addEventListener("pointerdown",start); cv.addEventListener("pointermove",move); window.addEventListener("pointerup",end);
+  $("#sigClear").onclick=()=>{ g.clearRect(0,0,cv.width,cv.height); empty=true; };
+  $("#sigSave").onclick=async()=>{ if(empty){ toast("ارسمي توقيعك أولًا"); return; } ST.signature=cv.toDataURL("image/png"); save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); toast("حُفظ التوقيع"); render(); };
+  const d=$("#sigDel"); if(d) d.onclick=async()=>{ ST.signature=""; save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); render(); }; }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
