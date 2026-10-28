@@ -1256,7 +1256,7 @@ VIEWS.hifz=async function(arg){
 // ===== المساعد الذكي (يتصل بوسيط Cloudflare Worker يحمل مفتاح Claude) =====
 const AI_URL_DEFAULT=""; // يُملأ برابط الوسيط بعد إنشائه (أو يُضبط من إعدادات الأستاذة ويُنشر عبر السحابة)
 const RECAPTCHA_SITE_KEY="6Lcn2QQuAAAAAKVS2k9clmvSrNQVywGN3xHBntN1";
-const AI_DAILY_LIMIT=25; const AI_MODEL="gemini-2.5-flash";
+const AI_DAILY_LIMIT=25; const AI_MODEL="gemini-3.5-flash";
 const AI_SYSTEM=`أنتِ «مساعدة رياحين»، معلّمة تجويد وحفظ لطيفة في حلقة قرآنية للطالبات، تعملين داخل تطبيق «رياحين».
 المرجع المعتمد: كتاب «هدي المجيد في أحكام التجويد» (رواية حفص عن عاصم). التزمي بمصطلحاته وأحكامه، ولا تخرجي عنها إلى خلافات لا تنفع الطالبة.
 القواعد:
@@ -1275,7 +1275,7 @@ const AI={
   async gemini(messages){
     if(!this.model){ const v="https://www.gstatic.com/firebasejs/11.10.0/"; const [{initializeApp,getApps},{getAI,getGenerativeModel,GoogleAIBackend},{initializeAppCheck,ReCaptchaEnterpriseProvider}]=await Promise.all([import(v+"firebase-app.js"),import(v+"firebase-ai.js"),import(v+"firebase-app-check.js")]);
       let app=getApps().find(a=>a.name==="ai"); if(!app){ app=initializeApp(FIREBASE_CONFIG,"ai"); try{ initializeAppCheck(app,{provider:new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true}); }catch(e){ console.warn("AppCheck",e); } } const ai=getAI(app,{backend:new GoogleAIBackend()});
-      this.model=getGenerativeModel(ai,{model:AI_MODEL,systemInstruction:AI_SYSTEM+"\n\n"+ctxText(this.context()),generationConfig:{maxOutputTokens:900,temperature:0.4}}); this.model._ctx=JSON.stringify(this.context()); }
+      this.model=getGenerativeModel(ai,{model:AI_MODEL,systemInstruction:AI_SYSTEM+"\n\n"+ctxText(this.context()),generationConfig:{maxOutputTokens:900,temperature:0.4,thinkingConfig:{thinkingBudget:0}}}); this.model._ctx=JSON.stringify(this.context()); }
     else if(this.model._ctx!==JSON.stringify(this.context())){ this.model=null; return this.gemini(messages); }
     const hist=messages.slice(0,-1).map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
     const chat=this.model.startChat({history:hist}); const r=await chat.sendMessage(messages[messages.length-1].content); return r.response.text();
