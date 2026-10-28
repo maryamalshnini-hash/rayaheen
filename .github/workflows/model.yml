@@ -24,7 +24,8 @@ jobs:
         run: |
           cd tjs && (python -m scripts.convert --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition || echo 'convert ended with error (checking files)')
           python -c "from transformers import GenerationConfig; GenerationConfig.from_pretrained('openai/whisper-tiny').save_pretrained('models/tarteel-ai/whisper-tiny-ar-quran')"
-          test -f models/tarteel-ai/whisper-tiny-ar-quran/onnx/decoder_model_merged.onnx
+          D=models/tarteel-ai/whisper-tiny-ar-quran; mkdir -p $D/onnx; mv $D/*.onnx $D/onnx/ 2>/dev/null || true; ls -la $D $D/onnx
+          test -f $D/onnx/decoder_model_merged.onnx
           ls -la models/tarteel-ai/whisper-tiny-ar-quran models/tarteel-ai/whisper-tiny-ar-quran/onnx
       - name: Quantize (int8)
         run: |
