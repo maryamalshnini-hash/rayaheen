@@ -1,35 +1,35 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#2b4fae"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1ea7d8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap">
 <style>
 /* Layout: one-screen app, RTL. Fixed top bar + bottom tab bar, scrolling main. Lessons read as a book page; tools (recording) as instrument panels. */
 :root{
-  --bg:#f3f5fb; --surface:#ffffff; --surface2:#eceff8; --line:#dde2ef;
-  --fg:#16213d; --muted:#65708c; --accent:#2b4fae; --accent-deep:#1c3579; --accent-fg:#ffffff; --accent-soft:#e2e9fb;
-  --gold:#d8a53c; --gold-soft:#fbf0d6;
-  --good:#1f9d6a; --warn:#d8891e; --bad:#d6473f; --good-soft:#dff5ea; --warn-soft:#fdf0d8; --bad-soft:#fbe1df;
-  --pink:#e07a90; --sky:#2f9fd6; --lilac:#7d6fd6; --mint:#3fb59b; --peach:#ef9f5a;
-  --hdr1:#1c3579; --hdr2:#2b4fae; --hdr3:#3a6fd3;
+  --bg:#fffbea; --surface:#ffffff; --surface2:#fff4cc; --line:#f3e3a8;
+  --fg:#2a2f3a; --muted:#6c7484; --accent:#1ea7d8; --accent-deep:#0e7fa8; --accent-fg:#ffffff; --accent-soft:#dbf3fb;
+  --gold:#f5b800; --gold-soft:#fff1b8;
+  --good:#22a06b; --warn:#e59a00; --bad:#e2506a; --good-soft:#dcf5e8; --warn-soft:#fff2cc; --bad-soft:#fde0e7;
+  --pink:#f26b9b; --sky:#1ea7d8; --lilac:#b48ce0; --mint:#39c4a9; --peach:#ffb347;
+  --hdr1:#1ea7d8; --hdr2:#4cc1e6; --hdr3:#f78fb3;
   --quran:"Amiri Quran","Amiri","Scheherazade New","Noto Naskh Arabic",serif;
   --display:"Amiri","Noto Naskh Arabic",serif;
   --ui:"Tajawal","Noto Sans Arabic",system-ui,sans-serif;
-  --radius:18px; --shadow:0 1px 2px rgba(22,33,61,.05),0 8px 24px rgba(22,33,61,.07);
+  --radius:18px; --shadow:0 1px 2px rgba(120,90,20,.05),0 8px 24px rgba(120,90,20,.08);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0f1526; --surface:#171f36; --surface2:#1f2a47; --line:#2c3a5e;
-  --fg:#eef1fa; --muted:#9ba7c6; --accent:#7f9cf0; --accent-deep:#a9bdf7; --accent-fg:#0f1526; --accent-soft:#25335c;
-  --gold:#e4b95c; --gold-soft:#3f3419;
-  --good:#5fd09a; --warn:#e9b35e; --bad:#f28078; --good-soft:#163a2b; --warn-soft:#423416; --bad-soft:#4a2320;
-  --pink:#f0a0b2; --sky:#7fc6ee; --lilac:#b7abf0; --mint:#8fe0c7; --peach:#f3bd8c;
-  --hdr1:#131c38; --hdr2:#1c2b57; --hdr3:#27407f;
+  --bg:#171a22; --surface:#1f2430; --surface2:#2a3040; --line:#3a4256;
+  --fg:#f3f4f8; --muted:#a3abbd; --accent:#5cc8ee; --accent-deep:#8ddcf6; --accent-fg:#0f1a22; --accent-soft:#1d3d4c;
+  --gold:#ffd04d; --gold-soft:#4a3d12;
+  --good:#5fd09a; --warn:#f0bb4f; --bad:#f58aa5; --good-soft:#163a2b; --warn-soft:#423416; --bad-soft:#4a2330;
+  --pink:#f79ab9; --sky:#7fd3f3; --lilac:#c8aef2; --mint:#8fe0c7; --peach:#ffc67a;
+  --hdr1:#0e5f7f; --hdr2:#1a7fa6; --hdr3:#a9507a;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#0f1526; --surface:#171f36; --surface2:#1f2a47; --line:#2c3a5e;
-  --fg:#eef1fa; --muted:#9ba7c6; --accent:#7f9cf0; --accent-deep:#a9bdf7; --accent-fg:#0f1526; --accent-soft:#25335c;
-  --gold:#e4b95c; --gold-soft:#3f3419;
-  --good:#5fd09a; --warn:#e9b35e; --bad:#f28078; --good-soft:#163a2b; --warn-soft:#423416; --bad-soft:#4a2320;
-  --pink:#f0a0b2; --sky:#7fc6ee; --lilac:#b7abf0; --mint:#8fe0c7; --peach:#f3bd8c;
-  --hdr1:#131c38; --hdr2:#1c2b57; --hdr3:#27407f;
+  --bg:#171a22; --surface:#1f2430; --surface2:#2a3040; --line:#3a4256;
+  --fg:#f3f4f8; --muted:#a3abbd; --accent:#5cc8ee; --accent-deep:#8ddcf6; --accent-fg:#0f1a22; --accent-soft:#1d3d4c;
+  --gold:#ffd04d; --gold-soft:#4a3d12;
+  --good:#5fd09a; --warn:#f0bb4f; --bad:#f58aa5; --good-soft:#163a2b; --warn-soft:#423416; --bad-soft:#4a2330;
+  --pink:#f79ab9; --sky:#7fd3f3; --lilac:#c8aef2; --mint:#8fe0c7; --peach:#ffc67a;
+  --hdr1:#0e5f7f; --hdr2:#1a7fa6; --hdr3:#a9507a;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark }
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:16px;line-height:1.6;direction:rtl}
@@ -189,7 +189,7 @@ audio{width:100%;max-width:420px}
 /* تصميم محسّن: بلاطات، حلقات تقدم، شارات، ألعاب، لوحة الأستاذة */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin:10px 0}
 .tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--shadow)}
-.tile b{display:block;font-family:var(--display);font-size:1.7rem;line-height:1.1;color:var(--accent)}
+.tile b{display:block;font-family:var(--display);font-size:1.7rem;line-height:1.1;color:var(--accent-deep)}
 .tile span{font-size:.75rem;color:var(--muted)}
 .tile.good b{color:var(--good)}.tile.warn b{color:var(--warn)}.tile.bad b{color:var(--bad)}.tile.gold b{color:var(--gold)}
 .ring{--p:0;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;flex:none}
@@ -238,17 +238,17 @@ audio{width:100%;max-width:420px}
 /* تحسينات التصميم العامة (الإصدار الأزرق) */
 .top{background-color:var(--hdr2);background-image:linear-gradient(120deg,var(--hdr1),var(--hdr2) 55%,var(--hdr3))}
 .card{border-radius:var(--radius);border-color:transparent}
-.card:not(.soft):hover{box-shadow:0 2px 4px rgba(22,33,61,.06),0 12px 30px rgba(22,33,61,.10)}
+.card:not(.soft):hover{box-shadow:0 2px 4px rgba(120,90,20,.06),0 12px 30px rgba(120,90,20,.12)}
 .btn{border-radius:12px;font-weight:700;letter-spacing:.1px}
-.btn:not(.sec):not(.danger):not(.gold){background-image:linear-gradient(135deg,var(--accent),var(--hdr3));border-color:transparent;box-shadow:0 4px 12px rgba(43,79,174,.25)}
-.btn.gold{background-image:linear-gradient(135deg,#c9952e,#e9bd5a);border-color:transparent;color:#2b2208}
-.tabs{border-top:0;box-shadow:0 -6px 24px rgba(22,33,61,.10);padding-top:6px}
+.btn:not(.sec):not(.danger):not(.gold){background-image:linear-gradient(135deg,var(--accent),#5fd0f0);border-color:transparent;box-shadow:0 4px 12px rgba(30,167,216,.28)}
+.btn.gold{background-image:linear-gradient(135deg,#f5b800,#ffd34d);border-color:transparent;color:#3a2d00}
+.tabs{border-top:0;box-shadow:0 -6px 24px rgba(120,90,20,.10);padding-top:6px}
 .tabs button{border-top:0;border-radius:14px;margin:0 3px;padding:7px 2px 9px}
 .tabs button.on{background:var(--accent-soft);color:var(--accent-deep);border-top-color:transparent}
 .tabs button.on svg{stroke-width:2.2}
-.hero{background:linear-gradient(135deg,var(--accent-soft),#fff 70%);border:0}
+.hero{background:linear-gradient(135deg,var(--accent-soft),#fff5d6 55%,#fde4ec);border:0}
 :root[data-theme="dark"] .hero,:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg,var(--accent-soft),var(--surface) 70%)}
-@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:linear-gradient(135deg,var(--accent-soft),#fff 70%)} }
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:linear-gradient(135deg,var(--accent-soft),#fff5d6 55%,#fde4ec)} }
 .quick button{border:0;background:color-mix(in srgb,var(--lc,var(--accent)) 10%,var(--surface));border-radius:18px;box-shadow:var(--shadow);transition:transform .15s}
 .quick button:hover{transform:translateY(-2px)}
 .quick button .cnt{color:var(--muted)}
@@ -259,10 +259,13 @@ input,select,textarea{border-radius:12px!important}
 .f input:focus,.f select:focus,.f textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .lesson-item{border-radius:14px}
 .game-ico{background:var(--accent-soft)}
-.fab{background-image:linear-gradient(135deg,var(--accent),var(--hdr3))}
+.fab{background-image:linear-gradient(135deg,var(--pink),#ffb347)}
 .stu{border-radius:16px;border:0;box-shadow:var(--shadow)}
-.stu .av{background-image:linear-gradient(135deg,var(--accent),var(--hdr3))}
+.stu .av{background-image:linear-gradient(135deg,var(--accent),var(--pink))}
 .level-head .n{background:var(--accent)}
+.ring{background:conic-gradient(var(--pink) calc(var(--p)*1%),var(--surface2) 0)}.ring>div{color:var(--pink)}
+.level-head .n{background:linear-gradient(135deg,var(--accent),var(--pink))}
+.lvbar i{background:linear-gradient(90deg,var(--gold),var(--pink))}
 </style>
 </head><body><div class="app">
   <header class="top">
