@@ -410,7 +410,7 @@ class Recorder{
 
 // ===== محرك التعرف القرآني داخل الجهاز (Whisper مدرَّب على القرآن من Tarteel، بصيغة ONNX) =====
 const QASR={
-  pipe:null,loading:null,error:"",modelId:"whisper-tiny-ar-quran",
+  pipe:null,loading:null,error:"",modelId:"qasr-v2",
   available(){ return /^https?:/.test(location.protocol)&&(ST.asr||"quran")==="quran"; },
   async load(onProgress){
     if(this.pipe) return this.pipe; if(this.loading) return this.loading;
@@ -506,8 +506,7 @@ const ATT={
   map(){ ST.attendance=ST.attendance||{}; return ST.attendance; },
   enter(){ const m=this.map(); const k=this.key(); if(!m[k]){ m[k]={entered:true,done:false}; save(); } },
   recheck(){ const m=this.map(); const k=this.key(); const rec=m[k]||(m[k]={entered:true,done:false}); const before=rec.done;
-    let done=false; if(ST.hifz&&ST.hifz.plan){ const T=todayTasks(); done=!!(T&&(T.finished||(T.tasks.length&&T.tasks.every(taskDone)))); }
-    else { const today=new Date().toDateString(); done=ST.attempts.some(a=>new Date(a.date).toDateString()===today)||Object.values(ST.quiz||{}).length>0&&!!ST.lastQuizDay&&ST.lastQuizDay===today; }
+    const items=(typeof autoHomeworkList==="function")?autoHomeworkList():[]; let done=items.length>0&&items.every(i=>i.done);
     rec.done=done; if(done!==before) save(); return done; },
   weekStart(d){ d=d||new Date(); const x=new Date(d); x.setHours(0,0,0,0); const dow=x.getDay(); const diff=(dow+1)%7; x.setDate(x.getDate()-diff); return x; }, // السبت
   week(d){ const s=this.weekStart(d); const m=this.map(); const days=[]; for(let i=0;i<7;i++){ const x=new Date(s); x.setDate(s.getDate()+i); const k=this.key(x); days.push({k,date:x,entered:!!(m[k]&&m[k].entered),done:!!(m[k]&&m[k].done)}); } return days; },
@@ -878,6 +877,7 @@ VIEWS.practice=async function(arg){
         <p class="small muted" style="margin-top:10px">هذا تقدير آلي يساعدك على الانتباه؛ والحكم النهائي لأستاذة الحلقة بالسماع. يمكنك حفظ المحاولة أو إرسالها كواجب.</p>
         <div class="row" style="margin-top:8px"><button class="btn sec sm" id="saveAtt">حفظ المحاولة</button>${cloudOn()?`<button class="btn sm" id="cloudAtt">إرسال للأستاذة</button>`:""}<button class="btn sec sm" id="exportAtt">تصدير التسجيل ملفًا</button></div></div>`;
       const label=`سورة ${SURAH_NAMES[s-1]} ${a1}–${a2}`; const att={id:Date.now(),label,score,wordPct,acoustic:r.acoustic,notes:notes.map(n=>n.t),date:Date.now(),s,a1,a2};
+      if(pre.auto){ ST.autoDone=ST.autoDone||{}; ST.autoDone[pre.auto]=score; ST.attempts.push(att); await DB.put("att:"+att.id,blob); save(); if(cloudOn()){ CLOUD.submit({kind:"recitation",hwTitle:"واجب تلقائي: "+label,att,blob}).then(()=>toast("أُنجز الواجب وأُرسل للأستاذة")).catch(()=>toast("أُنجز الواجب (تعذّر الإرسال السحابي)")); } else toast("أُنجز الواجب"); ATT.recheck(); }
       $("#saveAtt").onclick=async()=>{ ST.attempts.push(att); await DB.put("att:"+att.id,blob); save(); toast("حُفظت المحاولة"); };
       const ca=$("#cloudAtt"); if(ca) ca.onclick=async()=>{ ca.disabled=true; try{ await CLOUD.submit({kind:"recitation",hwTitle:label,att,blob}); toast("أُرسلت التلاوة للأستاذة"); }catch(e){ toast(CLOUD.msg(e)); ca.disabled=false; } };
       $("#exportAtt").onclick=async()=>{ const b64=await blobToB64(blob); const pack={type:"rayaheen-submission",student:ST.fullName||ST.name,halaqa:ST.halaqa,teacher:ST.teacherName,attempt:att,audio:b64}; await downloadsSave(`تلاوة-${ST.name}-${s}-${a1}-${a2}.json`,new Blob([JSON.stringify(pack)],{type:"application/json"})); };
@@ -921,8 +921,9 @@ VIEWS.homework=function(){
   view.innerHTML=`<h1>الواجبات</h1>${isTeacher()?`<div class="card stack"><h3>واجب جديد</h3><div class="row"><label class="f">العنوان<input type="text" id="hwT" placeholder="مثال: تلاوة سورة الفلق بتطبيق أحكام النون الساكنة"></label></div>
     <div class="row"><label class="f">السورة<select id="hwS">${SURAH_NAMES.map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join("")}</select></label><label class="f">من آية<input type="number" id="hwA1" value="1" min="1"></label><label class="f">إلى آية<input type="number" id="hwA2" value="5" min="1"></label><label class="f">موعد التسليم<input type="date" id="hwD"></label></div>
     <label class="f">تعليمات<textarea id="hwN" placeholder="ما الحكم المطلوب التركيز عليه؟"></textarea></label><div class="row"><button class="btn" id="hwAdd">إضافة الواجب</button><button class="btn sec" id="hwExport">تصدير الواجبات للطالبات</button><button class="btn sec" id="hwImportSub">استيراد تسليم طالبة</button></div></div>`:
-    `<div class="card"><p class="small muted">تصلك الواجبات من الأستاذة كملف؛ استورديه هنا، ثم سجّلي تلاوتك وصدّريها لإرسالها إليها.</p><div class="row" style="margin-top:8px"><button class="btn sec" id="hwImport">استيراد ملف واجبات</button><button class="btn sec" id="gradesImport">استيراد تصحيح الأستاذة</button></div></div>`}
+    `${autoHomeworkHtml()}<div class="card"><p class="small muted">${cloudOn()?"واجبات الأستاذة الإضافية تصلك هنا تلقائيًا.":"تصلك واجبات الأستاذة الإضافية كملف؛ استورديه هنا."}</p><div class="row" style="margin-top:8px"><button class="btn sec sm" id="hwImport">استيراد ملف واجبات</button><button class="btn sec sm" id="gradesImport">استيراد تصحيح الأستاذة</button></div></div>`}
   <div class="stack" id="hwList">${hws.length?"":`<div class="card soft"><p class="muted">لا توجد واجبات بعد.</p></div>`}</div>`;
+  wireAutoHomework();
   const list=$("#hwList");
   hws.forEach(h=>{ const subs=ST.submissions.filter(s=>s.hwId===h.id); const mine=subs.find(s=>s.student===(ST.fullName||ST.name)||s.student===ST.name); const late=h.due&&Date.now()>new Date(h.due).getTime();
     const el=document.createElement("div"); el.className="card stack"; el.innerHTML=`<div class="row between"><h3>${esc(h.title)}</h3>${mine?(mine.grade!=null?`<span class="pill good">صُحّح: ${mine.grade}٪</span>`:`<span class="pill acc">سُلّم</span>`):late?`<span class="pill bad">فات الموعد</span>`:`<span class="pill warn">مطلوب</span>`}</div>
@@ -953,6 +954,19 @@ VIEWS.homework=function(){
   }
 };
 
+// ===== الواجبات التلقائية (يومية، تُولَّد من خطة الطالبة ومستواها) =====
+function autoHomeworkList(){
+  const items=[]; const today=new Date().toDateString(); const key=ATT.key();
+  if(ST.hifz&&ST.hifz.plan){ const T=todayTasks(); if(T&&!T.finished) T.tasks.forEach(t=>items.push({id:"a-"+key+"-"+t.key,kind:t.type==="new"?"حفظ جديد":t.type==="fix"?"تثبيت":"مراجعة",title:`${t.title}: ${chunkLabel(t.c)}`,s:t.c.s,a1:t.c.a1,a2:t.c.a2,hidden:t.type!=="new"&&t.type!=="fix",done:!!taskDone(t),go:()=>go("hifz",{tab:"today"})})); }
+  const cl=currentLevel(); if(cl<=4){ const L=LEVELS[cl-1]; const ls=lessonsOf(cl); const next=ls.find(l=>!ST.done[l.id]);
+    if(next) items.push({id:"a-"+key+"-lesson",kind:"تجويد",title:`درس «${next.title}» واختباره`,done:!!ST.done[next.id],go:()=>go("lesson",next.id)});
+    const dayIdx=Math.floor(Date.now()/86400000); const r=L.recite[dayIdx%L.recite.length]; const rid="a-"+key+"-recite";
+    items.push({id:rid,kind:"تصحيح تلاوة",title:`تلاوة ${SURAH_NAMES[r[0]-1]} ${r[1]===r[2]?`آية ${r[1]}`:`${r[1]}–${r[2]}`} بتطبيق أحكام ${L.title}`,s:r[0],a1:r[1],a2:r[2],done:!!(ST.autoDone||{})[rid],go:()=>go("practice",{s:r[0],a1:r[1],a2:r[2],auto:rid})}); }
+  return items;
+}
+function autoHomeworkHtml(){ const items=autoHomeworkList(); const done=items.filter(i=>i.done).length; return `<div class="card"><div class="row between"><h3>واجبات اليوم (تلقائية)</h3><span class="pill ${done===items.length&&items.length?"good":"acc"}">${done} من ${items.length}</span></div><p class="small muted">تُولَّد يوميًا من خطة حفظك ومستواك في التجويد، وتُرسل نتائجها للأستاذة تلقائيًا عند تسجيل الدخول. ${fmtDate(Date.now())}</p>
+  <div class="stack" style="margin-top:8px">${items.length?items.map((i,k)=>`<button class="lesson-item" data-auto="${k}"><span class="mark ${i.done?"done":""}">${i.done?"✓":k+1}</span><span class="t"><b>${esc(i.title)}</b><span class="small muted">${i.kind}${i.done?" · أُنجز":""}</span></span></button>`).join(""):`<p class="muted small">اضبطي خطة الحفظ لتظهر واجباتك اليومية.</p>`}</div></div>`; }
+function wireAutoHomework(){ const items=autoHomeworkList(); document.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>items[+b.dataset.auto].go()); }
 // ===== اختبار المستوى =====
 VIEWS.leveltest=async function(lv){
   lv=+lv||1; const L=LEVELS[lv-1]; const ls=lessonsOf(lv); if(!levelUnlocked(lv)){ go("levels"); return; }
@@ -1169,7 +1183,7 @@ VIEWS.hifz=async function(arg){
         <div class="stack" style="margin-top:10px">${notes.map(n=>`<div class="note ${n.k}">${esc(n.t)}</div>`).join("")}</div>
         <div class="row" style="margin-top:10px"><button class="btn ${pass?"gold":"sec"}" id="hzMark">${pass?"اعتماد وإنهاء المهمة":"اعتماد المهمة رغم ذلك"}</button><button class="btn sec" id="hzRetry">إعادة التسميع</button>${cloudOn()?`<button class="btn sec" id="hzCloud">إرسال للأستاذة</button>`:`<button class="btn sec" id="hzExport">تصدير للأستاذة</button>`}</div></div>`;
       $("#hzRetry").onclick=()=>openSession(t);
-      $("#hzMark").onclick=async()=>{ H.log.push({date:Date.now(),type,key:t.key,k:c.k,s:c.s,a1:c.a1,a2:c.a2,score,wordPct,acoustic:ac,day:H.plan.mode==="nahya"?H.day:null}); if(H.plan.mode==="nahya"){ H.dayDone[H.day]=H.dayDone[H.day]||{}; H.dayDone[H.day][t.key]={score,date:Date.now()}; } else if(type==="new"&&!H.memorized.includes(c.k)) H.memorized.push(c.k); await DB.put("hz:"+Date.now(),blob); save(); CLOUD.logHifz(H.log[H.log.length-1]); toast("اعتُمدت المهمة"); go("hifz",{tab:"today"}); };
+      $("#hzMark").onclick=async()=>{ H.log.push({date:Date.now(),type,key:t.key,k:c.k,s:c.s,a1:c.a1,a2:c.a2,score,wordPct,acoustic:ac,day:H.plan.mode==="nahya"?H.day:null}); if(H.plan.mode==="nahya"){ H.dayDone[H.day]=H.dayDone[H.day]||{}; H.dayDone[H.day][t.key]={score,date:Date.now()}; } else if(type==="new"&&!H.memorized.includes(c.k)) H.memorized.push(c.k); await DB.put("hz:"+Date.now(),blob); save(); CLOUD.logHifz(H.log[H.log.length-1]); if(cloudOn()){ CLOUD.submit({kind:"hifz",hwTitle:`${t.title} ${chunkLabel(c)}`,att:{id:Date.now(),score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),s:c.s,a1:c.a1,a2:c.a2},blob}).catch(()=>{}); } toast("اعتُمدت المهمة وأُرسلت للأستاذة"); go("hifz",{tab:"today"}); };
       const hc=$("#hzCloud"); if(hc) hc.onclick=async()=>{ hc.disabled=true; try{ await CLOUD.submit({kind:"hifz",hwTitle:`${t.title} ${chunkLabel(c)}`,att:{id:Date.now(),score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),s:c.s,a1:c.a1,a2:c.a2},blob}); toast("أُرسل التسميع للأستاذة"); }catch(e){ toast(CLOUD.msg(e)); hc.disabled=false; } };
       const hx=$("#hzExport"); if(hx) hx.onclick=async()=>{ const b64=await blobToB64(blob); const att={id:Date.now(),label:`${t.title} ${chunkLabel(c)}`,score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),date:Date.now(),s:c.s,a1:c.a1,a2:c.a2}; downloadsSave(`تسميع-${ST.name}-${c.s}-${c.a1}.json`,new Blob([JSON.stringify({type:"rayaheen-submission",student:ST.fullName||ST.name,halaqa:ST.halaqa,teacher:ST.teacherName,attempt:att,audio:b64})],{type:"application/json"})); };
     }});
