@@ -17,6 +17,7 @@ jobs:
         run: |
           pip install -q 'numpy<2' 'onnx<1.17' 'onnxruntime==1.18.1' 'optimum[exporters]==1.21.4' 'transformers==4.42.4' onnxscript
           pip install -q --force-reinstall --no-deps torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          pip uninstall -y -q torchvision torchaudio || true
           python -c "import torch,transformers,optimum;print('torch',torch.__version__,'transformers',transformers.__version__)"
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Export ONNX
