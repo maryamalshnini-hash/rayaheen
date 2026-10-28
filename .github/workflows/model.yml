@@ -15,13 +15,14 @@ jobs:
           python-version: "3.10"
       - name: Install exporter
         run: |
-          pip install -q torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -q 'numpy<2' 'onnx<1.17' 'onnxruntime==1.18.1' 'optimum[exporters]==1.21.4' 'transformers==4.42.4' onnxscript
+          pip install -q --force-reinstall --no-deps torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -c "import torch,transformers,optimum;print('torch',torch.__version__,'transformers',transformers.__version__)"
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Export ONNX
         run: |
-          optimum-cli export onnx --model tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition-with-past exported || true
-          ls -la exported || true
+          optimum-cli export onnx --model tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition-with-past exported
+          ls -la exported
       - name: Quantize + generation config
         run: |
           python - <<'PY'
