@@ -1,4 +1,4 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1ea7d8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
+<!doctype html><html lang="ar" dir="rtl" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1ea7d8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap">
 <style>
@@ -764,6 +764,7 @@ const DB={
 const DEFAULT_STATE=()=>({name:"",fullName:"",halaqa:"",teacherName:"",track:"both",hifzAmount:"نصف وجه",reviewAmount:"أربع صفحات",role:"student",pin:"1400",reciter:"akhdar",passPct:80,requireTeacher:false,
   done:{},quiz:{},levelTests:{},attempts:[],homework:[],submissions:[],customAudio:"",textCache:{},letterRefs:[],seenIntro:false});
 let ST=DEFAULT_STATE();
+function applyTheme(){ try{ document.documentElement.dataset.theme=(ST&&ST.theme)||"light"; }catch(e){} }
 function load(){ try{ const s=localStorage.getItem("ry_state"); if(s) ST=Object.assign(DEFAULT_STATE(),JSON.parse(s)); }catch(e){} }
 function save(){ try{ localStorage.setItem("ry_state",JSON.stringify(ST)); }catch(e){} if(window.CLOUD&&CLOUD.user) CLOUD.schedulePush(); }
 load();
@@ -1210,6 +1211,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>${isTeacher()?"بطاقة المعلمة":"بيانات الطالبة"}</h3>${profileFormHtml()}</div>
   ${isTeacher()?signaturePadHtml():""}
   <div class="card stack"><h3>التدريب والاختبارات</h3>
+    <label class="f">مظهر التطبيق<select id="themeIn"><option value="light" ${(ST.theme||"light")==="light"?"selected":""}>فاتح (الافتراضي)</option><option value="dark" ${ST.theme==="dark"?"selected":""}>داكن</option></select></label>
     <label class="f">القارئ المرجعي الافتراضي<select id="rc">${RECITERS.map(r=>`<option value="${r.id}" ${r.id===ST.reciter?"selected":""}>${r.name}</option>`).join("")}</select></label>
     <label class="f">نسبة اجتياز الدروس والمستويات (٪)<input type="number" id="pp" min="50" max="100" value="${ST.passPct}"></label>
     ${isTeacher()?`<label class="f">نبذة تظهر للطالبات في غرفة المعلمات<textarea id="bioIn" placeholder="مثال: إجازة في رواية حفص، أقبل طالبات من 10 سنوات فأكثر، اللقاء يوميًا بعد العصر.">${esc(ST.bio||"")}</textarea></label><label class="f">اسم المعلمة كما تكتبه الطالبات<input id="aliasIn" value="${esc(ST.teacherAlias||"")}" placeholder="مثال: الأستاذة مريم"><span class="small muted">كل طالبة تكتب هذا الاسم (أو اسم الحلقة) في بياناتها تظهر في لوحتك مع تسجيلاتها وحضورها.</span></label><label class="f">رابط وسيط المساعد الذكي (Cloudflare Worker)<input id="aiUrlIn" dir="ltr" placeholder="https://rayaheen-ai.xxxx.workers.dev" value="${esc(ST.aiUrl||"")}"><span class="small muted">يُنشر تلقائيًا لجميع الطالبات عبر السحابة.</span></label>`:""}
@@ -1220,7 +1222,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>نسخة احتياطية</h3><p class="small muted">تُحفظ بياناتك في هذا المتصفح فقط. صدّري نسخة كاملة (مع التسجيلات) لنقلها إلى جهاز آخر.</p><div class="row"><button class="btn sec" id="bk">تصدير نسخة كاملة</button><button class="btn sec" id="rs">استعادة نسخة</button><button class="btn danger" id="reset">مسح كل البيانات</button></div></div>`;
   $("#back").onclick=()=>go("more");
   wireProfileForm(); if(isTeacher()){ wireSignaturePad(); ["trackIn","teacherIn"].forEach(id=>{ const el=$("#"+id); if(el) el.closest("label").hidden=true; }); const ar=$("#amountRow"); if(ar) ar.hidden=true; }
-  $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aliasIn")) ST.teacherAlias=$("#aliasIn").value.trim(); if(isTeacher()&&$("#bioIn")) ST.bio=$("#bioIn").value.trim(); if(isTeacher()&&cloudOn()) CLOUD.saveTeacherProfile().catch(()=>{}); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
+  $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.theme=$("#themeIn").value; applyTheme(); ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aliasIn")) ST.teacherAlias=$("#aliasIn").value.trim(); if(isTeacher()&&$("#bioIn")) ST.bio=$("#bioIn").value.trim(); if(isTeacher()&&cloudOn()) CLOUD.saveTeacherProfile().catch(()=>{}); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
   $("#bk").onclick=async()=>{ const d=await DB.open().catch(()=>null); const blobs={}; if(d){ const keys=await new Promise(res=>{ const r=d.transaction("blobs").objectStore("blobs").getAllKeys(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); }); for(const k of keys){ const b=await DB.get(k); if(b) blobs[k]=await blobToB64(b); } } downloadsSave(`رياحين-نسخة-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-backup",state:ST,blobs})],{type:"application/json"})); };
   $("#rs").onclick=async()=>{ const f=await pickFile(".json"); if(!f)return; try{ const j=JSON.parse(await f.text()); if(j.type!=="rayaheen-backup")throw 0; ST=Object.assign(DEFAULT_STATE(),j.state); for(const k in (j.blobs||{})) await DB.put(k,b64ToBlob(j.blobs[k])); save(); toast("استُعيدت النسخة"); go("home"); }catch(e){ toast("الملف ليس نسخة صالحة"); } };
   $("#reset").onclick=()=>{ const b=$("#reset"); if(b.dataset.c){ try{localStorage.removeItem("ry_state")}catch(e){} indexedDB.deleteDatabase("rayaheen"); ST=DEFAULT_STATE(); DB._db=null; go("home"); } else { b.dataset.c=1; b.textContent="اضغطي مرة أخرى للتأكيد"; } };
@@ -1241,7 +1243,7 @@ VIEWS.listen=listenView; VIEWS.account=accountView; VIEWS.cloudteacher=cloudTeac
 $("#whoPill").style.cursor="pointer"; $("#whoPill").onclick=()=>go("account");
 if(CLOUD.config()) CLOUD.load().then(()=>render());
 // ===== بدء =====
-(function(){ const h=location.hash.replace("#",""); if(h&&VIEWS[h]) route=h; render(); })();
+applyTheme(); (function(){ const h=location.hash.replace("#",""); if(h&&VIEWS[h]) route=h; render(); })();
 
 // ===== وحدة الحفظ والمراجعة =====
 function hifzState(){ if(!ST.hifz) ST.hifz={plan:null,log:[],memorized:[],day:0,dayDone:{},counters:{}}; const H=ST.hifz; H.memorized=H.memorized||[]; H.log=H.log||[]; H.day=H.day||0; H.dayDone=H.dayDone||{}; H.counters=H.counters||{}; return H; }
