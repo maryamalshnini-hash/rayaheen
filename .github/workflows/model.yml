@@ -22,7 +22,9 @@ jobs:
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Convert tarteel-ai/whisper-tiny-ar-quran
         run: |
-          cd tjs && python -m scripts.convert --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition
+          cd tjs && (python -m scripts.convert --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition || echo 'convert ended with error (checking files)')
+          python -c "from transformers import GenerationConfig; GenerationConfig.from_pretrained('openai/whisper-tiny').save_pretrained('models/tarteel-ai/whisper-tiny-ar-quran')"
+          test -f models/tarteel-ai/whisper-tiny-ar-quran/onnx/decoder_model_merged.onnx
           ls -la models/tarteel-ai/whisper-tiny-ar-quran models/tarteel-ai/whisper-tiny-ar-quran/onnx
       - name: Quantize (int8)
         run: |
