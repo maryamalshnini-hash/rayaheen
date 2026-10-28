@@ -766,7 +766,9 @@ $("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(
 function gate(){
   if(!CLOUD.config()) return false; if(route==="account"||route==="about") return false;
   if(CLOUD.user) return false;
-  if(!CLOUD.ready){ view.innerHTML=`<div class="card stack" style="text-align:center;padding:40px 16px"><h2>رياحين</h2><p class="muted">جارٍ الاتصال…</p>${CLOUD.error?`<div class="note bad">${esc(CLOUD.error)}</div><div class="row" style="justify-content:center"><button class="btn" onclick="location.reload()">إعادة المحاولة</button>${ST.fullName?`<button class="btn sec" id="offlineBtn">متابعة دون اتصال</button>`:""}</div>`:""}</div>`; const ob=$("#offlineBtn"); if(ob) ob.onclick=()=>{ CLOUD.offline=true; render(); }; if(!CLOUD.busy&&!CLOUD.error) CLOUD.load().then(()=>render()); return !CLOUD.offline; }
+  if(!CLOUD.ready){ view.innerHTML=`<div class="card stack" style="text-align:center;padding:40px 16px"><h2>رياحين</h2><p class="muted">جارٍ الاتصال…</p>${CLOUD.error?`<div class="note bad">${esc(CLOUD.error)}</div>`:`<div id="slowNote" hidden class="note info" style="text-align:right"><b>لماذا يتأخر التحميل؟</b><br>• أول دخول يحمّل ملفات التطبيق والخدمة السحابية (قد يستغرق دقيقة على شبكة بطيئة).<br>• شبكة الجوال ضعيفة أو بيانات الهاتف مقيّدة.<br>• بعض شبكات المدارس أو الـ VPN تحجب خدمات جوجل.</div>`}
+    <div class="note info" style="text-align:right"><b>إذا لم يفتح:</b><br>1) تأكدي من الإنترنت ثم اضغطي «إعادة المحاولة».<br>2) أغلقي التطبيق وافتحيه من جديد، أو حدّثي الصفحة.<br>3) جرّبي متصفح Chrome أو Safari بدل متصفح داخلي (مثل متصفح واتساب/تيليجرام).<br>4) إن كنتِ سجّلتِ من قبل، تابعي دون اتصال وستُزامن بياناتك لاحقًا.<br>5) إن استمرّت المشكلة أرسلي لقطة شاشة للأستاذة.</div>
+    <div class="row" style="justify-content:center;margin-top:8px"><button class="btn" onclick="location.reload()">إعادة المحاولة</button>${ST.fullName?`<button class="btn sec" id="offlineBtn">متابعة دون اتصال</button>`:""}</div></div>`; const ob=$("#offlineBtn"); if(ob) ob.onclick=()=>{ CLOUD.offline=true; render(); }; setTimeout(()=>{ const n=$("#slowNote"); if(n&&!CLOUD.ready) n.hidden=false; },6000); if(!CLOUD.busy&&!CLOUD.error) CLOUD.load().then(()=>render()); return !CLOUD.offline; }
   route="account"; return false;
 }
 function render(){
@@ -1253,10 +1255,31 @@ VIEWS.hifz=async function(arg){
 
 // ===== المساعد الذكي (يتصل بوسيط Cloudflare Worker يحمل مفتاح Claude) =====
 const AI_URL_DEFAULT=""; // يُملأ برابط الوسيط بعد إنشائه (أو يُضبط من إعدادات الأستاذة ويُنشر عبر السحابة)
-const AI_DAILY_LIMIT=25;
+const RECAPTCHA_SITE_KEY="6Lcn2QQuAAAAAKVS2k9clmvSrNQVywGN3xHBntN1";
+const AI_DAILY_LIMIT=25; const AI_MODEL="gemini-2.5-flash";
+const AI_SYSTEM=`أنتِ «مساعدة رياحين»، معلّمة تجويد وحفظ لطيفة في حلقة قرآنية للطالبات، تعملين داخل تطبيق «رياحين».
+المرجع المعتمد: كتاب «هدي المجيد في أحكام التجويد» (رواية حفص عن عاصم). التزمي بمصطلحاته وأحكامه، ولا تخرجي عنها إلى خلافات لا تنفع الطالبة.
+القواعد:
+- أجيبي بالعربية الفصحى المبسّطة، بإيجاز ووضوح، وخاطبي الطالبة بصيغة المؤنث، ومثّلي بآيات من القرآن مع ضبطها.
+- حين تُعطَين سياق الطالبة (درسها الحالي، نتائج تلاوتها، مهام حفظها) فابني الجواب عليه.
+- عند شرح خطأ تلاوة: سمّي الحكم، واذكري موضعه في الكلمة، وكيف تنطقه صحيحًا، وتمرينًا قصيرًا.
+- لا تفتي في مسائل فقهية أو عقدية خارج التجويد والحفظ؛ وجّهي الطالبة لسؤال أستاذة الحلقة.
+- لا تخترعي أحاديث أو أقوالًا؛ إن لم تتأكدي قولي ذلك.
+- استعملي عناوين قصيرة ونقاطًا (- ) عند الحاجة، واجعلي الرد في حدود 150 كلمة ما لم يُطلب التفصيل.`;
+function ctxText(c){ const L=[]; if(c.name) L.push(`اسم الطالبة: ${c.name}`); if(c.role==="teacher") L.push("المستخدمة: أستاذة الحلقة"); if(c.level) L.push(`مستواها: ${c.level}`); if(c.track) L.push(`مسارها: ${c.track}`); if(c.lessonTitle) L.push(`درسها الحالي: «${c.lessonTitle}»${c.lessonDone?" (أنهته)":""}`); if(c.lessonSummary) L.push(`ملخص الدرس من الكتاب:\n${c.lessonSummary}`); if(c.lastAttempts&&c.lastAttempts.length) L.push(`آخر نتائج تلاوتها:\n- ${c.lastAttempts.join("\n- ")}`); if(c.hifzToday) L.push(`مهام حفظها اليوم: ${c.hifzToday}`); return L.length?`[سياق الطالبة]\n${L.join("\n")}`:""; }
 const AI={
   url(){ return (ST.aiUrl||AI_URL_DEFAULT||"").trim().replace(/\/+$/,""); },
-  ready(){ return !!this.url(); },
+  ready(){ return !!this.url()||!!(typeof FIREBASE_CONFIG!=="undefined"&&FIREBASE_CONFIG&&/^https?:/.test(location.protocol)); },
+  // Gemini عبر Firebase AI Logic (مجاني، بلا مفاتيح إضافية) — يُستخدم إن لم يُضبط وسيط
+  model:null,
+  async gemini(messages){
+    if(!this.model){ const v="https://www.gstatic.com/firebasejs/11.10.0/"; const [{initializeApp,getApps},{getAI,getGenerativeModel,GoogleAIBackend},{initializeAppCheck,ReCaptchaEnterpriseProvider}]=await Promise.all([import(v+"firebase-app.js"),import(v+"firebase-ai.js"),import(v+"firebase-app-check.js")]);
+      let app=getApps().find(a=>a.name==="ai"); if(!app){ app=initializeApp(FIREBASE_CONFIG,"ai"); try{ initializeAppCheck(app,{provider:new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),isTokenAutoRefreshEnabled:true}); }catch(e){ console.warn("AppCheck",e); } } const ai=getAI(app,{backend:new GoogleAIBackend()});
+      this.model=getGenerativeModel(ai,{model:AI_MODEL,systemInstruction:AI_SYSTEM+"\n\n"+ctxText(this.context()),generationConfig:{maxOutputTokens:900,temperature:0.4}}); this.model._ctx=JSON.stringify(this.context()); }
+    else if(this.model._ctx!==JSON.stringify(this.context())){ this.model=null; return this.gemini(messages); }
+    const hist=messages.slice(0,-1).map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
+    const chat=this.model.startChat({history:hist}); const r=await chat.sendMessage(messages[messages.length-1].content); return r.response.text();
+  },
   usedToday(){ const k=new Date().toISOString().slice(0,10); const u=ST.aiUse||{}; return u.day===k?u.n||0:0; },
   bump(){ const k=new Date().toISOString().slice(0,10); const u=ST.aiUse||{}; ST.aiUse=u.day===k?{day:k,n:(u.n||0)+1}:{day:k,n:1}; save(); },
   // سياق الطالبة الذي يُرسل مع كل سؤال ليجيب المساعد بما يناسبها
@@ -1270,6 +1293,8 @@ const AI={
   async ask(messages){
     if(!this.ready()) throw new Error("لم يُربط المساعد بعد.");
     if(this.usedToday()>=AI_DAILY_LIMIT) throw new Error(`بلغتِ الحد اليومي (${AI_DAILY_LIMIT} سؤالًا). عودي غدًا إن شاء الله.`);
+    if(!cloudOn()) throw new Error("سجّلي الدخول أولًا لاستخدام المساعد.");
+    if(!this.url()){ const t=await this.gemini(messages.slice(-12)); this.bump(); return t; }
     let token=""; try{ if(cloudOn()) token=await CLOUD.user.getIdToken(); }catch(e){}
     const r=await fetch(this.url()+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token,context:this.context(),messages:messages.slice(-12)})});
     const j=await r.json().catch(()=>({}));
@@ -1283,7 +1308,7 @@ VIEWS.assistant=function(){
   const bubble=m=>`<div class="msg ${m.role}">${m.role==="assistant"?`<div class="av">${ART.star}</div>`:""}<div class="bb">${mdLite(m.content)}</div></div>`;
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button>${isTeacher()?`<button class="btn sec sm" data-go="settings">ربط المساعد</button>`:""}</div>
   <h1>المساعد الذكي</h1><p class="muted small">يجيب عن أسئلة التجويد والحفظ وفق كتاب «هدي المجيد»، ويعرف درسك الحالي ونتائج تلاوتك. الأسئلة المتبقية اليوم: <b id="aiLeft">${AI_DAILY_LIMIT-AI.usedToday()}</b></p>
-  ${AI.ready()?"":`<div class="note warn">لم تربط الأستاذة المساعد بعد.${isTeacher()?" اذهبي إلى الإعدادات ← المساعد الذكي والصقي رابط الوسيط.":""}</div>`}
+  ${AI.ready()?(cloudOn()?"":`<div class="note warn">سجّلي الدخول أولًا لاستخدام المساعد.</div>`):`<div class="note warn">المساعد يعمل في نسخة الموقع فقط.</div>`}
   <div class="chat" id="chat">${msgs.length?msgs.map(bubble).join(""):`<div class="msg assistant"><div class="av">${ART.star}</div><div class="bb">السلام عليكم ${esc(ST.name||"")}! أنا مساعدك في رياحين. اسأليني عن أي حكم تجويد، أو عن درسك، أو اطلبي شرح خطأ في تلاوتك.</div></div>`}</div>
   <div class="chips" id="sug">${AI_SUGGEST.map(s=>`<button class="chip">${s}</button>`).join("")}</div>
   <form class="chatbar" id="chatForm"><textarea id="chatIn" rows="1" placeholder="اكتبي سؤالك…" ${AI.ready()?"":"disabled"}></textarea><button class="btn" id="sendBtn" type="submit" ${AI.ready()?"":"disabled"}>إرسال</button><button class="btn sec sm" type="button" id="clearChat" title="محادثة جديدة">جديد</button></form>`;
@@ -1296,7 +1321,7 @@ VIEWS.assistant=function(){
   $("#chatForm").onsubmit=async e=>{ e.preventDefault(); const q=inp.value.trim(); if(!q||busy) return; busy=true; inp.value=""; inp.style.height="auto";
     msgs.push({role:"user",content:q}); chat.insertAdjacentHTML("beforeend",bubble({role:"user",content:q})); chat.insertAdjacentHTML("beforeend",`<div class="msg assistant" id="typing"><div class="av">${ART.star}</div><div class="bb"><span class="dots"><i></i><i></i><i></i></span></div></div>`); scroll(); $("#sendBtn").disabled=true;
     try{ const a=await AI.ask(msgs.map(m=>({role:m.role,content:m.content}))); msgs.push({role:"assistant",content:a}); if(msgs.length>40) msgs.splice(0,msgs.length-40); save(); $("#typing").outerHTML=bubble({role:"assistant",content:a}); $("#aiLeft").textContent=AI_DAILY_LIMIT-AI.usedToday(); }
-    catch(err){ $("#typing").outerHTML=`<div class="note bad">${esc(err.message||"تعذّر الاتصال بالمساعد")}</div>`; msgs.pop(); save(); }
+    catch(err){ console.warn(err); const m=String(err&&err.message||""); const why=/app ?check|403|permission/i.test(m)?"تعذّر التحقق من التطبيق (App Check). افتحي الموقع من رابطه الأصلي وحدّثي الصفحة.":/quota|429|exhausted/i.test(m)?"ضغط على الخدمة المجانية الآن؛ جرّبي بعد دقيقة.":/network|fetch|failed/i.test(m)?"لا يوجد اتصال بالإنترنت أو الشبكة تحجب خدمة جوجل.":m||"تعذّر الاتصال بالمساعد"; $("#typing").outerHTML=`<div class="note bad">${esc(why)}<br><span class="small">إن تكرّر: حدّثي الصفحة، أو جرّبي شبكة أخرى، أو أخبري الأستاذة.</span></div>`; msgs.pop(); save(); }
     busy=false; $("#sendBtn").disabled=!AI.ready(); scroll(); inp.focus(); };
 };
 // تنسيق خفيف لردود المساعد (عناوين، نقاط، عريض)
