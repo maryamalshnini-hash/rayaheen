@@ -506,7 +506,7 @@ const ATT={
   map(){ ST.attendance=ST.attendance||{}; return ST.attendance; },
   enter(){ const m=this.map(); const k=this.key(); if(!m[k]){ m[k]={entered:true,done:false}; save(); } },
   recheck(){ const m=this.map(); const k=this.key(); const rec=m[k]||(m[k]={entered:true,done:false}); const before=rec.done;
-    const items=(typeof autoHomeworkList==="function")?autoHomeworkList():[]; let done=items.length>0&&items.every(i=>i.done);
+    const items=(typeof autoHomeworkList==="function")?autoHomeworkList():[]; let done=items.length>0&&items.every(i=>i.done)&&!Object.values(ST.lessonHw||{}).some(h=>!h.done);
     rec.done=done; if(done!==before) save(); return done; },
   weekStart(d){ d=d||new Date(); const x=new Date(d); x.setHours(0,0,0,0); const dow=x.getDay(); const diff=(dow+1)%7; x.setDate(x.getDate()-diff); return x; }, // السبت
   week(d){ const s=this.weekStart(d); const m=this.map(); const days=[]; for(let i=0;i<7;i++){ const x=new Date(s); x.setDate(s.getDate()+i); const k=this.key(x); days.push({k,date:x,entered:!!(m[k]&&m[k].entered),done:!!(m[k]&&m[k].done)}); } return days; },
@@ -780,6 +780,7 @@ VIEWS.home=function(){
     <div class="stack" style="margin-top:10px">
       ${T?(T.finished?`<div class="todo done"><span class="dot"></span><span>أتممتِ برنامج الحفظ كاملًا</span></div>`:`<div class="todo ${hzDone===hzTotal&&hzTotal?"done":""}"><span class="dot"></span><span style="flex:1">الحفظ والمراجعة: ${hzDone} من ${hzTotal} مهام</span><button class="btn sm" data-go="hifz">${hzDone===hzTotal&&hzTotal?"عرض":"ابدئي"}</button></div>`):`<div class="todo"><span class="dot"></span><span style="flex:1">لم تُضبط خطة الحفظ بعد</span><button class="btn sm sec" data-go="hifz">ضبط الخطة</button></div>`}
       ${cl<=4?`<div class="todo ${!next?"done":""}"><span class="dot"></span><span style="flex:1">التجويد: ${next?`درس «${esc(next.title)}»`:`اختبار اجتياز ${esc(L.title)}`}</span><button class="btn sm sec" id="${next?"goNext":"goTest"}">افتحي</button></div>`:""}
+      ${(()=>{ const p=Object.values(ST.lessonHw||{}).filter(h=>!h.done); return p.length?`<div class="todo"><span class="dot" style="background:var(--gold)"></span><span style="flex:1">${p.length===1?"واجب درس: "+esc(p[0].title.replace("واجب درس ","")):p.length+" واجبات دروس معلّقة"}</span><button class="btn sm" data-go="homework">الواجبات</button></div>`:""; })()}
       ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
     </div></div>
   ${attendanceCardHtml()}
@@ -826,7 +827,8 @@ VIEWS.lesson=function(id){
   $("#back").onclick=()=>go("levels"); const p=$("#prevL"); if(p)p.onclick=()=>go("lesson",ls[idx-1].id); const n=$("#nextL"); if(n)n.onclick=()=>go("lesson",ls[idx+1].id); const t=$("#toTest"); if(t)t.onclick=()=>go("leveltest",l.level);
   if(l.practice&&l.practice.length){ const sel=i=>{ document.querySelectorAll("#prList .opt").forEach(b=>b.classList.toggle("sel",+b.dataset.p===i)); $("#prCur").textContent=l.practice[i]; }; sel(0); document.querySelectorAll("#prList .opt").forEach(b=>b.onclick=()=>sel(+b.dataset.p));
     wireRecorder("pr0",{onDone:async blob=>{ const out=$("#pr0Out"); out.innerHTML=audioTag(blob)+`<span class="small muted" id="pr0A">جارٍ التحليل…</span>`; try{ const sig=await Audio_.decode(blob); const S=extractFeatures(sig); const regs=sustainedRegions(S.frames,S.hopSec,0.3); const mc=l.timing&&l.timing.maddCounts; let t=`مدة الصوت ${S.voicedSec.toFixed(1)} ث · مواضع ممدودة: ${regs.length}${regs.length?" (أطولها "+Math.max(...regs.map(r=>r.sec)).toFixed(1)+" ث)":""}`; if(mc&&regs.length){ const longest=Math.max(...regs.map(r=>r.sec)); const perH=longest/mc; if(perH<0.12) t+=" — المد يبدو أقصر من مقداره، أطيلي قليلًا."; else if(perH>0.3) t+=" — المد يبدو أطول من مقداره."; } $("#pr0A").textContent=t; }catch(e){ $("#pr0A").textContent=""; } }}); }
-  renderQuiz($("#quizBox"),l.quiz||[],{onFinish:pct=>{ ST.quiz[l.id]=pct; ST.lastQuizDay=new Date().toDateString(); if(pct>=ST.passPct){ ST.done[l.id]=true; toast("أحسنتِ! أُنجز الدرس."); } else toast("راجعي الدرس ثم أعيدي الاختبار."); save(); }});
+  renderQuiz($("#quizBox"),l.quiz||[],{onFinish:pct=>{ ST.quiz[l.id]=pct; ST.lastQuizDay=new Date().toDateString(); if(pct>=ST.passPct){ ST.done[l.id]=true; ensureLessonHomework(l); toast("أحسنتِ! أُنجز الدرس وظهر لك واجبه."); setTimeout(()=>{ const q=$("#quizCard"); if(q){ q.insertAdjacentHTML("afterend",lessonHomeworkCardHtml(l)); wireLessonHomework(l); const c=$("#lhw-"+l.id); if(c) c.scrollIntoView({behavior:"smooth"}); } },50); } else toast("راجعي الدرس ثم أعيدي الاختبار."); save(); }});
+  if(ST.done[l.id]){ ensureLessonHomework(l); const q=$("#quizCard"); if(q){ q.insertAdjacentHTML("afterend",lessonHomeworkCardHtml(l)); wireLessonHomework(l); } }
 };
 function renderQuiz(box,qs,{onFinish,shuffle=false,label="تصحيح"}={}){
   const list=shuffle?qs.slice().sort(()=>Math.random()-.5):qs; const ans=new Array(list.length).fill(null);
@@ -921,7 +923,7 @@ VIEWS.homework=function(){
   view.innerHTML=`<h1>الواجبات</h1>${isTeacher()?`<div class="card stack"><h3>واجب جديد</h3><div class="row"><label class="f">العنوان<input type="text" id="hwT" placeholder="مثال: تلاوة سورة الفلق بتطبيق أحكام النون الساكنة"></label></div>
     <div class="row"><label class="f">السورة<select id="hwS">${SURAH_NAMES.map((n,i)=>`<option value="${i+1}">${i+1}. ${n}</option>`).join("")}</select></label><label class="f">من آية<input type="number" id="hwA1" value="1" min="1"></label><label class="f">إلى آية<input type="number" id="hwA2" value="5" min="1"></label><label class="f">موعد التسليم<input type="date" id="hwD"></label></div>
     <label class="f">تعليمات<textarea id="hwN" placeholder="ما الحكم المطلوب التركيز عليه؟"></textarea></label><div class="row"><button class="btn" id="hwAdd">إضافة الواجب</button><button class="btn sec" id="hwExport">تصدير الواجبات للطالبات</button><button class="btn sec" id="hwImportSub">استيراد تسليم طالبة</button></div></div>`:
-    `${autoHomeworkHtml()}<div class="card"><p class="small muted">${cloudOn()?"واجبات الأستاذة الإضافية تصلك هنا تلقائيًا.":"تصلك واجبات الأستاذة الإضافية كملف؛ استورديه هنا."}</p><div class="row" style="margin-top:8px"><button class="btn sec sm" id="hwImport">استيراد ملف واجبات</button><button class="btn sec sm" id="gradesImport">استيراد تصحيح الأستاذة</button></div></div>`}
+    `${lessonHomeworkListHtml()}${autoHomeworkHtml()}<div class="card"><p class="small muted">${cloudOn()?"واجبات الأستاذة الإضافية تصلك هنا تلقائيًا.":"تصلك واجبات الأستاذة الإضافية كملف؛ استورديه هنا."}</p><div class="row" style="margin-top:8px"><button class="btn sec sm" id="hwImport">استيراد ملف واجبات</button><button class="btn sec sm" id="gradesImport">استيراد تصحيح الأستاذة</button></div></div>`}
   <div class="stack" id="hwList">${hws.length?"":`<div class="card soft"><p class="muted">لا توجد واجبات بعد.</p></div>`}</div>`;
   wireAutoHomework();
   const list=$("#hwList");
@@ -954,6 +956,25 @@ VIEWS.homework=function(){
   }
 };
 
+// ===== واجب الدرس (يظهر بعد إنهاء كل درس) =====
+function ensureLessonHomework(l){ ST.lessonHw=ST.lessonHw||{}; if(!ST.lessonHw[l.id]){ const phrases=(l.practice||[]).slice(0,4); ST.lessonHw[l.id]={id:"lhw-"+l.id,lessonId:l.id,title:"واجب درس «"+l.title+"»",phrases,created:Date.now(),done:false,score:null}; save(); } return ST.lessonHw[l.id]; }
+function lessonHomeworkCardHtml(l){ const h=ensureLessonHomework(l); return `<div class="card lv" style="--lc:var(--gold)" id="lhw-${l.id}"><div class="row between"><h3>${esc(h.title)}</h3>${h.done?`<span class="pill good">أُنجز ${h.score!=null?h.score+"٪":""}</span>`:`<span class="pill warn">مطلوب</span>`}</div>
+  <p class="small muted">اقرئي العبارات التالية بتطبيق حكم الدرس في تسجيل واحد متتابع. يصحّح التطبيق الكلمات ويُرسل الواجب للأستاذة تلقائيًا.</p>
+  <div class="quran" style="font-size:1.45rem;margin-top:8px">${h.phrases.map((p,i)=>`<span data-ph="${i}">${esc(p)}</span>`).join(" <span class='ayah-num'>۝</span> ")}</div>
+  ${recorderHtml("lhw","سجّلي قراءة العبارات كلها ثم أوقفي.")}<div id="lhwRes"></div></div>`; }
+function wireLessonHomework(l){ const h=ensureLessonHomework(l); const words=h.phrases.join(" ").split(/\s+/).filter(Boolean);
+  wireRecorder("lhw",{recognize:true,onDone:async(blob,text)=>{ $("#lhwOut").innerHTML=audioTag(blob); const res=$("#lhwRes"); res.innerHTML=`<div class="note info" id="lhwSt">جارٍ التصحيح…</div>`;
+    text=(await bestTranscript(blob,text,m=>{ const el=$("#lhwSt"); if(el) el.textContent=m; })).text; const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normAr); let wordPct=null; const notes=[];
+    if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>similar(x,refW[i])>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } }); wordPct=Math.round(st.filter(x=>x==="ok").length/refW.length*100);
+      if(missed.length) notes.push({k:missed.length>2?"bad":"warn",t:`كلمات سقطت أو حُرّفت: ${missed.slice(0,8).map(m=>`«${words[m.i]}»${m.near?" سُمعت: "+m.near:""}`).join("، ")}`}); else notes.push({k:"good",t:"جميع الكلمات مطابقة. أحسنتِ."}); }
+    else notes.push({k:"info",t:"لم يُتعرَّف على الكلام؛ سُجّل الواجب وسيُقيَّم بالسماع."});
+    let S=null; try{ S=extractFeatures(await Audio_.decode(blob)); }catch(e){}
+    if(S&&S.voicedSec<1) notes.push({k:"bad",t:"التسجيل قصير جدًا؛ أعيدي قراءة العبارات كاملة."});
+    const score=wordPct; h.done=true; h.score=score; h.date=Date.now(); save(); ATT.recheck();
+    const att={id:Date.now(),label:h.title,score,wordPct,notes:notes.map(n=>n.t),date:Date.now(),s:0,a1:0,a2:0}; ST.attempts.push(att); await DB.put("att:"+att.id,blob); save();
+    if(cloudOn()) CLOUD.submit({kind:"homework",hwId:h.id,hwTitle:h.title,att,blob}).then(()=>toast("أُرسل الواجب للأستاذة")).catch(()=>{});
+    res.innerHTML=`<div class="card soft"><div class="score"><div class="big ${score==null?"":score>=ST.passPct?"good":score>=55?"warn":"bad"}">${score==null?"—":score+"٪"}</div><div><b>${score==null?"سُجّل الواجب":score>=ST.passPct?"واجب مقبول":"يُستحسن إعادة التسجيل"}</b><div class="small muted">يصل الأستاذة تلقائيًا</div></div></div><div class="stack" style="margin-top:10px">${notes.map(n=>`<div class="note ${n.k}">${esc(n.t)}</div>`).join("")}</div><div class="row" style="margin-top:8px"><button class="btn sec sm" id="lhwAgain">إعادة التسجيل</button></div></div>`;
+    $("#lhwAgain").onclick=()=>{ const l2=LESSONS.find(x=>x.id===h.lessonId); const card=$("#lhw-"+h.lessonId); card.outerHTML=lessonHomeworkCardHtml(l2); wireLessonHomework(l2); }; }}); }
 // ===== الواجبات التلقائية (يومية، تُولَّد من خطة الطالبة ومستواها) =====
 function autoHomeworkList(){
   const items=[]; const today=new Date().toDateString(); const key=ATT.key();
@@ -964,9 +985,10 @@ function autoHomeworkList(){
     items.push({id:rid,kind:"تصحيح تلاوة",title:`تلاوة ${SURAH_NAMES[r[0]-1]} ${r[1]===r[2]?`آية ${r[1]}`:`${r[1]}–${r[2]}`} بتطبيق أحكام ${L.title}`,s:r[0],a1:r[1],a2:r[2],done:!!(ST.autoDone||{})[rid],go:()=>go("practice",{s:r[0],a1:r[1],a2:r[2],auto:rid})}); }
   return items;
 }
+function lessonHomeworkListHtml(){ const hws=Object.values(ST.lessonHw||{}).sort((a,b)=>b.created-a.created); if(!hws.length) return ""; const pend=hws.filter(h=>!h.done).length; return `<div class="card"><div class="row between"><h3>واجبات الدروس</h3><span class="pill ${pend?"warn":"good"}">${pend?pend+" معلّق":"كلها منجزة"}</span></div><p class="small muted">يظهر واجب بعد إنهاء كل درس في التجويد.</p><div class="stack" style="margin-top:8px">${hws.map(h=>`<button class="lesson-item" data-lhw="${h.lessonId}"><span class="mark ${h.done?"done":""}">${h.done?"✓":"!"}</span><span class="t"><b>${esc(h.title)}</b><span class="small muted">${h.done?`أُنجز · ${h.score!=null?h.score+"٪":""}`:"سجّلي قراءة عبارات الدرس"}</span></span></button>`).join("")}</div></div>`; }
 function autoHomeworkHtml(){ const items=autoHomeworkList(); const done=items.filter(i=>i.done).length; return `<div class="card"><div class="row between"><h3>واجبات اليوم (تلقائية)</h3><span class="pill ${done===items.length&&items.length?"good":"acc"}">${done} من ${items.length}</span></div><p class="small muted">تُولَّد يوميًا من خطة حفظك ومستواك في التجويد، وتُرسل نتائجها للأستاذة تلقائيًا عند تسجيل الدخول. ${fmtDate(Date.now())}</p>
   <div class="stack" style="margin-top:8px">${items.length?items.map((i,k)=>`<button class="lesson-item" data-auto="${k}"><span class="mark ${i.done?"done":""}">${i.done?"✓":k+1}</span><span class="t"><b>${esc(i.title)}</b><span class="small muted">${i.kind}${i.done?" · أُنجز":""}</span></span></button>`).join(""):`<p class="muted small">اضبطي خطة الحفظ لتظهر واجباتك اليومية.</p>`}</div></div>`; }
-function wireAutoHomework(){ const items=autoHomeworkList(); document.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>items[+b.dataset.auto].go()); }
+function wireAutoHomework(){ const items=autoHomeworkList(); document.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>items[+b.dataset.auto].go()); document.querySelectorAll("[data-lhw]").forEach(b=>b.onclick=()=>go("lesson",b.dataset.lhw)); }
 // ===== اختبار المستوى =====
 VIEWS.leveltest=async function(lv){
   lv=+lv||1; const L=LEVELS[lv-1]; const ls=lessonsOf(lv); if(!levelUnlocked(lv)){ go("levels"); return; }
