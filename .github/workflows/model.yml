@@ -36,6 +36,7 @@ jobs:
               src=f'{d}/{f}.onnx'; dst=f'{d}/{f}_quantized.onnx'
               quantize_dynamic(src,dst,weight_type=QuantType.QUInt8,per_channel=False,reduce_range=False,extra_options={'EnableSubgraph':True})
               print(f, os.path.getsize(src)//1e6, '->', os.path.getsize(dst)//1e6, 'MB')
+              import onnx; m=onnx.load(dst); m.ir_version=8; onnx.save(m,dst); print('ir',m.ir_version,'opset',[o.version for o in m.opset_import])
           if not os.path.exists(f'{d}/generation_config.json'):
               GenerationConfig.from_pretrained('openai/whisper-tiny').save_pretrained(d)
           out='models/whisper-tiny-ar-quran'; shutil.rmtree(out, ignore_errors=True); os.makedirs(out+'/onnx')
