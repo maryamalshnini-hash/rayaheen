@@ -16,7 +16,7 @@ jobs:
       - name: Install exporter
         run: |
           pip install -q torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
-          pip install -q 'numpy<2' 'onnx<1.17' 'onnxruntime==1.18.1' 'optimum[exporters]==1.21.4' 'transformers==4.44.2' onnxscript
+          pip install -q 'numpy<2' 'onnx<1.17' 'onnxruntime==1.18.1' 'optimum[exporters]==1.21.4' 'transformers==4.42.4' onnxscript
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
       - name: Export ONNX
         run: |
