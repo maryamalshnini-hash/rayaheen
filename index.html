@@ -185,6 +185,41 @@ audio{width:100%;max-width:420px}
 .chatbar textarea{flex:1;resize:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:var(--surface);color:var(--ink);max-height:120px}
 .dots i{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* تصميم محسّن: بلاطات، حلقات تقدم، شارات، ألعاب، لوحة الأستاذة */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin:10px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:var(--shadow)}
+.tile b{display:block;font-family:var(--display);font-size:1.7rem;line-height:1.1;color:var(--accent)}
+.tile span{font-size:.75rem;color:var(--muted)}
+.tile.good b{color:var(--good)}.tile.warn b{color:var(--warn)}.tile.bad b{color:var(--bad)}.tile.gold b{color:var(--gold)}
+.ring{--p:0;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;flex:none}
+.ring>div{width:66px;height:66px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-weight:800;font-size:.95rem;color:var(--accent)}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:.82rem}
+.badge .ic{font-size:1.2rem}.badge.off{opacity:.4;filter:grayscale(1)}
+.lvbar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}.lvbar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
+.game-card{display:flex;gap:12px;align-items:center;cursor:pointer;text-align:right}
+.game-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.game-ico{font-size:2.2rem;width:56px;height:56px;border-radius:14px;background:var(--surface2);display:grid;place-items:center;flex:none}
+.game-box{text-align:center}
+.game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.gstat b{display:block;font-family:var(--display);font-size:1.6rem;color:var(--accent);line-height:1}.gstat span{font-size:.72rem;color:var(--muted)}
+.gtimer{position:relative;width:64px;height:64px}.gtimer svg{width:64px;height:64px;transform:rotate(-90deg)}.gtimer circle{fill:none;stroke-width:3.5}.gtimer .bg{stroke:var(--surface2)}.gtimer .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.gtimer b{position:absolute;inset:0;display:grid;place-items:center;font-size:1.1rem}
+.game-q{min-height:120px;display:grid;place-items:center}
+.game-word{font-family:var(--quran);font-size:2.4rem;line-height:1.6;color:var(--ink)}.game-word.small-q{font-family:inherit;font-size:1.2rem;font-weight:700}
+.game-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
+.opt-btn{font-size:1rem;padding:12px 8px}.opt-btn.ok{background:var(--good);color:#fff;border-color:var(--good)}.opt-btn.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.game-fb{min-height:28px;margin-top:8px;font-weight:700}.game-fb .good{color:var(--good)}.game-fb .bad{color:var(--bad)}
+.game-end .big{font-family:var(--display);font-size:3.4rem;line-height:1}.game-end .big.good{color:var(--good)}.game-end .big.warn{color:var(--warn)}.game-end .big.bad{color:var(--bad)}
+.btn.lg{font-size:1.1rem;padding:14px 28px}
+.stu{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;text-align:right;width:100%}
+.stu:hover{border-color:var(--accent)}
+.stu .av{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.stu .t{flex:1;min-width:0}.stu .t b{display:block}.stu .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.seg button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink)}.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.attgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.attgrid div{aspect-ratio:1;border-radius:6px;background:var(--surface2);display:grid;place-items:center;font-size:.65rem;color:var(--muted)}.attgrid .d{background:var(--good);color:#fff}.attgrid .e{background:var(--warn-soft)}
+@media (max-width:600px){.hero svg{width:84px}.hero{grid-template-columns:1fr auto}}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -575,7 +610,7 @@ const CLOUD={
   async signUpEmail(email,pw){ await this.load(); const r=await this.auth.createUserWithEmailAndPassword(email,pw); if(ST.fullName) await r.user.updateProfile({displayName:ST.fullName}); },
   async reset(email){ await this.load(); await this.auth.sendPasswordResetEmail(email); },
   async signOut(){ if(this.auth) await this.auth.signOut(); this.user=null; },
-  profile(){ return {uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,weekDone:ATT.summary().done,weekEntered:ATT.summary().entered,weekRating:ATT.summary().rating.t,weekStart:ATT.weekStart().getTime(),attendance:ST.attendance||{},updated:Date.now()}; },
+  profile(){ return {uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,weekDone:ATT.summary().done,weekEntered:ATT.summary().entered,weekRating:ATT.summary().rating.t,weekStart:ATT.weekStart().getTime(),attendance:ST.attendance||{},games:ST.games||{},badges:(typeof badgesList==="function"?badgesList().filter(b=>b.on).length:0),attemptsCount:ST.attempts.length,updated:Date.now()}; },
   stateSlim(){ const s=Object.assign({},ST); delete s.textCache; delete s.pin; delete s.aiChat; return s; },
   async afterLogin(){
     const u=this.user; const ref=this.db.collection("users").doc(u.uid); let snap=null; try{ snap=await ref.get(); }catch(e){ this.error=this.msg(e); return; }
@@ -612,8 +647,12 @@ const CLOUD={
     const ref=await this.db.collection("submissions").add(doc); return ref.id; },
   async logHifz(entry){ if(!this.user) return; try{ await this.db.collection("hifzLogs").add(Object.assign({studentUid:this.user.uid,studentName:ST.fullName||ST.name,halaqa:ST.halaqa||""},entry)); }catch(e){} },
   // الأستاذة
-  async students(){ const q=await this.db.collection("users").where("halaqa","==",ST.halaqa||"").get(); return q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(x=>x.role!=="teacher"); },
-  async submissions(){ const q=await this.db.collection("submissions").where("halaqa","==",ST.halaqa||"").get(); return q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>b.date-a.date); },
+  normName(s){ return String(s||"").replace(/[\u064B-\u0652\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/\s+/g," ").trim().toLowerCase(); },
+  myNames(){ return [ST.teacherAlias,ST.fullName,ST.name].map(x=>this.normName(x)).filter(x=>x.length>=3); },
+  isMine(u){ if(u.role==="teacher") return false; if(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa)) return true; const t=this.normName(u.teacherName); if(!t) return false; return this.myNames().some(n=>t===n||t.includes(n)||n.includes(t)); },
+  async students(){ const q=await this.db.collection("users").get(); return q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>this.isMine(u)); },
+  async submissions(){ const q=await this.db.collection("submissions").orderBy("date","desc").limit(400).get().catch(async()=>await this.db.collection("submissions").get()); const subs=q.docs.map(d=>Object.assign({id:d.id},d.data())); const mine=new Set((this._students||[]).map(s=>s.uid)); return subs.filter(s=>mine.has(s.studentUid)||(ST.halaqa&&this.normName(s.halaqa)===this.normName(ST.halaqa))).sort((a,b)=>b.date-a.date); },
+  async submissionsOf(uid){ const q=await this.db.collection("submissions").where("studentUid","==",uid).get(); return q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>b.date-a.date); },
   async grade(id,grade,feedback,rubric){ await this.db.collection("submissions").doc(id).update({grade,feedback,rubric,gradedAt:Date.now(),gradedBy:ST.fullName||ST.name}); },
   async approve(studentUid,level){ await this.db.collection("approvals").add({studentUid,level,halaqa:ST.halaqa||"",by:ST.fullName||ST.name,date:Date.now()}); },
   async publishHomework(h){ await this.db.collection("homework").doc(String(h.id)).set(Object.assign({},h,{id:String(h.id),halaqa:ST.halaqa||"",teacherUid:this.user.uid})); },
@@ -652,22 +691,6 @@ function accountView(){
     $("#upBtn").onclick=async()=>{ try{ msg("جارٍ إنشاء الحساب…","info"); await CLOUD.signUpEmail($("#em").value.trim(),$("#pw").value); }catch(e){ msg(CLOUD.msg(e)); } };
     $("#rsBtn").onclick=async()=>{ try{ await CLOUD.reset($("#em").value.trim()); msg("أُرسلت رسالة إعادة التعيين إلى بريدك","good"); }catch(e){ msg(CLOUD.msg(e)); } };
   });
-}
-// ===== لوحة الأستاذة السحابية =====
-async function cloudTeacherView(){
-  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ الحساب</button><span class="pill acc">${esc(ST.halaqa||"بلا حلقة")}</span></div><h1>لوحة الأستاذة</h1><div id="ctBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`; $("#back").onclick=()=>go("account");
-  if(!cloudOn()){ $("#ctBox").innerHTML=`<div class="note warn">سجّلي الدخول أولًا.</div>`; return; }
-  try{ const [students,subs]=await Promise.all([CLOUD.students(),CLOUD.submissions()]); const box=$("#ctBox");
-    box.innerHTML=`<div class="card"><h3>طالبات الحلقة (${students.length})</h3><p class="small muted">كل من كتبت اسم الحلقة «${esc(ST.halaqa)}» في بياناتها.</p><div class="scroller"><table class="table"><tr><th>الطالبة</th><th>المسار</th><th>الدروس</th><th>المستويات</th><th>الحفظ</th><th>الحضور الأسبوعي</th><th>آخر نشاط</th><th></th></tr>${students.map(s=>`<tr><td><b>${esc(s.fullName||s.name||"")}</b><div class="small muted">${esc(s.email||"")}</div></td><td>${s.track==="tilawa"?"تصحيح تلاوة":s.track==="hifz"?"حفظ":"حفظ وتصحيح"}</td><td>${s.doneCount??0}</td><td>${[1,2,3,4].map(l=>(s.levelTests&&s.levelTests[l]&&s.levelTests[l].passed)?"✓":(s.levelTests&&s.levelTests[l]&&s.levelTests[l].pendingApproval)?"⏳":"·").join(" ")}</td><td>${s.hifzMode==="nahya"?`اليوم ${(s.hifzDay||0)+1}`:s.hifzMode==="custom"?`${s.hifzDay||0} مقطعًا`:"—"}</td><td>${s.weekRating?`<span class="pill ${s.weekRating==="متميزة"?"good":s.weekRating==="مثالية"?"acc":"bad"}">${s.weekRating}</span> <span class="small muted">${s.weekDone??0} أيام</span>`:"—"}</td><td class="small">${s.updated?fmtDate(s.updated):"—"}</td><td><button class="btn sec sm" data-hz="${s.uid}">سجل الحفظ</button> <button class="btn sec sm" data-ap="${s.uid}">اعتماد مستوى</button></td></tr>`).join("")||`<tr><td colspan="7" class="muted">لا طالبات بعد.</td></tr>`}</table></div><div id="ctSub"></div></div>
-    <div class="card"><h3>التسليمات (${subs.length})</h3><div class="stack" id="subList">${subs.length?"":`<p class="muted small">لا تسليمات بعد.</p>`}</div></div>`;
-    const sl=$("#subList"); subs.forEach(sb=>{ const d=document.createElement("div"); d.className="q stack"; d.innerHTML=`<div class="row between"><b>${esc(sb.studentName)}</b><span class="small muted">${sb.kind==="homework"?"واجب":sb.kind==="hifz"?"تسميع حفظ":"تلاوة"} · ${esc(sb.hwTitle||"")} · ${fmtDate(sb.date)}${sb.autoScore!=null?` · تقدير آلي ${sb.autoScore}٪`:""}</span></div><div data-au><button class="btn sec sm" data-load>تحميل التسجيل</button></div>${sb.notes&&sb.notes.length?`<details><summary class="small">ملاحظات التطبيق</summary><ul class="clean small">${sb.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details>`:""}
-      <div class="row">${[["makh","المخارج"],["mad","المدود"],["ghn","الغنن"],["waqf","الوقف والابتداء"]].map(([k,n])=>`<label class="f">${n}<select data-r="${k}">${[5,4,3,2,1].map(v=>`<option ${v===((sb.rubric||{})[k]??4)?"selected":""}>${v}</option>`).join("")}</select></label>`).join("")}</div>
-      <label class="f">ملاحظات للطالبة<textarea data-fb>${esc(sb.feedback||"")}</textarea></label><div class="row"><button class="btn sm" data-save>حفظ التصحيح</button>${sb.grade!=null?`<span class="pill good">${sb.grade}٪</span>`:`<span class="pill warn">لم يُصحّح</span>`}</div>`;
-      d.querySelector("[data-load]").onclick=async()=>{ const box=d.querySelector("[data-au]"); box.innerHTML=`<span class="small muted">جارٍ التحميل…</span>`; try{ const u=await CLOUD.audioUrl(sb.audioUrl); box.innerHTML=u?`<audio controls src="${u}"></audio>`:`<span class="small muted">لا يوجد تسجيل</span>`; }catch(e){ box.innerHTML=`<span class="small muted">${esc(CLOUD.msg(e))}</span>`; } };
-      d.querySelector("[data-save]").onclick=async()=>{ const rub={}; d.querySelectorAll("[data-r]").forEach(s=>rub[s.dataset.r]=+s.value); const g=Math.round((rub.makh+rub.mad+rub.ghn+rub.waqf)/20*100); try{ await CLOUD.grade(sb.id,g,d.querySelector("[data-fb]").value,rub); toast("حُفظ التصحيح ووصل الطالبة"); d.querySelector(".pill").outerHTML=`<span class="pill good">${g}٪</span>`; }catch(e){ toast(CLOUD.msg(e)); } }; sl.appendChild(d); });
-    box.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>{ const s=students.find(x=>x.uid===b.dataset.ap); $("#ctSub").innerHTML=`<div class="q row"><b>اعتماد اجتياز مستوى لـ ${esc(s.fullName||s.name)}</b><select id="apL">${LEVELS.map(L=>`<option value="${L.n}">${L.title}</option>`).join("")}</select><button class="btn sm" id="apGo">اعتماد</button></div>`; $("#apGo").onclick=async()=>{ try{ await CLOUD.approve(s.uid,+$("#apL").value); toast("اعتُمد وسيُفتح للطالبة المستوى التالي"); }catch(e){ toast(CLOUD.msg(e)); } }; });
-    box.querySelectorAll("[data-hz]").forEach(b=>b.onclick=async()=>{ const s=students.find(x=>x.uid===b.dataset.hz); const lg=await CLOUD.hifzLogsOf(s.uid); $("#ctSub").innerHTML=`<div class="q"><b>سجل حفظ ${esc(s.fullName||s.name)}</b><div class="scroller"><table class="table"><tr><th>التاريخ</th><th>النوع</th><th>المقطع</th><th>النتيجة</th></tr>${lg.slice(0,40).map(l=>`<tr><td>${fmtDate(l.date)}</td><td>${l.type==="new"?"حفظ":l.type==="fix"?"تثبيت":"مراجعة"}</td><td>${SURAH_NAMES[l.s-1]} ${l.a1}–${l.a2}</td><td>${l.score??"—"}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">لا سجل بعد.</td></tr>`}</table></div></div>`; });
-  }catch(e){ $("#ctBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; }
 }
 
 // ===== التخزين =====
@@ -775,7 +798,7 @@ function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
   try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
-  const tabOf={assistant:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  const tabOf={assistant:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -800,8 +823,12 @@ VIEWS.home=function(){
   const tr=ST.track==="tilawa"?"تصحيح التلاوة والتجويد":ST.track==="hifz"?"حفظ ومراجعة":"حفظ ومراجعة وتصحيح تلاوة";
   const T=(ST.hifz&&ST.hifz.plan)?todayTasks():null; const hzDone=T?T.tasks.filter(taskDone).length:0; const hzTotal=T?T.tasks.length:0;
   const hour=new Date().getHours(); const greet=hour<12?"صباح الخير":hour<18?"مساء الخير":"مساء النور";
+  const totalLessons=LESSONS.length, totalDone=Object.keys(ST.done).length; const pct=Math.round(totalDone/totalLessons*100); const att=ATT.summary(); const B=badgesList();
   view.innerHTML=`
-  <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p></div>${ART.mushaf}</div>
+  <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p>
+    <div class="row" style="margin-top:8px;gap:10px;align-items:center"><div class="ring" style="--p:${pct}"><div>${pct}٪</div></div><div class="small"><b>${totalDone}</b> من ${totalLessons} درسًا<br><span class="muted">${streakDays()} يومًا متتاليًا · ${B.filter(b=>b.on).length}/${B.length} شارات</span></div></div></div>${ART.mushaf}</div>
+  ${isTeacher()?`<div class="card" style="border-color:var(--accent)"><div class="row between"><div><h3>👩‍🏫 لوحة المعلمة</h3><p class="small muted">تابعي كل طالبة: مستواها، حضورها، تسجيلاتها، وإجاباتها.</p></div><button class="btn" data-go="cloudteacher">افتحي اللوحة</button></div></div>`:""}
+  <div class="tiles"><div class="tile ${att.rating.k}"><b>${att.done}</b><span>أيام منجزة هذا الأسبوع</span></div><div class="tile"><b>${ST.attempts.length}</b><span>تلاوات مسجّلة</span></div><div class="tile gold"><b>${gamesSummary().total}</b><span>نقاط الألعاب</span></div><div class="tile"><b>${cl<=4?cl:"✓"}</b><span>المستوى الحالي</span></div></div>
   <div class="card"><div class="row between"><h3>مهامك اليوم</h3><span class="small muted">${fmtDate(Date.now())}</span></div>
     <div class="stack" style="margin-top:10px">
       ${T?(T.finished?`<div class="todo done"><span class="dot"></span><span>أتممتِ برنامج الحفظ كاملًا</span></div>`:`<div class="todo ${hzDone===hzTotal&&hzTotal?"done":""}"><span class="dot"></span><span style="flex:1">الحفظ والمراجعة: ${hzDone} من ${hzTotal} مهام</span><button class="btn sm" data-go="hifz">${hzDone===hzTotal&&hzTotal?"عرض":"ابدئي"}</button></div>`):`<div class="todo"><span class="dot"></span><span style="flex:1">لم تُضبط خطة الحفظ بعد</span><button class="btn sm sec" data-go="hifz">ضبط الخطة</button></div>`}
@@ -817,7 +844,11 @@ VIEWS.home=function(){
     <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} في المستوى ${cl}`:"مكتمل"}</span></button>
     <button data-go="makharij" style="--lc:var(--lilac)"><span class="art">${ART.lips}</span>المخارج<span class="cnt">29 حرفًا</span></button>
     <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
+    <button data-go="games" style="--lc:var(--warn)"><span class="art" style="font-size:2rem;line-height:40px">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
+    <button data-go="assistant" style="--lc:var(--accent)"><span class="art" style="font-size:2rem;line-height:40px">💬</span>المساعد الذكي<span class="cnt">اسألي</span></button>
+    <button data-go="progress" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">📈</span>تقدّمي<span class="cnt">الشارات والسجل</span></button>
   </div>
+  <div class="card"><div class="row between"><h3>شاراتك</h3><span class="small muted">${B.filter(b=>b.on).length} من ${B.length}</span></div><div class="badges" style="margin-top:8px">${B.map(b=>`<div class="badge ${b.on?"":"off"}" title="${esc(b.d)}"><span class="ic">${b.ic}</span><span>${esc(b.t)}</span></div>`).join("")}</div></div>
   ${cl<=4?`<div class="card lv lvcolor-${cl}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="eyebrow">مستواك في التجويد</div><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
     <div class="progress" style="margin-top:10px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted">أتممتِ ${doneN} من ${ls.length} دروس</p></div>`:
     `<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`}
@@ -827,6 +858,15 @@ VIEWS.home=function(){
   const gn=$("#goNext"); if(gn) gn.onclick=()=>go("lesson",next.id); const gt=$("#goTest"); if(gt) gt.onclick=()=>go("leveltest",cl);
 };
 
+// ===== الشارات والتتابع =====
+function streakDays(){ const m=ST.attendance||{}; let n=0; const d=new Date(); for(let i=0;i<365;i++){ const k=ATT.key(d); if(m[k]&&m[k].entered) n++; else if(i>0) break; d.setDate(d.getDate()-1); } return n; }
+function badgesList(){ const done=Object.keys(ST.done).length; const lt=ST.levelTests||{}; const rec=ST.attempts.length; const good=ST.attempts.filter(a=>a.score>=ST.passPct).length; const g=gamesSummary(); const st=streakDays(); const hz=ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):0;
+  return [
+   {t:"البداية",ic:"🌱",d:"أنهيتِ أول درس",on:done>=1},{t:"خمسة دروس",ic:"📚",d:"أنهيتِ 5 دروس",on:done>=5},{t:"نصف الطريق",ic:"🧭",d:"أنهيتِ نصف الدروس",on:done>=Math.ceil(LESSONS.length/2)},
+   {t:"المستوى الأول",ic:"🥉",d:"اجتزتِ مستوى المبتدئ",on:!!(lt[1]&&lt[1].passed)},{t:"المستوى الثاني",ic:"🥈",d:"اجتزتِ المستوى الثاني",on:!!(lt[2]&&lt[2].passed)},{t:"المتوسط",ic:"🥇",d:"اجتزتِ المستوى المتوسط",on:!!(lt[3]&&lt[3].passed)},{t:"الإتقان",ic:"🏆",d:"اجتزتِ مستوى الإتقان",on:!!(lt[4]&&lt[4].passed)},
+   {t:"أول تلاوة",ic:"🎙️",d:"سجّلتِ أول تلاوة",on:rec>=1},{t:"صوت متقن",ic:"🎧",d:"10 تلاوات ناجحة",on:good>=10},{t:"حافظة",ic:"📖",d:"أتممتِ 7 أيام من خطة الحفظ",on:hz>=7},
+   {t:"مواظبة",ic:"🔥",d:"7 أيام دخول متتالية",on:st>=7},{t:"لاعبة ماهرة",ic:"🎮",d:"500 نقطة في الألعاب",on:g.total>=500}];
+}
 // ===== المستويات =====
 VIEWS.levels=function(){
   view.innerHTML=`<h1>المستويات</h1>`+LEVELS.map(L=>{ const ls=lessonsOf(L.n); const unlocked=levelUnlocked(L.n); const passed=levelPassed(L.n); const doneN=ls.filter(l=>ST.done[l.id]).length;
@@ -1050,6 +1090,8 @@ VIEWS.more=function(){
   view.innerHTML=`<h1>المزيد</h1><div class="grid">
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="practice"><h3>تصحيح التلاوة</h3><p class="small muted">سجّلي أي آيات وقارنيها بالقارئ أو الأستاذة.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="makharij"><h3>مخارج الحروف</h3><p class="small muted">تدريب نطق الحروف الـ29 مع المقارنة.</p></button>
+    ${isTeacher()?`<button class="card stack" style="text-align:right;cursor:pointer;border-color:var(--accent)" data-go="cloudteacher"><h3>👩‍🏫 لوحة المعلمة</h3><p class="small muted">تقدّم كل طالبة ومستواها وحضورها وغيابها والاستماع لتسجيلاتها وتصحيحها.</p></button>`:""}
+    <button class="card stack" style="text-align:right;cursor:pointer" data-go="games"><h3>🎮 ألعاب التجويد</h3><p class="small muted">ست ألعاب سريعة: أحكام النون والميم، المدود، المخارج، الصفات، اللام والراء.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="assistant"><h3>المساعد الذكي</h3><p class="small muted">اسألي عن أي حكم تجويد أو عن درسك أو خطأ في تلاوتك.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="homework"><h3>الواجبات</h3><p class="small muted">واجبات الأستاذة وتسليمها وتصحيحها.</p></button>
     <button class="card stack" style="text-align:right;cursor:pointer" data-go="account"><h3>الحساب والمزامنة</h3><p class="small muted">${cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول بجوجل أو البريد وحفظ البيانات في السحابة."}</p></button>
@@ -1095,7 +1137,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>التدريب والاختبارات</h3>
     <label class="f">القارئ المرجعي الافتراضي<select id="rc">${RECITERS.map(r=>`<option value="${r.id}" ${r.id===ST.reciter?"selected":""}>${r.name}</option>`).join("")}</select></label>
     <label class="f">نسبة اجتياز الدروس والمستويات (٪)<input type="number" id="pp" min="50" max="100" value="${ST.passPct}"></label>
-    ${isTeacher()?`<label class="f">رابط وسيط المساعد الذكي (Cloudflare Worker)<input id="aiUrlIn" dir="ltr" placeholder="https://rayaheen-ai.xxxx.workers.dev" value="${esc(ST.aiUrl||"")}"><span class="small muted">يُنشر تلقائيًا لجميع الطالبات عبر السحابة.</span></label>`:""}
+    ${isTeacher()?`<label class="f">اسم المعلمة كما تكتبه الطالبات<input id="aliasIn" value="${esc(ST.teacherAlias||"")}" placeholder="مثال: الأستاذة مريم"><span class="small muted">كل طالبة تكتب هذا الاسم (أو اسم الحلقة) في بياناتها تظهر في لوحتك مع تسجيلاتها وحضورها.</span></label><label class="f">رابط وسيط المساعد الذكي (Cloudflare Worker)<input id="aiUrlIn" dir="ltr" placeholder="https://rayaheen-ai.xxxx.workers.dev" value="${esc(ST.aiUrl||"")}"><span class="small muted">يُنشر تلقائيًا لجميع الطالبات عبر السحابة.</span></label>`:""}
     <label class="f">محرك تصحيح الكلمات<select id="asrIn"><option value="quran" ${(ST.asr||"quran")==="quran"?"selected":""}>المحرك القرآني داخل الجهاز (أدق، يُحمَّل مرة واحدة ~30 م.ب)</option><option value="browser" ${ST.asr==="browser"?"selected":""}>تعرّف المتصفح (أسرع، أقل دقة)</option></select></label>
     <label class="row" style="gap:8px"><input type="checkbox" id="rq" ${ST.requireTeacher?"checked":""}> يلزم اعتماد الأستاذة لاجتياز المستوى (لا يُفتح المستوى التالي آليًا)</label>
     <label class="f">رابط صوت مخصص (اختياري) — استخدمي {sss} و{aaa} أو {s} و{a}<input type="text" id="ca" dir="ltr" placeholder="https://example.com/{sss}{aaa}.mp3" value="${esc(ST.customAudio)}"></label>
@@ -1103,7 +1145,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>نسخة احتياطية</h3><p class="small muted">تُحفظ بياناتك في هذا المتصفح فقط. صدّري نسخة كاملة (مع التسجيلات) لنقلها إلى جهاز آخر.</p><div class="row"><button class="btn sec" id="bk">تصدير نسخة كاملة</button><button class="btn sec" id="rs">استعادة نسخة</button><button class="btn danger" id="reset">مسح كل البيانات</button></div></div>`;
   $("#back").onclick=()=>go("more");
   wireProfileForm();
-  $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
+  $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aliasIn")) ST.teacherAlias=$("#aliasIn").value.trim(); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
   $("#bk").onclick=async()=>{ const d=await DB.open().catch(()=>null); const blobs={}; if(d){ const keys=await new Promise(res=>{ const r=d.transaction("blobs").objectStore("blobs").getAllKeys(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); }); for(const k of keys){ const b=await DB.get(k); if(b) blobs[k]=await blobToB64(b); } } downloadsSave(`رياحين-نسخة-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-backup",state:ST,blobs})],{type:"application/json"})); };
   $("#rs").onclick=async()=>{ const f=await pickFile(".json"); if(!f)return; try{ const j=JSON.parse(await f.text()); if(j.type!=="rayaheen-backup")throw 0; ST=Object.assign(DEFAULT_STATE(),j.state); for(const k in (j.blobs||{})) await DB.put(k,b64ToBlob(j.blobs[k])); save(); toast("استُعيدت النسخة"); go("home"); }catch(e){ toast("الملف ليس نسخة صالحة"); } };
   $("#reset").onclick=()=>{ const b=$("#reset"); if(b.dataset.c){ try{localStorage.removeItem("ry_state")}catch(e){} indexedDB.deleteDatabase("rayaheen"); ST=DEFAULT_STATE(); DB._db=null; go("home"); } else { b.dataset.c=1; b.textContent="اضغطي مرة أخرى للتأكيد"; } };
@@ -1326,5 +1368,120 @@ VIEWS.assistant=function(){
 };
 // تنسيق خفيف لردود المساعد (عناوين، نقاط، عريض)
 function mdLite(t){ const lines=esc(String(t||"")).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").split("\n"); let out="",inList=false; for(const ln of lines){ const m=ln.match(/^\s*[-•*]\s+(.*)/); if(m){ if(!inList){out+="<ul>";inList=true;} out+=`<li>${m[1]}</li>`; continue; } if(inList){out+="</ul>";inList=false;} if(!ln.trim()) continue; const h=ln.match(/^#+\s*(.*)/); out+=h?`<b class="h">${h[1]}</b>`:`<p>${ln}</p>`; } if(inList) out+="</ul>"; return out; }
+
+// ===== ألعاب تعليمية في التجويد (وفق كتاب هدي المجيد) =====
+const G_NOON=[
+ ["مِنْ هَادٍ","إظهار"],["أَنْعَمْتَ","إظهار"],["مِنْ حَكِيمٍ","إظهار"],["مِنْ غِلٍّ","إظهار"],["مِنْ خَيْرٍ","إظهار"],["عَلِيمٌ حَكِيمٌ","إظهار"],["سَلَامٌ هِيَ","إظهار"],["كُفُوًا أَحَدٌ","إظهار"],["عَذَابٌ أَلِيمٌ","إظهار"],["يَنْأَوْنَ","إظهار"],["جُرُفٍ هَارٍ","إظهار"],["مِنْ عِلْمٍ","إظهار"],
+ ["مَنْ يَعْمَلْ","إدغام"],["مِنْ رَبِّهِمْ","إدغام"],["مِنْ مَاءٍ","إدغام"],["مِنْ لَدُنْهُ","إدغام"],["مِنْ وَلِيٍّ","إدغام"],["مِنْ نِعْمَةٍ","إدغام"],["غَفُورٌ رَحِيمٌ","إدغام"],["هُدًى لِلْمُتَّقِينَ","إدغام"],["وُجُوهٌ يَوْمَئِذٍ","إدغام"],["مَاءً مُبَارَكًا","إدغام"],["خَيْرٌ وَأَبْقَى","إدغام"],["بَرْقٌ يَجْعَلُونَ","إدغام"],
+ ["مِنْ بَعْدِ","إقلاب"],["أَنْبِئْهُمْ","إقلاب"],["سَمِيعٌ بَصِيرٌ","إقلاب"],["لَيُنْبَذَنَّ","إقلاب"],["مِنْ بَيْنِ","إقلاب"],["عَلِيمٌ بِذَاتِ","إقلاب"],["صُمٌّ بُكْمٌ","إقلاب"],["أَنْ بُورِكَ","إقلاب"],
+ ["مِنْ قَبْلُ","إخفاء"],["أَنْتُمْ","إخفاء"],["مِنْ شَرِّ","إخفاء"],["عَنْ صَلَاتِهِمْ","إخفاء"],["مِنْ دُونِ","إخفاء"],["مِنْ ثَمَرَةٍ","إخفاء"],["مَنْ كَانَ","إخفاء"],["يَنْصُرُكُمْ","إخفاء"],["مِنْ فَضْلِهِ","إخفاء"],["مِنْ جُوعٍ","إخفاء"],["مِنْ طِينٍ","إخفاء"],["مِنْ ضَرِيعٍ","إخفاء"],["مِنْ سُوءٍ","إخفاء"],["إِنْ زَعَمْتُمْ","إخفاء"],["مَنْ ذَا","إخفاء"],["مِنْ تَحْتِهَا","إخفاء"],["مِنْ ظَهِيرٍ","إخفاء"],["عَلِيمٌ قَدِيرٌ","إخفاء"],["رِيحًا صَرْصَرًا","إخفاء"],["قَوْلًا سَدِيدًا","إخفاء"],["جَنَّاتٍ تَجْرِي","إخفاء"],["مُنْذِرٌ","إخفاء"]];
+const G_MEEM=[
+ ["تَرْمِيهِمْ بِحِجَارَةٍ","إخفاء شفوي"],["يَعْتَصِمْ بِاللَّهِ","إخفاء شفوي"],["أَمْ بِهِ","إخفاء شفوي"],["رَبُّهُمْ بِهِمْ","إخفاء شفوي"],["هُمْ بِالْآخِرَةِ","إخفاء شفوي"],["فَاحْكُمْ بَيْنَهُمْ","إخفاء شفوي"],["أَنْتُمْ بِهِ","إخفاء شفوي"],
+ ["لَهُمْ مَا","إدغام شفوي"],["كَمْ مِنْ","إدغام شفوي"],["أَمْ مَنْ","إدغام شفوي"],["عَلَيْهِمْ مُؤْصَدَةٌ","إدغام شفوي"],["خَلَقَكُمْ مِنْ","إدغام شفوي"],["إِنَّكُمْ مَيِّتُونَ","إدغام شفوي"],["أَطْعَمَهُمْ مِنْ","إدغام شفوي"],
+ ["لَهُمْ فِيهَا","إظهار شفوي"],["أَمْ لَمْ","إظهار شفوي"],["عَلَيْهِمْ وَلَا","إظهار شفوي"],["أَنْعَمْتَ","إظهار شفوي"],["هُمْ يُوقِنُونَ","إظهار شفوي"],["لَكُمْ دِينُكُمْ","إظهار شفوي"],["الْحَمْدُ","إظهار شفوي"],["أَمْوَالِهِمْ","إظهار شفوي"],["يَمْكُرُونَ","إظهار شفوي"],["عَلَيْكُمْ صِيَامٌ","إظهار شفوي"]];
+const G_MADD=[
+ ["جَاءَ","متصل"],["السَّمَاءِ","متصل"],["سُوءَ","متصل"],["شَاءَ","متصل"],["أُولَئِكَ","متصل"],["الْمَلَائِكَةُ","متصل"],["سِيءَ","متصل"],["جِيءَ","متصل"],
+ ["بِمَا أُنْزِلَ","منفصل"],["يَا أَيُّهَا","منفصل"],["إِنَّا أَعْطَيْنَاكَ","منفصل"],["قُوا أَنْفُسَكُمْ","منفصل"],["فِي أَنْفُسِهِمْ","منفصل"],["تُوبُوا إِلَى","منفصل"],["مَا أَنْزَلَ","منفصل"],["إِنِّي أَخَافُ","منفصل"],
+ ["الضَّالِّينَ","لازم"],["دَابَّةٍ","لازم"],["الْحَاقَّةُ","لازم"],["الصَّاخَّةُ","لازم"],["أَتُحَاجُّونِّي","لازم"],["الطَّامَّةُ","لازم"],["الم (أوّل البقرة)","لازم"],["ن وَالْقَلَمِ","لازم"],
+ ["الرَّحِيمِ (وقفًا)","عارض للسكون"],["نَسْتَعِينُ (وقفًا)","عارض للسكون"],["الْعَالَمِينَ (وقفًا)","عارض للسكون"],["الْمُفْلِحُونَ (وقفًا)","عارض للسكون"],["الدِّينِ (وقفًا)","عارض للسكون"],["خَبِيرٌ (وقفًا)","عارض للسكون"],
+ ["آمَنُوا","بدل"],["أُوتُوا","بدل"],["إِيمَانًا","بدل"],["آدَمَ","بدل"],["آخَرِينَ","بدل"],["أُوذِينَا","بدل"],
+ ["قَالَ","طبيعي"],["يَقُولُ","طبيعي"],["قِيلَ","طبيعي"],["نُوحِيهَا","طبيعي"],["كَانُوا","طبيعي"],["فِيهَا","طبيعي"],["الصَّابِرِينَ","طبيعي"],["مُوسَى","طبيعي"]];
+const G_MAKHRAJ=(()=>{ const halq="ء ه ع ح غ خ".split(" "), shafa="ف ب م و".split(" "), jawf=["ا (مدّ)","و (مدّ)","ي (مدّ)"]; const lisan="ق ك ج ش ي ض ل ن ر ط د ت ص ز س ظ ذ ث".split(" "); const out=[]; halq.forEach(l=>out.push([l,"الحلق"])); shafa.forEach(l=>out.push([l,"الشفتان"])); jawf.forEach(l=>out.push([l,"الجوف"])); lisan.forEach(l=>out.push([l,"اللسان"])); return out; })();
+const G_SIFAT=(()=>{ const all="ء ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي".split(" "); const tafkh="خ ص ض غ ط ق ظ".split(" "); const qalq="ق ط ب ج د".split(" "); const hams="ف ح ث ه ش خ ص س ك ت".split(" "); const out=[]; all.forEach(l=>{ out.push([`هل حرف «${l}» من حروف التفخيم (خص ضغط قظ)؟`,tafkh.includes(l)?"نعم":"لا"]); out.push([`هل حرف «${l}» من حروف القلقلة (قطب جد)؟`,qalq.includes(l)?"نعم":"لا"]); out.push([`هل حرف «${l}» من حروف الهمس (فحثه شخص سكت)؟`,hams.includes(l)?"نعم":"لا"]); }); return out; })();
+const G_LAM_RA=[
+ ["اللَّهُ (بعد فتح)","تفخيم"],["قَالَ اللَّهُ","تفخيم"],["رَسُولُ اللَّهِ","تفخيم"],["بِسْمِ اللَّهِ","ترقيق"],["لِلَّهِ","ترقيق"],["الْحَمْدُ لِلَّهِ","ترقيق"],["فِي اللَّهِ","ترقيق"],["هُوَ اللَّهُ","تفخيم"],
+ ["رَبِّ","تفخيم"],["الرَّحْمَنِ","تفخيم"],["رِزْقًا","ترقيق"],["رِجَالٌ","ترقيق"],["فِرْعَوْنَ","ترقيق"],["مَرْيَمَ","تفخيم"],["خَيْرٌ (وقفًا)","ترقيق"],["النَّارُ","تفخيم"],["الْقَدْرِ (وقفًا)","تفخيم"],["قَدِيرٌ (وقفًا)","ترقيق"],["يَرْجِعُونَ","تفخيم"],["أَرْسَلَ","تفخيم"]];
+const GAMES=[
+ {id:"noon",title:"صيد أحكام النون الساكنة",sub:"انظري إلى الكلمة واختاري الحكم قبل نفاد الوقت",lv:2,opts:["إظهار","إدغام","إقلاب","إخفاء"],data:G_NOON,icon:"🎯",hint:"حروف الإظهار: ء ه ع ح غ خ · الإدغام: يرملون · الإقلاب: ب · الإخفاء: باقي الحروف"},
+ {id:"meem",title:"ميم ساكنة: أين تذهب؟",sub:"إخفاء شفوي أم إدغام شفوي أم إظهار شفوي",lv:2,opts:["إخفاء شفوي","إدغام شفوي","إظهار شفوي"],data:G_MEEM,icon:"👄",hint:"بعد الميم الساكنة: ب ← إخفاء شفوي · م ← إدغام شفوي · غيرهما ← إظهار شفوي"},
+ {id:"madd",title:"سباق المدود",sub:"حدّدي نوع المدّ في الكلمة",lv:2,opts:["طبيعي","متصل","منفصل","لازم","عارض للسكون","بدل"],data:G_MADD,icon:"🏁",hint:"متصل: الهمزة بعد المد في كلمة · منفصل: في كلمتين · لازم: سكون أصلي · عارض: سكون الوقف · بدل: همزة قبل المد"},
+ {id:"makhraj",title:"من أين يخرج الحرف؟",sub:"اختاري المخرج العام للحرف",lv:1,opts:["الجوف","الحلق","اللسان","الشفتان"],data:G_MAKHRAJ,icon:"🗣️",hint:"الجوف: حروف المد · الحلق: ء ه ع ح غ خ · الشفتان: ف ب م و · اللسان: بقية الحروف"},
+ {id:"sifat",title:"صفات الحروف: نعم أم لا؟",sub:"أجيبي بسرعة عن صفة الحرف",lv:1,opts:["نعم","لا"],data:G_SIFAT,icon:"⚡",hint:"التفخيم: خص ضغط قظ · القلقلة: قطب جد · الهمس: فحثه شخص سكت"},
+ {id:"lamra",title:"اللام والراء: تفخيم أم ترقيق؟",sub:"لفظ الجلالة والراء بأحوالها",lv:2,opts:["تفخيم","ترقيق"],data:G_LAM_RA,icon:"⚖️",hint:"لام الجلالة تُفخَّم بعد فتح أو ضم وتُرقَّق بعد كسر · الراء تُفخَّم مع الفتح والضم وتُرقَّق مع الكسر"}];
+const GAME_SECS=60;
+function gameState(){ ST.games=ST.games||{}; return ST.games; }
+function gameBest(id){ return (gameState()[id]||{}).best||0; }
+function gamesSummary(){ const g=gameState(); const played=Object.keys(g).length; const total=Object.values(g).reduce((a,x)=>a+(x.best||0),0); return {played,total}; }
+VIEWS.games=function(){
+  const sm=gamesSummary();
+  view.innerHTML=`<div class="hero"><div><div class="eyebrow">تعلّمي باللعب</div><h1>ألعاب التجويد</h1><p class="small muted">دقيقة واحدة لكل لعبة. كل إجابة صحيحة = 10 نقاط، والتتابع يضاعف النقاط. أفضل نتيجة تُحفظ وتظهر للأستاذة.</p></div>${ART.star}</div>
+  <div class="tiles"><div class="tile"><b>${sm.played}</b><span>ألعاب جرّبتها</span></div><div class="tile"><b>${sm.total}</b><span>مجموع أفضل النقاط</span></div><div class="tile"><b>${GAMES.length}</b><span>لعبة متاحة</span></div></div>
+  <div class="grid">${GAMES.map(g=>{ const s=gameState()[g.id]||{}; return `<button class="card game-card" data-game="${g.id}"><div class="game-ico">${g.icon}</div><div style="flex:1;text-align:right"><h3>${g.title}</h3><p class="small muted">${g.sub}</p><div class="row" style="margin-top:6px;gap:6px"><span class="pill ${g.lv===1?"acc":"warn"}">${g.lv===1?"المستوى الأول":"المستوى الثاني"}</span>${s.best?`<span class="pill good">أفضل: ${s.best}</span>`:""}${s.plays?`<span class="pill">${s.plays} مرة</span>`:""}</div></div></button>`; }).join("")}</div>`;
+  view.querySelectorAll("[data-game]").forEach(b=>b.onclick=()=>go("game",b.dataset.game));
+};
+VIEWS.game=function(id){
+  const g=GAMES.find(x=>x.id===id); if(!g){ go("games"); return; }
+  let pool=[],q=null,score=0,streak=0,best=0,correct=0,wrong=0,left=GAME_SECS,timer=null,running=false,answered=0;
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ الألعاب</button><span class="pill acc">أفضل نتيجة: ${gameBest(id)}</span></div>
+  <h1>${g.icon} ${g.title}</h1><p class="small muted">${g.hint}</p>
+  <div class="card game-box" id="gbox"><div class="game-top"><div class="gstat"><b id="gScore">0</b><span>النقاط</span></div><div class="gtimer"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" class="bg"/><circle cx="18" cy="18" r="16" class="fg" id="gArc"/></svg><b id="gTime">${GAME_SECS}</b></div><div class="gstat"><b id="gStreak">0</b><span>تتابع</span></div></div>
+    <div id="gQ" class="game-q"><div class="game-start"><p>اضغطي «ابدئي» وأجيبي عن أكبر عدد ممكن خلال ${GAME_SECS} ثانية.</p><button class="btn lg" id="gStart">ابدئي ▶</button></div></div>
+    <div id="gOpts" class="game-opts"></div><div id="gFb" class="game-fb"></div></div>`;
+  $("#back").onclick=()=>{ clearInterval(timer); go("games"); };
+  const arc=$("#gArc"); const C=2*Math.PI*16; arc.style.strokeDasharray=C; const setArc=()=>{ arc.style.strokeDashoffset=C*(1-left/GAME_SECS); arc.style.stroke=left<=10?"var(--bad)":"var(--accent)"; };
+  function next(){ if(!pool.length) pool=g.data.slice().sort(()=>Math.random()-.5); q=pool.pop();
+    $("#gQ").innerHTML=`<div class="game-word ${g.id==="sifat"?"small-q":""}">${esc(q[0])}</div>`;
+    $("#gOpts").innerHTML=g.opts.map(o=>`<button class="btn sec opt-btn" data-o="${esc(o)}">${esc(o)}</button>`).join("");
+    $("#gOpts").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>answer(b.dataset.o,b)); $("#gFb").textContent=""; }
+  function answer(o,btn){ if(!running) return; answered++; const ok=o===q[1]; $("#gOpts").querySelectorAll("[data-o]").forEach(b=>{ b.disabled=true; if(b.dataset.o===q[1]) b.classList.add("ok"); }); if(ok){ correct++; streak++; best=Math.max(best,streak); const pts=10*Math.min(3,1+Math.floor(streak/3)); score+=pts; $("#gFb").innerHTML=`<span class="good">✔ صحيح +${pts}</span>`; } else { wrong++; streak=0; btn.classList.add("bad"); $("#gFb").innerHTML=`<span class="bad">✘ الصواب: ${esc(q[1])}</span>`; }
+    $("#gScore").textContent=score; $("#gStreak").textContent=streak; setTimeout(next,ok?350:900); }
+  function finish(){ running=false; clearInterval(timer); const st=gameState(); const rec=st[id]||{best:0,plays:0}; const isBest=score>rec.best; rec.best=Math.max(rec.best,score); rec.plays=(rec.plays||0)+1; rec.last={score,correct,wrong,date:Date.now()}; st[id]=rec; save(); ATT.recheck();
+    const acc=answered?Math.round(correct/answered*100):0;
+    $("#gQ").innerHTML=`<div class="game-end"><div class="big ${acc>=80?"good":acc>=50?"warn":"bad"}">${score}</div><p><b>${isBest?"🏆 رقم قياسي جديد!":"أحسنتِ!"}</b> صحيح ${correct} · خطأ ${wrong} · دقة ${acc}٪ · أطول تتابع ${best}</p>${acc<80?`<p class="small muted">راجعي درس «${esc(g.title)}» في التجويد ثم أعيدي اللعب.</p>`:""}<div class="row" style="justify-content:center"><button class="btn" id="gAgain">العب مرة أخرى</button><button class="btn sec" id="gOut">الألعاب</button></div></div>`;
+    $("#gOpts").innerHTML=""; $("#gFb").textContent=""; $("#gAgain").onclick=()=>go("game",id); $("#gOut").onclick=()=>go("games"); };
+  $("#gStart").onclick=()=>{ running=true; score=0;streak=0;best=0;correct=0;wrong=0;left=GAME_SECS;answered=0; setArc(); next(); timer=setInterval(()=>{ left--; $("#gTime").textContent=left; setArc(); if(left<=0) finish(); },1000); };
+};
+
+// ===== لوحة الأستاذة: متابعة كل طالبة (المستوى، الحضور، التسجيلات، الإجابات) =====
+function levelOf(u){ const lt=u.levelTests||{}; let lv=1; while(lv<=4&&lt[lv]&&lt[lv].passed) lv++; return lv; }
+function attStats(u,weeks=4){ const m=u.attendance||{}; const out=[]; for(let w=0;w<weeks;w++){ const d=new Date(); d.setDate(d.getDate()-7*w); const s=ATT.weekStart(d); let done=0,entered=0; const days=[]; for(let i=0;i<7;i++){ const x=new Date(s); x.setDate(s.getDate()+i); const k=ATT.key(x); const r=m[k]; if(r&&r.done) done++; if(r&&r.entered) entered++; days.push({k,d:!!(r&&r.done),e:!!(r&&r.entered),future:x>new Date()}); } out.push({start:s,done,entered,days,rating:ATT.rating(done)}); } const totalDone=Object.values(m).filter(r=>r.done).length; const totalEntered=Object.values(m).filter(r=>r.entered).length; const absentWeeks=out.filter(w=>w.done<=2).length; return {weeks:out,totalDone,totalEntered,absentWeeks}; }
+function initials(n){ return String(n||"؟").trim().split(/\s+/).slice(0,2).map(x=>x[0]).join(""); }
+async function cloudTeacherView(){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ الحساب</button><button class="btn sec sm" data-go="settings">إعدادات المعلمة</button></div>
+  <div class="hero"><div><div class="eyebrow">لوحة المعلمة</div><h1>${esc(ST.fullName||ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}تظهر هنا كل طالبة كتبت اسم حلقتك أو اسمك «${esc(ST.teacherAlias||ST.fullName||ST.name)}» في بياناتها.</p></div>${ART.book}</div><div id="ctBox"><div class="card"><p class="muted">جارٍ تحميل الطالبات…</p></div></div>`;
+  $("#back").onclick=()=>go("account"); view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  if(!cloudOn()){ $("#ctBox").innerHTML=`<div class="note warn">سجّلي الدخول أولًا.</div>`; return; }
+  try{ const students=await CLOUD.students(); CLOUD._students=students; const subs=await CLOUD.submissions(); CLOUD._subs=subs; const box=$("#ctBox");
+    const stats=students.map(s=>({s,a:attStats(s,1).weeks[0]})); const exc=stats.filter(x=>x.a.done>=4).length, ideal=stats.filter(x=>x.a.done===3).length, abs=stats.filter(x=>x.a.done<=2).length; const ungraded=subs.filter(x=>x.grade==null).length;
+    let sort="name"; const renderList=()=>{ const arr=students.slice().sort((a,b)=>sort==="name"?String(a.fullName||"").localeCompare(String(b.fullName||""),"ar"):sort==="level"?levelOf(b)-levelOf(a)||(b.doneCount||0)-(a.doneCount||0):sort==="att"?(b.weekDone||0)-(a.weekDone||0):(b.updated||0)-(a.updated||0));
+      $("#stuList").innerHTML=arr.map(s=>{ const a=attStats(s,1).weeks[0]; const lv=levelOf(s); const nsub=subs.filter(x=>x.studentUid===s.uid).length; const ng=subs.filter(x=>x.studentUid===s.uid&&x.grade==null).length;
+        return `<button class="stu" data-stu="${s.uid}"><div class="av">${esc(initials(s.fullName||s.name))}</div><div class="t"><b>${esc(s.fullName||s.name||"")}</b><span class="small muted">${esc(s.email||"")}${s.updated?" · آخر نشاط "+fmtDate(s.updated):""}</span><div class="meta"><span class="pill acc">${lv<=4?"المستوى "+lv:"أتمت الإتقان"}</span><span class="pill">${s.doneCount??0} درسًا</span><span class="pill ${a.rating.k}">${a.rating.t} · ${a.done}/7</span>${nsub?`<span class="pill ${ng?"warn":"good"}">${nsub} تسجيل${ng?" · "+ng+" بلا تصحيح":""}</span>`:""}${s.hifzMode?`<span class="pill">${s.hifzMode==="nahya"?"حفظ: اليوم "+((s.hifzDay||0)+1):"حفظ: "+(s.hifzDay||0)+" مقطعًا"}</span>`:""}</div></div><span class="muted">‹</span></button>`; }).join("")||`<p class="muted small">لا طالبات بعد. اطلبي من الطالبات كتابة اسم الحلقة «${esc(ST.halaqa||"")}» أو اسمك في بياناتهن.</p>`;
+      $("#stuList").querySelectorAll("[data-stu]").forEach(b=>b.onclick=()=>go("student",b.dataset.stu)); };
+    box.innerHTML=`<div class="tiles"><div class="tile"><b>${students.length}</b><span>طالبة</span></div><div class="tile good"><b>${exc}</b><span>متميزة هذا الأسبوع</span></div><div class="tile"><b>${ideal}</b><span>مثالية</span></div><div class="tile bad"><b>${abs}</b><span>غائبة</span></div><div class="tile warn"><b>${ungraded}</b><span>تسجيل بلا تصحيح</span></div></div>
+      <div class="card"><div class="row between"><h3>الطالبات</h3><div class="seg" id="sortSeg"><button data-s="name" class="on">الاسم</button><button data-s="level">المستوى</button><button data-s="att">الحضور</button><button data-s="recent">الأحدث</button></div></div><div class="stack" id="stuList" style="margin-top:8px"></div></div>
+      <div class="card"><div class="row between"><h3>أحدث التسجيلات (${subs.length})</h3><span class="small muted">اضغطي اسم الطالبة لعرض سجلها كاملًا</span></div><div class="stack" id="subList" style="margin-top:8px">${subs.slice(0,15).map(sb=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>${esc(sb.studentName)}</b> <span class="small muted">· ${sb.kind==="homework"?"واجب":sb.kind==="hifz"?"تسميع":"تلاوة"} · ${esc(sb.hwTitle||"")} · ${fmtDate(sb.date)}</span></div><div class="row" style="gap:6px">${sb.autoScore!=null?`<span class="pill">آلي ${sb.autoScore}٪</span>`:""}${sb.grade!=null?`<span class="pill good">${sb.grade}٪</span>`:`<span class="pill warn">بلا تصحيح</span>`}<button class="btn sec sm" data-open="${sb.studentUid}">فتح</button></div></div>`).join("")||`<p class="muted small">لا تسليمات بعد.</p>`}</div></div>`;
+    renderList(); box.querySelectorAll("#sortSeg button").forEach(b=>b.onclick=()=>{ sort=b.dataset.s; box.querySelectorAll("#sortSeg button").forEach(x=>x.classList.toggle("on",x===b)); renderList(); }); box.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>go("student",b.dataset.open));
+  }catch(e){ $("#ctBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; }
+}
+// ===== صفحة الطالبة الواحدة =====
+VIEWS.student=async function(uid){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ اللوحة</button></div><div id="stBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`; $("#back").onclick=()=>go("cloudteacher");
+  if(!cloudOn()||!isTeacher()){ $("#stBox").innerHTML=`<div class="note warn">هذه الصفحة للأستاذة.</div>`; return; }
+  try{ const d=await CLOUD.db.collection("users").doc(uid).get(); if(!d.exists) throw new Error("لا توجد طالبة"); const u=Object.assign({uid},d.data()); const S=u.state||{}; const subs=await CLOUD.submissionsOf(uid); const logs=await CLOUD.hifzLogsOf(uid);
+    const lv=levelOf(u); const A=attStats(u,4); const doneIds=Object.keys(S.done||{}); const lt=u.levelTests||{}; const lhw=Object.values(S.lessonHw||{}); const games=u.games||S.games||{}; const atts=(S.attempts||[]).slice().reverse();
+    const box=$("#stBox"); let tab="overview";
+    const tabs={
+      overview:()=>`<div class="tiles"><div class="tile"><b>${lv<=4?lv:"✓"}</b><span>المستوى</span></div><div class="tile"><b>${doneIds.length}</b><span>درسًا منجزًا من ${LESSONS.length}</span></div><div class="tile good"><b>${A.totalDone}</b><span>يوم حضور منجز</span></div><div class="tile bad"><b>${A.absentWeeks}</b><span>أسبوع غياب (من 4)</span></div><div class="tile"><b>${subs.length}</b><span>تسجيلًا</span></div><div class="tile gold"><b>${Object.values(games).reduce((a,x)=>a+(x.best||0),0)}</b><span>نقاط الألعاب</span></div></div>
+        <div class="card"><h3>المستويات</h3><div class="stack" style="margin-top:8px">${LEVELS.map(L=>{ const ls=lessonsOf(L.n); const dn=ls.filter(l=>doneIds.includes(l.id)).length; const t=lt[L.n]||{}; if(!ls.length&&!t.passed&&!t.pendingApproval) return `<div class="row between"><span><b>${esc(L.title)}</b> <span class="small muted">اختبار شامل</span></span><span class="pill">لم يُبدأ</span></div>`; return `<div><div class="row between"><span><b>${esc(L.title)}</b> <span class="small muted">${dn}/${ls.length} دروس${t.mcq!=null?" · نظري "+t.mcq+"٪":""}${t.recite!=null?" · تلاوة "+t.recite+"٪":""}</span></span>${t.passed?`<span class="pill good">مجتاز</span>`:t.pendingApproval?`<span class="pill warn">بانتظار اعتمادك</span>`:`<span class="pill">${dn===ls.length&&ls.length?"جاهزة للاختبار":"قيد الدراسة"}</span>`}</div><div class="lvbar" style="margin-top:4px"><i style="width:${ls.length?Math.round(dn/ls.length*100):0}%"></i></div></div>`; }).join("")}</div>
+          <div class="row" style="margin-top:10px"><select id="apL">${LEVELS.map(L=>`<option value="${L.n}">${L.title}</option>`).join("")}</select><button class="btn sm" id="apGo">اعتماد اجتياز المستوى</button></div></div>
+        <div class="card"><h3>الحضور (آخر 4 أسابيع)</h3><p class="small muted">أخضر: يوم منجز (دخلت وأتمّت مهامها) · أصفر: دخلت دون إتمام · رمادي: غياب.</p>${A.weeks.map(w=>`<div class="row between" style="margin-top:8px"><span class="small">أسبوع ${fmtDate(w.start.getTime())}</span><span class="pill ${w.rating.k}">${w.rating.t} · ${w.done}/7</span></div><div class="attgrid">${w.days.map(x=>`<div class="${x.d?"d":x.e?"e":""}" title="${x.k}">${x.future?"":x.d?"✓":x.e?"•":""}</div>`).join("")}</div>`).join("")}<p class="small muted" style="margin-top:8px">إجمالي أيام الدخول: ${A.totalEntered} · إجمالي الأيام المنجزة: ${A.totalDone}</p></div>`,
+      recordings:()=>`<div class="card"><h3>التسجيلات (${subs.length})</h3><p class="small muted">استمعي لتلاوة الطالبة وقيّميها؛ يصل التصحيح لها فورًا.</p><div class="stack" id="recList" style="margin-top:8px">${subs.length?"":`<p class="muted small">لا تسجيلات بعد.</p>`}</div></div>`,
+      answers:()=>`<div class="card"><h3>الدروس والاختبارات</h3><div class="stack" style="margin-top:8px">${LESSONS.map(l=>{ const dn=doneIds.includes(l.id); const h=(S.lessonHw||{})[l.id]; return `<div class="row between" style="padding:6px 0;border-bottom:1px solid var(--line)"><span class="small"><span class="pill ${dn?"good":""}" style="min-width:26px;justify-content:center">${dn?"✓":"·"}</span> ${esc(l.title)}</span><span class="small muted">${h?(h.done?`واجب الدرس: ${h.score!=null?h.score+"٪":"مُنجز"}`:"واجب الدرس معلّق"):""}</span></div>`; }).join("")}</div></div>
+        <div class="card"><h3>محاولات التلاوة الآلية (${atts.length})</h3><div class="scroller"><table class="table"><tr><th>التاريخ</th><th>الموضع</th><th>النتيجة</th><th>ملاحظات التطبيق</th></tr>${atts.slice(0,40).map(a=>`<tr><td class="small">${fmtDate(a.date)}</td><td>${esc(a.label||"")}</td><td>${a.score!=null?a.score+"٪":"—"}</td><td class="small">${(a.notes||[]).slice(0,2).map(esc).join("؛ ")}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">لا محاولات.</td></tr>`}</table></div></div>
+        <div class="card"><h3>الألعاب</h3><div class="stack" style="margin-top:8px">${GAMES.map(g=>{ const r=games[g.id]; return `<div class="row between"><span>${g.icon} ${esc(g.title)}</span><span class="small">${r?`أفضل ${r.best} · ${r.plays} مرة${r.last?" · آخر دقة "+(r.last.correct+r.last.wrong?Math.round(r.last.correct/(r.last.correct+r.last.wrong)*100):0)+"٪":""}`:"لم تلعب"}</span></div>`; }).join("")}</div></div>`,
+      hifz:()=>`<div class="card"><h3>سجل الحفظ (${logs.length})</h3><p class="small muted">${u.hifzMode?(u.hifzMode==="nahya"?"برنامج بالقرآن نحيا · اليوم "+((u.hifzDay||0)+1):"خطة خاصة · "+(u.hifzDay||0)+" مقطعًا"):"لم تضبط خطة حفظ."}</p><div class="scroller"><table class="table"><tr><th>التاريخ</th><th>النوع</th><th>المقطع</th><th>النتيجة</th></tr>${logs.slice(0,60).map(l=>`<tr><td class="small">${fmtDate(l.date)}</td><td>${l.type==="new"?"حفظ":l.type==="fix"?"تثبيت":"مراجعة"}</td><td>${SURAH_NAMES[l.s-1]||""} ${l.a1}–${l.a2}</td><td>${l.score??"—"}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">لا سجل بعد.</td></tr>`}</table></div></div>`
+    };
+    const draw=()=>{ box.innerHTML=`<div class="hero"><div><div class="eyebrow">${esc(u.halaqa||"")}${u.teacherName?" · الأستاذة "+esc(u.teacherName):""}</div><h1>${esc(u.fullName||u.name||"")}</h1><p class="small muted">${esc(u.email||"")} · ${u.track==="tilawa"?"تصحيح تلاوة":u.track==="hifz"?"حفظ ومراجعة":"حفظ وتصحيح"}${u.hifzAmount?" · حفظ "+esc(u.hifzAmount):""}${u.reviewAmount?" · مراجعة "+esc(u.reviewAmount):""}${u.updated?" · آخر نشاط "+fmtDate(u.updated):""}</p></div><div class="av" style="width:64px;height:64px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:1.4rem;font-weight:800">${esc(initials(u.fullName||u.name))}</div></div>
+      <div class="seg">${[["overview","نظرة عامة"],["recordings","التسجيلات"],["answers","الإجابات والدروس"],["hifz","الحفظ"]].map(([k,n])=>`<button data-t="${k}" class="${tab===k?"on":""}">${n}</button>`).join("")}</div><div id="tabBox">${tabs[tab]()}</div>`;
+      box.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ tab=b.dataset.t; draw(); });
+      const ap=$("#apGo"); if(ap) ap.onclick=async()=>{ try{ await CLOUD.approve(uid,+$("#apL").value); toast("اعتُمد المستوى للطالبة"); }catch(e){ toast(CLOUD.msg(e)); } };
+      const rl=$("#recList"); if(rl) subs.forEach(sb=>{ const d=document.createElement("div"); d.className="q stack"; d.innerHTML=`<div class="row between"><b>${sb.kind==="homework"?"واجب":sb.kind==="hifz"?"تسميع حفظ":"تلاوة"} · ${esc(sb.hwTitle||"")}</b><span class="small muted">${fmtDate(sb.date)}${sb.autoScore!=null?` · تقدير آلي ${sb.autoScore}٪`:""}</span></div><div data-au><button class="btn sec sm" data-load>▶ تحميل التسجيل والاستماع</button></div>${sb.notes&&sb.notes.length?`<details><summary class="small">ملاحظات التطبيق (${sb.notes.length})</summary><ul class="clean small">${sb.notes.map(n=>`<li>${esc(n)}</li>`).join("")}</ul></details>`:""}
+        <div class="row">${[["makh","المخارج"],["mad","المدود"],["ghn","الغنن"],["waqf","الوقف والابتداء"]].map(([k,n])=>`<label class="f">${n}<select data-r="${k}">${[5,4,3,2,1].map(v=>`<option ${v===((sb.rubric||{})[k]??4)?"selected":""}>${v}</option>`).join("")}</select></label>`).join("")}</div>
+        <label class="f">ملاحظات للطالبة<textarea data-fb>${esc(sb.feedback||"")}</textarea></label><div class="row"><button class="btn sm" data-save>حفظ التصحيح</button>${sb.grade!=null?`<span class="pill good">${sb.grade}٪</span>`:`<span class="pill warn">لم يُصحّح</span>`}</div>`;
+        d.querySelector("[data-load]").onclick=async()=>{ const bx=d.querySelector("[data-au]"); bx.innerHTML=`<span class="small muted">جارٍ التحميل…</span>`; try{ const url=await CLOUD.audioUrl(sb.audioUrl); bx.innerHTML=url?`<audio controls src="${url}" autoplay></audio>`:`<span class="small muted">لا يوجد تسجيل</span>`; }catch(e){ bx.innerHTML=`<span class="small muted">${esc(CLOUD.msg(e))}</span>`; } };
+        d.querySelector("[data-save]").onclick=async()=>{ const rub={}; d.querySelectorAll("[data-r]").forEach(s=>rub[s.dataset.r]=+s.value); const g=Math.round((rub.makh+rub.mad+rub.ghn+rub.waqf)/20*100); try{ await CLOUD.grade(sb.id,g,d.querySelector("[data-fb]").value,rub); sb.grade=g; toast("حُفظ التصحيح ووصل الطالبة"); d.querySelector(".pill").outerHTML=`<span class="pill good">${g}٪</span>`; }catch(e){ toast(CLOUD.msg(e)); } }; rl.appendChild(d); }); };
+    draw();
+  }catch(e){ $("#stBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; }
+};
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
