@@ -13,40 +13,37 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - name: Install converter
+      - name: Install exporter
         run: |
-          git clone --depth 1 --branch 2.17.2 https://github.com/xenova/transformers.js.git tjs
-          pip install -q -r tjs/scripts/requirements.txt
-          pip install -q 'numpy<2' onnxscript 'onnx<1.17' 'onnxruntime==1.18.1'
           pip install -q torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          pip install -q 'numpy<2' 'onnx<1.17' 'onnxruntime==1.18.1' 'optimum[exporters]==1.21.4' 'transformers==4.44.2' onnxscript
           pip list 2>/dev/null | grep -iE '^(torch|transformers|optimum|onnx|onnxruntime|numpy) '
-      - name: Convert tarteel-ai/whisper-tiny-ar-quran
+      - name: Export ONNX
         run: |
-          cd tjs && (python -m scripts.convert --model_id tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition || echo 'convert ended with error (checking files)')
-          python -c "from transformers import GenerationConfig; GenerationConfig.from_pretrained('openai/whisper-tiny').save_pretrained('models/tarteel-ai/whisper-tiny-ar-quran')"
-          D=models/tarteel-ai/whisper-tiny-ar-quran; mkdir -p $D/onnx; mv $D/*.onnx $D/onnx/ 2>/dev/null || true; ls -la $D $D/onnx
-          test -f $D/onnx/decoder_model_merged.onnx
-          ls -la models/tarteel-ai/whisper-tiny-ar-quran models/tarteel-ai/whisper-tiny-ar-quran/onnx
-      - name: Quantize (int8)
+          optimum-cli export onnx --model tarteel-ai/whisper-tiny-ar-quran --task automatic-speech-recognition-with-past exported || true
+          ls -la exported || true
+      - name: Quantize + generation config
         run: |
           python - <<'PY'
+          import os, glob, shutil
           from onnxruntime.quantization import quantize_dynamic, QuantType
-          import os
-          d='tjs/models/tarteel-ai/whisper-tiny-ar-quran/onnx'
+          from transformers import GenerationConfig
+          d='exported'; files=os.listdir(d); print(files)
+          assert os.path.exists(f'{d}/decoder_model_merged.onnx'), 'no merged decoder'
           for f in ['encoder_model','decoder_model_merged']:
               src=f'{d}/{f}.onnx'; dst=f'{d}/{f}_quantized.onnx'
               quantize_dynamic(src,dst,weight_type=QuantType.QUInt8,per_channel=False,reduce_range=False,extra_options={'EnableSubgraph':True})
               print(f, os.path.getsize(src)//1e6, '->', os.path.getsize(dst)//1e6, 'MB')
+          if not os.path.exists(f'{d}/generation_config.json'):
+              GenerationConfig.from_pretrained('openai/whisper-tiny').save_pretrained(d)
+          out='models/whisper-tiny-ar-quran'; shutil.rmtree(out, ignore_errors=True); os.makedirs(out+'/onnx')
+          for f in ['config.json','generation_config.json','tokenizer.json','tokenizer_config.json','preprocessor_config.json','vocab.json','merges.txt','normalizer.json','special_tokens_map.json','added_tokens.json']:
+              if os.path.exists(f'{d}/{f}'): shutil.copy(f'{d}/{f}', out)
+          for f in ['encoder_model_quantized.onnx','decoder_model_merged_quantized.onnx']:
+              shutil.copy(f'{d}/{f}', out+'/onnx')
+          print(os.listdir(out), os.listdir(out+'/onnx'))
           PY
-      - name: Copy needed files
-        run: |
-          D=models/whisper-tiny-ar-quran; rm -rf $D; mkdir -p $D/onnx
-          S=tjs/models/tarteel-ai/whisper-tiny-ar-quran
-          for f in config.json generation_config.json tokenizer.json tokenizer_config.json preprocessor_config.json vocab.json merges.txt normalizer.json special_tokens_map.json added_tokens.json; do [ -f $S/$f ] && cp $S/$f $D/; done
-          cp $S/onnx/encoder_model_quantized.onnx $D/onnx/
-          cp $S/onnx/decoder_model_merged_quantized.onnx $D/onnx/
-          du -sh $D/onnx/*
       - name: Commit model
         run: |
           git config user.name "rayaheen-bot"; git config user.email "bot@rayaheen"
-          git add models && git commit -m "نموذج التعرف القرآني (whisper-tiny-ar-quran, ONNX)" && git push
+          git add models && git commit -m "نموذج التعرف القرآني (whisper-tiny-ar-quran, ONNX int8)" && git push
