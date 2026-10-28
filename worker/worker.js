@@ -1,7 +1,10 @@
 // وسيط المساعد الذكي لرياحين — Cloudflare Worker
-// المتغيرات (Settings → Variables and Secrets): ANTHROPIC_API_KEY (سري) — وإن شئتِ: MODEL, DAILY_LIMIT, ALLOWED_ORIGINS
+// المتغيرات (Settings → Variables and Secrets):
+//   GEMINI_API_KEY (سري) ← مجاني من aistudio.google.com   أو   ANTHROPIC_API_KEY (سري) ← Claude مدفوع
+//   اختياري: MODEL, DAILY_LIMIT, ALLOWED_ORIGINS
 const DEFAULTS={
   MODEL:"claude-haiku-4-5",
+  GEMINI_MODEL:"gemini-2.0-flash",
   DAILY_LIMIT:"25",
   ALLOWED_ORIGINS:"https://maryamalshnini-hash.github.io,https://claude.ai,http://localhost,capacitor://localhost,https://localhost",
   FIREBASE_API_KEY:"AIzaSyCnYvTcWLjyBaFlNtpaIXAnhE43kUglenY",
@@ -25,20 +28,29 @@ export default{
     const origin=req.headers.get("Origin")||""; const C=cors(origin,env);
     if(req.method==="OPTIONS") return new Response(null,{headers:C.headers});
     const url=new URL(req.url);
-    if(url.pathname==="/"||url.pathname==="/health") return new Response(JSON.stringify({ok:true,service:"rayaheen-ai",keySet:!!env.ANTHROPIC_API_KEY}),{headers:{"Content-Type":"application/json",...C.headers}});
+    if(url.pathname==="/"||url.pathname==="/health") return new Response(JSON.stringify({ok:true,service:"rayaheen-ai",keySet:!!(env.GEMINI_API_KEY||env.ANTHROPIC_API_KEY),provider:env.GEMINI_API_KEY?"gemini":env.ANTHROPIC_API_KEY?"claude":"none"}),{headers:{"Content-Type":"application/json",...C.headers}});
     if(req.method!=="POST"||url.pathname!=="/chat") return new Response("Not found",{status:404,headers:C.headers});
     const J=(o,s=200)=>new Response(JSON.stringify(o),{status:s,headers:{"Content-Type":"application/json; charset=utf-8",...C.headers}});
     if(!C.ok) return J({error:"المصدر غير مسموح"},403);
-    if(!env.ANTHROPIC_API_KEY) return J({error:"لم يُضبط مفتاح ANTHROPIC_API_KEY في الوسيط"},500);
+    if(!env.GEMINI_API_KEY&&!env.ANTHROPIC_API_KEY) return J({error:"لم يُضبط مفتاح في الوسيط (GEMINI_API_KEY أو ANTHROPIC_API_KEY)"},500);
     let body; try{ body=await req.json(); }catch(e){ return J({error:"طلب غير صالح"},400); }
     let who=null; if((env.REQUIRE_LOGIN||DEFAULTS.REQUIRE_LOGIN)==="true"){ who=await verifyUser(body.token,env); if(!who) return J({error:"سجّلي الدخول أولًا لاستخدام المساعد"},401); }
     const id=who?who.uid:(req.headers.get("CF-Connecting-IP")||"anon"); const day=new Date().toISOString().slice(0,10); const k=id+"|"+day; const n=(dayUse.get(k)||0)+1; const lim=+(env.DAILY_LIMIT||DEFAULTS.DAILY_LIMIT); if(n>lim) return J({error:`بلغتِ الحد اليومي (${lim} سؤالًا)`},429); dayUse.set(k,n);
     const msgs=(Array.isArray(body.messages)?body.messages:[]).filter(m=>m&&(m.role==="user"||m.role==="assistant")&&typeof m.content==="string").slice(-12).map(m=>({role:m.role,content:m.content.slice(0,4000)}));
     if(!msgs.length||msgs[msgs.length-1].role!=="user") return J({error:"لا سؤال"},400);
-    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:env.MODEL||DEFAULTS.MODEL,max_tokens:700,system:SYSTEM+ctxText(body.context),messages:msgs})});
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok) return J({error:(j.error&&j.error.message)||"تعذّر الاتصال بالنموذج"},502);
-    const text=(j.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n").trim();
+    const sys=SYSTEM+ctxText(body.context); let text="";
+    if(env.GEMINI_API_KEY){
+      const model=env.MODEL&&/gemini/.test(env.MODEL)?env.MODEL:DEFAULTS.GEMINI_MODEL;
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:msgs.map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]})),generationConfig:{maxOutputTokens:900,temperature:0.4}})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok) return J({error:(j.error&&j.error.message)||"تعذّر الاتصال بالنموذج"},502);
+      text=(((j.candidates||[])[0]||{}).content||{}).parts?.map(p=>p.text||"").join("\n").trim()||"";
+    } else {
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01"},body:JSON.stringify({model:env.MODEL&&!/gemini/.test(env.MODEL)?env.MODEL:DEFAULTS.MODEL,max_tokens:700,system:sys,messages:msgs})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok) return J({error:(j.error&&j.error.message)||"تعذّر الاتصال بالنموذج"},502);
+      text=(j.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n").trim();
+    }
     return J({text});
   }
 };

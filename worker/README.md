@@ -1,35 +1,32 @@
-# ربط المساعد الذكي (Claude) بموقع رياحين — 10 دقائق
+# ربط المساعد الذكي بموقع رياحين — مجانًا (10 دقائق)
 
-المساعد يعمل عبر «وسيط» صغير مجاني على Cloudflare يحفظ مفتاح Claude عنده، فلا يظهر المفتاح في الموقع أبدًا.
+المساعد يعمل عبر «وسيط» صغير مجاني على Cloudflare يحفظ المفتاح عنده، فلا يظهر في الموقع أبدًا.
+الخيار المجاني: نموذج **Gemini** من جوجل. (ويمكن لاحقًا التبديل إلى Claude بمفتاح مدفوع.)
 
-## 1) مفتاح Claude
-1. افتحي https://console.anthropic.com وسجّلي (بريدك).
-2. Billing ← أضيفي رصيدًا (5 دولارات تكفي شهورًا لحلقة صغيرة).
-3. API Keys ← Create Key ← سمّيه `rayaheen` ← انسخي المفتاح (يبدأ بـ `sk-ant-`). **لا ترسليه لأحد.**
+## 1) مفتاح Gemini المجاني (لا يحتاج بطاقة)
+1. افتحي https://aistudio.google.com وادخلي بحساب جوجل.
+2. اضغطي **Get API key** ← **Create API key** ← انسخي المفتاح (يبدأ بـ `AIza`). **لا ترسليه لأحد.**
 
 ## 2) الوسيط على Cloudflare (مجاني)
-1. افتحي https://dash.cloudflare.com وسجّلي.
-2. من القائمة: **Workers & Pages** ← **Create** ← **Create Worker** ← الاسم: `rayaheen-ai` ← **Deploy**.
-3. اضغطي **Edit code** ← احذفي كل الكود الموجود ← الصقي محتوى ملف `worker.js` (في مجلد رياحين ← worker) ← **Deploy**.
-4. ارجعي لصفحة الـ Worker ← **Settings** ← **Variables and Secrets** ← **Add**:
-   - Type: **Secret** ← Name: `ANTHROPIC_API_KEY` ← Value: الصقي المفتاح ← **Deploy**.
-5. انسخي رابط الوسيط من أعلى الصفحة، شكله:
-   `https://rayaheen-ai.xxxxx.workers.dev`
-6. للتأكد: افتحي الرابط في المتصفح؛ يجب أن يظهر `{"ok":true,...,"keySet":true}`.
+1. افتحي https://dash.cloudflare.com وسجّلي (بريدك فقط).
+2. **Workers & Pages** ← **Create** ← **Create Worker** ← الاسم: `rayaheen-ai` ← **Deploy**.
+3. **Edit code** ← احذفي الكود الموجود ← الصقي محتوى ملف `worker.js` ← **Deploy**.
+4. **Settings** ← **Variables and Secrets** ← **Add**:
+   Type: **Secret** ← Name: `GEMINI_API_KEY` ← Value: المفتاح ← **Deploy**.
+5. انسخي رابط الوسيط: `https://rayaheen-ai.xxxxx.workers.dev`
+   افتحيه في المتصفح؛ يجب أن يظهر `"keySet":true,"provider":"gemini"`.
 
 ## 3) ربطه بالموقع
-- افتحي رياحين بحساب الأستاذة ← **المزيد ← الإعدادات ← رابط وسيط المساعد الذكي** ← الصقي الرابط ← **حفظ**.
-  يُنشر تلقائيًا لجميع الطالبات.
-- أو أرسلي الرابط لي في المحادثة وأثبّته داخل الموقع نفسه.
+- رياحين بحساب الأستاذة ← **المزيد ← الإعدادات ← رابط وسيط المساعد الذكي** ← الصقي ← **حفظ**. يُنشر لجميع الطالبات تلقائيًا.
+- أو أرسلي الرابط لي في المحادثة وأثبّته داخل الموقع.
 
 ## 4) قواعد Firestore (مرة واحدة)
-Firebase ← Firestore ← Rules ← أضيفي هذا السطر داخل القواعد (موجود أيضًا في firebase-rules.txt):
+Firebase ← Firestore ← Rules ← أضيفي داخل القواعد:
 ```
 match /config/{id} { allow read: if signedIn(); allow write: if isTeacher(); }
 ```
 ثم **Publish**.
 
-## إعدادات اختيارية (في Variables)
-- `MODEL` = `claude-sonnet-4-5` لجودة أعلى (أغلى قليلًا). الافتراضي `claude-haiku-4-5`.
-- `DAILY_LIMIT` = عدد الأسئلة اليومية لكل طالبة (الافتراضي 25).
-- `REQUIRE_LOGIN` = `false` للسماح بدون تسجيل دخول (غير مستحسن).
+## اختياري
+- للتبديل إلى Claude: أضيفي Secret باسم `ANTHROPIC_API_KEY` واحذفي `GEMINI_API_KEY`.
+- `MODEL` = `gemini-2.5-flash` لنموذج أحدث، `DAILY_LIMIT` = عدد الأسئلة اليومية للطالبة (25).
