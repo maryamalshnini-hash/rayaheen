@@ -666,7 +666,7 @@ const CLOUD={
   isMine(u){ if(u.role==="teacher") return false; if(u.teacherEmail&&this.user&&u.teacherEmail.toLowerCase()===(this.user.email||"").toLowerCase()) return true; if(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa)) return true; const t=this.normName(u.teacherName); if(!t) return false; return this.myNames().some(n=>t===n||t.includes(n)||n.includes(t)); },
   // غرفة المعلمات (عالمي): كل معلمة لها بطاقة عامة
   async registerTeacher(){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,created:Date.now()},{merge:true}); ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); await this.saveTeacherProfile(); },
-  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",signature:ST.signature||"",updated:Date.now()},{merge:true}); },
+  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",signature:ST.signature||"",stamp:ST.stamp||"",updated:Date.now()},{merge:true}); },
   async teachersList(){ const q=await this.db.collection("teachers").get(); return q.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name).sort((a,b)=>(b.updated||0)-(a.updated||0)); },
   async joinTeacher(t){ ST.teacherEmail=t.email; ST.teacherName=t.name; if(t.halaqa) ST.halaqa=t.halaqa; save(); await this.push(true); await this.pullShared(); },
   async students(){ const q=await this.db.collection("users").get(); return q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>this.isMine(u)); },
@@ -1539,12 +1539,12 @@ VIEWS.teachers=async function(){
 // ===== شهادات إتمام المستويات + توقيع/ختم المعلمة =====
 const CERT_W=1400, CERT_H=990;
 async function teacherSignature(){ // توقيع المعلمة: من حسابها إن كانت هي، أو من بطاقة معلمة الطالبة
-  if(isTeacher()&&ST.signature) return {sig:ST.signature,name:ST.fullName||ST.name,halaqa:ST.halaqa};
+  if(isTeacher()&&(ST.signature||ST.stamp)) return {sig:ST.signature||"",stamp:ST.stamp||"",name:ST.fullName||ST.name,halaqa:ST.halaqa};
   if(ST.teacherSig&&ST.teacherSig.email===ST.teacherEmail&&Date.now()-ST.teacherSig.at<86400000) return ST.teacherSig;
   if(!cloudOn()) return {sig:"",name:ST.teacherName,halaqa:ST.halaqa};
   try{ let d=null; if(ST.teacherEmail){ d=await CLOUD.db.collection("teachers").doc(ST.teacherEmail).get(); }
     if((!d||!d.exists)&&ST.teacherName){ const all=await CLOUD.teachersList(); const n=CLOUD.normName(ST.teacherName); const t=all.find(x=>CLOUD.normName(x.name)===n||CLOUD.normName(x.alias)===n); if(t) d={exists:true,data:()=>t}; }
-    const x=d&&d.exists?d.data():{}; ST.teacherSig={email:ST.teacherEmail,sig:x.signature||"",name:x.name||ST.teacherName,halaqa:x.halaqa||ST.halaqa,at:Date.now()}; save(); return ST.teacherSig; }catch(e){ return {sig:"",name:ST.teacherName,halaqa:ST.halaqa}; }
+    const x=d&&d.exists?d.data():{}; ST.teacherSig={email:ST.teacherEmail,sig:x.signature||"",stamp:x.stamp||"",name:x.name||ST.teacherName,halaqa:x.halaqa||ST.halaqa,at:Date.now()}; save(); return ST.teacherSig; }catch(e){ return {sig:"",name:ST.teacherName,halaqa:ST.halaqa}; }
 }
 function certDates(ts){ try{ return [new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura",{day:"numeric",month:"long",year:"numeric"}).format(new Date(ts))+" هـ", new Intl.DateTimeFormat("ar",{day:"numeric",month:"long",year:"numeric"}).format(new Date(ts))+" م"]; }catch(e){ return [fmtDate(ts),""]; } }
 function certDate(ts){ return certDates(ts).filter(Boolean).join(" — "); }
@@ -1556,7 +1556,7 @@ function certHtml(lv,T){ const L=LEVELS[lv-1]; const t=ST.levelTests[lv]||{}; co
     <p class="cert2-p">قد أتمّت دروس ${esc(L.title)} في أحكام التجويد واجتازت اختباره${t.mcq!=null?` بنسبة ${t.mcq}٪ في النظري`:""}${t.recite!=null?` و${t.recite}٪ في التلاوة`:""}، سائلين الله لها التوفيق والقبول.</p>
     <div class="cert2-foot"><div class="cert2-date"><span class="small muted">التاريخ</span><div>${certDate(when)}</div></div>
       <div class="cert2-sign">${T.sig?`<img src="${T.sig}" alt="توقيع">`:`<div class="cert2-sigline"></div>`}<div><span class="small muted">المعلمة</span> <b>${esc(teacher)}</b></div></div>
-      <div class="cert2-stamp"><div class="stamp"><span>رياحين</span><small>${esc((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22))}</small><em>مُعتمدة</em></div></div></div>
+      <div class="cert2-stamp">${T.stamp?`<img src="${T.stamp}" alt="ختم" style="height:110px;max-width:160px;object-fit:contain;transform:rotate(-8deg)">`:`<div class="stamp"><span>رياحين</span><small>${esc((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22))}</small><em>مُعتمدة</em></div>`}</div></div>
     <div class="cert2-serial">رقم الشهادة: RY-${lv}-${String(when).slice(-6)}</div></div></div>`; }
 VIEWS.certificate=async function(lv){
   lv=+lv||1; const t=ST.levelTests[lv]||{}; const L=LEVELS[lv-1];
@@ -1584,7 +1584,7 @@ function certToPng(lv,T){ return new Promise(async(res,rej)=>{ try{ const L=LEVE
   g.fillStyle="#6b7a76"; g.font="22px 'Noto Naskh Arabic', serif"; g.fillText("المعلمة",X,880); g.fillStyle="#2b3a36"; g.font="bold 28px Amiri, serif"; g.fillText(T.name||ST.teacherName||"—",X,918);
   if(T.sig){ await new Promise(r=>{ const im=new Image(); im.onload=()=>{ const w=300,h=110; g.drawImage(im,X-w/2,745,w,h); r(); }; im.onerror=r; im.src=T.sig; }); } else { g.strokeStyle="#9aa8a3"; g.lineWidth=2; g.beginPath(); g.moveTo(X-150,860); g.lineTo(X+150,860); g.stroke(); }
   // الختم
-  const sx=X-430, sy=840; g.save(); g.translate(sx,sy); g.rotate(-0.2); g.strokeStyle="#b23a3a"; g.lineWidth=5; g.globalAlpha=.85; g.beginPath(); g.arc(0,0,95,0,Math.PI*2); g.stroke(); g.lineWidth=2; g.beginPath(); g.arc(0,0,82,0,Math.PI*2); g.stroke(); g.fillStyle="#b23a3a"; g.font="bold 34px Amiri, serif"; g.fillText("رياحين",0,-8); g.font="18px 'Noto Naskh Arabic', serif"; g.fillText((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22),0,24); g.font="bold 16px 'Noto Naskh Arabic', serif"; g.fillText("مُعتمدة",0,52); g.restore();
+  const sx=X-430, sy=840; if(T.stamp){ await new Promise(r=>{ const im=new Image(); im.onload=()=>{ const h=190, w=Math.min(260,im.width*h/im.height); g.save(); g.translate(sx,sy); g.rotate(-0.12); g.drawImage(im,-w/2,-h/2,w,h); g.restore(); r(); }; im.onerror=r; im.src=T.stamp; }); } else { g.save(); g.translate(sx,sy); g.rotate(-0.2); g.strokeStyle="#b23a3a"; g.lineWidth=5; g.globalAlpha=.85; g.beginPath(); g.arc(0,0,95,0,Math.PI*2); g.stroke(); g.lineWidth=2; g.beginPath(); g.arc(0,0,82,0,Math.PI*2); g.stroke(); g.fillStyle="#b23a3a"; g.font="bold 34px Amiri, serif"; g.fillText("رياحين",0,-8); g.font="18px 'Noto Naskh Arabic', serif"; g.fillText((T.halaqa||ST.halaqa||"حلقة قرآنية").slice(0,22),0,24); g.font="bold 16px 'Noto Naskh Arabic', serif"; g.fillText("مُعتمدة",0,52); g.restore(); }
   g.fillStyle="#9aa8a3"; g.font="16px monospace"; g.direction="ltr"; g.textAlign="left"; g.fillText(`RY-${lv}-${String(when).slice(-6)}`,80,CERT_H-72);
   cv.toBlob(b=>b?res(b):rej(new Error("blob")),"image/png"); }catch(e){ rej(e); } });
   function star(g,x,y,r){ g.beginPath(); for(let i=0;i<16;i++){ const a=i*Math.PI/8; const rr=i%2?r*.55:r; g.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr); } g.closePath(); g.fill(); }
@@ -1593,12 +1593,21 @@ function certToPng(lv,T){ return new Promise(async(res,rej)=>{ try{ const L=LEVE
 function signaturePadHtml(){ return `<div class="card stack"><h3>توقيعك وختمك على الشهادات</h3><p class="small muted">ارسمي توقيعك بالإصبع أو الفأرة؛ يظهر مع ختم رياحين على شهادات إتمام المستويات لطالباتك.</p>
   ${ST.signature?`<div class="row" style="align-items:center;gap:10px"><img src="${ST.signature}" alt="توقيع" style="height:70px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px"><span class="pill good">محفوظ</span></div>`:""}
   <canvas id="sigPad" width="600" height="200" style="width:100%;max-width:600px;height:auto;background:#fff;border:1px dashed var(--line);border-radius:10px;touch-action:none"></canvas>
-  <div class="row"><button class="btn sm" id="sigSave" type="button">حفظ التوقيع</button><button class="btn sec sm" id="sigClear" type="button">مسح</button>${ST.signature?`<button class="btn danger sm" id="sigDel" type="button">حذف التوقيع المحفوظ</button>`:""}</div></div>`; }
+  <div class="row"><button class="btn sm" id="sigSave" type="button">حفظ التوقيع</button><button class="btn sec sm" id="sigClear" type="button">مسح</button><button class="btn sec sm" id="sigUpload" type="button">📷 أو ارفعي صورة توقيعك</button>${ST.signature?`<button class="btn danger sm" id="sigDel" type="button">حذف التوقيع</button>`:""}</div>
+  <hr style="border:0;border-top:1px solid var(--line);margin:6px 0">
+  <h3>ختمك الخاص (اختياري)</h3><p class="small muted">ارفعي صورة ختم حلقتك أو مركزك (PNG بخلفية شفافة أفضل)؛ يحل محل ختم رياحين الافتراضي على الشهادات.</p>
+  ${ST.stamp?`<div class="row" style="align-items:center;gap:10px"><img src="${ST.stamp}" alt="ختم" style="height:90px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px"><span class="pill good">محفوظ</span></div>`:""}
+  <div class="row"><button class="btn sec sm" id="stampUpload" type="button">📷 رفع صورة الختم</button>${ST.stamp?`<button class="btn danger sm" id="stampDel" type="button">حذف الختم</button>`:""}</div></div>`; }
+// تصغير صورة مرفوعة إلى PNG صغير (حتى لا تتجاوز حدود التخزين)
+function shrinkImage(file,maxW,maxH){ return new Promise((res,rej)=>{ const im=new Image(); const u=URL.createObjectURL(file); im.onload=()=>{ const r=Math.min(1,maxW/im.width,maxH/im.height); const cv=document.createElement("canvas"); cv.width=Math.round(im.width*r); cv.height=Math.round(im.height*r); cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(u); const d=cv.toDataURL("image/png"); if(d.length>400000){ const j=cv.toDataURL("image/jpeg",0.85); res(j.length<d.length?j:d); } else res(d); }; im.onerror=()=>rej(new Error("صورة غير صالحة")); im.src=u; }); }
 function wireSignaturePad(){ const cv=$("#sigPad"); if(!cv) return; const g=cv.getContext("2d"); g.lineWidth=3.5; g.lineCap="round"; g.lineJoin="round"; g.strokeStyle="#1b2a4a"; let drawing=false,empty=true; const pos=e=>{ const r=cv.getBoundingClientRect(); const p=e.touches?e.touches[0]:e; return {x:(p.clientX-r.left)*cv.width/r.width,y:(p.clientY-r.top)*cv.height/r.height}; };
   const start=e=>{ drawing=true; empty=false; const p=pos(e); g.beginPath(); g.moveTo(p.x,p.y); e.preventDefault(); }; const move=e=>{ if(!drawing) return; const p=pos(e); g.lineTo(p.x,p.y); g.stroke(); e.preventDefault(); }; const end=()=>{ drawing=false; };
   cv.addEventListener("pointerdown",start); cv.addEventListener("pointermove",move); window.addEventListener("pointerup",end);
   $("#sigClear").onclick=()=>{ g.clearRect(0,0,cv.width,cv.height); empty=true; };
   $("#sigSave").onclick=async()=>{ if(empty){ toast("ارسمي توقيعك أولًا"); return; } ST.signature=cv.toDataURL("image/png"); save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); toast("حُفظ التوقيع"); render(); };
-  const d=$("#sigDel"); if(d) d.onclick=async()=>{ ST.signature=""; save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); render(); }; }
+  const d=$("#sigDel"); if(d) d.onclick=async()=>{ ST.signature=""; save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); render(); };
+  const up=async(key,maxW,maxH,msg)=>{ const f=await pickFile("image/*"); if(!f) return; try{ ST[key]=await shrinkImage(f,maxW,maxH); save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); toast(msg); render(); }catch(e){ toast(e.message||"تعذّر قراءة الصورة"); } };
+  $("#sigUpload").onclick=()=>up("signature",600,220,"حُفظت صورة التوقيع"); $("#stampUpload").onclick=()=>up("stamp",400,400,"حُفظت صورة الختم");
+  const sd=$("#stampDel"); if(sd) sd.onclick=async()=>{ ST.stamp=""; save(); if(cloudOn()) await CLOUD.saveTeacherProfile().catch(()=>{}); render(); }; }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
