@@ -4,9 +4,9 @@
 <style>
 /* Layout: one-screen app, RTL. Fixed top bar + bottom tab bar, scrolling main. Lessons read as a book page; tools (recording) as instrument panels. */
 :root{
-  --bg:#fffbea; --surface:#ffffff; --surface2:#fff4cc; --line:#f3e3a8;
+  --bg:#fffefa; --surface:#ffffff; --surface2:#fffae3; --line:#f6ecc4;
   --fg:#2a2f3a; --muted:#6c7484; --accent:#1ea7d8; --accent-deep:#0e7fa8; --accent-fg:#ffffff; --accent-soft:#dbf3fb;
-  --gold:#f5b800; --gold-soft:#fff1b8;
+  --gold:#f5b800; --gold-soft:#fff6cf;
   --good:#22a06b; --warn:#e59a00; --bad:#e2506a; --good-soft:#dcf5e8; --warn-soft:#fff2cc; --bad-soft:#fde0e7;
   --pink:#f26b9b; --sky:#1ea7d8; --lilac:#b48ce0; --mint:#39c4a9; --peach:#ffb347;
   --hdr1:#1ea7d8; --hdr2:#4cc1e6; --hdr3:#f78fb3;
@@ -246,9 +246,9 @@ audio{width:100%;max-width:420px}
 .tabs button{border-top:0;border-radius:14px;margin:0 3px;padding:7px 2px 9px}
 .tabs button.on{background:var(--accent-soft);color:var(--accent-deep);border-top-color:transparent}
 .tabs button.on svg{stroke-width:2.2}
-.hero{background:linear-gradient(135deg,var(--accent-soft),#fff5d6 55%,#fde4ec);border:0}
+.hero{background:linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5);border:0}
 :root[data-theme="dark"] .hero,:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg,var(--accent-soft),var(--surface) 70%)}
-@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:linear-gradient(135deg,var(--accent-soft),#fff5d6 55%,#fde4ec)} }
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5)} }
 .quick button{border:0;background:color-mix(in srgb,var(--lc,var(--accent)) 10%,var(--surface));border-radius:18px;box-shadow:var(--shadow);transition:transform .15s}
 .quick button:hover{transform:translateY(-2px)}
 .quick button .cnt{color:var(--muted)}
@@ -857,7 +857,7 @@ function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
   try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
-  const tabOf={assistant:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  const tabOf={assistant:"more",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -906,6 +906,7 @@ VIEWS.home=function(){
     <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
     <button data-go="games" style="--lc:var(--warn)"><span class="art" style="font-size:2rem;line-height:40px">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
     <button data-go="rewards" style="--lc:var(--gold)"><span class="art" style="font-size:2rem;line-height:40px">🏆</span>نقاطي وجوائزي<span class="cnt">${PTS.total()} نقطة</span></button>
+    <button data-go="halaqa" style="--lc:var(--pink)"><span class="art" style="font-size:2rem;line-height:40px">👭</span>حلقتي<span class="cnt">${ST.halaqa?esc(ST.halaqa):"المعلمة والزميلات"}</span></button>
     <button data-go="progress" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">📈</span>تقدّمي<span class="cnt">${att.rating.t} · ${B.filter(b=>b.on).length} شارات</span></button>
   </div>
 
@@ -1167,7 +1168,7 @@ VIEWS.more=function(){
   const T=isTeacher();
   view.innerHTML=`<h1>المزيد</h1>
   ${T?sec("المتابعة",[item("cloudteacher","👩‍🏫","طالباتي","تقدّم كل طالبة ومستواها وحضورها والاستماع لتسجيلاتها","border-color:var(--accent)"),item("homework","📝","الواجبات","إنشاء واجبات ونشرها وتصحيحها"),item("teachers","🏫","غرفة المعلمات","بطاقتك كما تراها الطالبات"),item("teacher","🎙️","قراءتي المرجعية","تسجيل الآيات والحروف لتقارن بها الطالبات")]):""}
-  ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")]))}
+  ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("halaqa","👭","حلقتي","معلمتي وزميلاتي ونتائجهن"),item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")]))}
   ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("about","ℹ️","عن التطبيق","طريقة الاستخدام والمصدر العلمي")])}
   <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit;margin-top:12px;display:block" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>📱 تحميل تطبيق أندرويد (APK)</h3><p class="small muted">لآيفون: افتحي الموقع في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -1578,6 +1579,22 @@ VIEWS.teachers=async function(){
       ${isTeacher()||me?"":`<button class="btn ${mine?"sec":""} sm" data-join="${esc(t.email)}">${mine?"إلغاء الانضمام":"انضمام إلى هذه المعلمة"}</button>`}</div>`; }).join("")||`<div class="card"><p class="muted">لا معلمات مطابقات. ${list.length?"":"لم تسجّل أي معلمة بعد."}</p></div>`;
     $("#tList").querySelectorAll("[data-join]").forEach(b=>b.onclick=async()=>{ const t=list.find(x=>x.email===b.dataset.join); b.disabled=true; try{ if(ST.teacherEmail&&ST.teacherEmail.toLowerCase()===t.email.toLowerCase()){ ST.teacherEmail=""; ST.teacherName=""; save(); await CLOUD.push(true); toast("أُلغي الانضمام"); } else { await CLOUD.joinTeacher(t); toast("انضممتِ إلى "+t.name+" — ستصلك واجباتها"); } }catch(e){ toast(CLOUD.msg(e)); } draw($("#tSearch").value); }); };
   draw(""); $("#tSearch").oninput=()=>draw($("#tSearch").value);
+};
+
+// ===== حلقتي (للطالبة): المعلمة وزميلاتها ونتائجهن =====
+VIEWS.halaqa=async function(){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button>${ST.teacherEmail||ST.halaqa?"":`<button class="btn sm" data-go="teachers">غرفة المعلمات</button>`}</div><div id="hqBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`;
+  $("#back").onclick=()=>history.length>1?history.back():go("home"); view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  if(!cloudOn()){ $("#hqBox").innerHTML=`<div class="note warn">سجّلي الدخول لعرض حلقتك.</div>`; return; }
+  if(!ST.teacherEmail&&!ST.halaqa){ $("#hqBox").innerHTML=`<div class="card"><h2>لم تنضمي إلى حلقة بعد</h2><p class="small muted">اختاري معلمتك من غرفة المعلمات لتظهر لك زميلاتك ونتائج الحلقة.</p></div>`; return; }
+  try{ let T=null; if(ST.teacherEmail){ const d=await CLOUD.db.collection("teachers").doc(ST.teacherEmail).get(); if(d.exists) T=Object.assign({email:ST.teacherEmail},d.data()); }
+    if(!T&&ST.teacherName){ const all=await CLOUD.teachersList(); const n=CLOUD.normName(ST.teacherName); T=all.find(x=>CLOUD.normName(x.name)===n||CLOUD.normName(x.alias)===n)||null; }
+    const lb=await CLOUD.leaderboard(); const me=CLOUD.user.uid; const halaqa=(T&&T.halaqa)||ST.halaqa||"";
+    const exc=lb.filter(s=>(s.weekDone||0)>=4).length;
+    $("#hqBox").innerHTML=`<div class="hero"><div><div class="eyebrow">حلقتي</div><h1>${esc(halaqa||"حلقة "+(T?T.name:ST.teacherName))}</h1><p class="small muted">${lb.length} طالبة · ${exc} متميزة هذا الأسبوع</p></div>${ART.book}</div>
+      ${T?`<div class="card"><div class="row" style="gap:10px"><div class="av" style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;display:grid;place-items:center;font-weight:800">${esc(initials(T.name))}</div><div style="flex:1"><div class="eyebrow">المعلمة</div><b>${esc(T.name)}</b><div class="small muted">${T.city?esc(T.city)+" · ":""}${T.bio?esc(T.bio):""}</div></div></div>${contactHtml(T)}</div>`:`<div class="card"><div class="eyebrow">المعلمة</div><b>${esc(ST.teacherName||"—")}</b></div>`}
+      <div class="card"><h3>طالبات الحلقة ونتائجهن</h3><p class="small muted">الترتيب بالنقاط. تظهر لكل طالبة: المستوى، الدروس المنجزة، حضور الأسبوع، الرتبة.</p><div class="stack" style="margin-top:8px">${lb.map((s,i)=>{ const lv=levelOf(s); const r=ATT.rating(s.weekDone||0); return `<div class="stu" style="cursor:default;${s.uid===me?"outline:2px solid var(--accent)":""}"><div class="av">${i<3?["🥇","🥈","🥉"][i]:esc(initials(s.fullName||s.name))}</div><div class="t"><b>${esc(s.fullName||s.name||"")}${s.uid===me?" (أنا)":""}</b><div class="meta"><span class="pill gold">${s.points||0} ن${s.rank?" · "+esc(s.rank):""}</span><span class="pill acc">${lv<=4?"المستوى "+lv:"الإتقان"}</span><span class="pill">${s.doneCount??0} درسًا</span><span class="pill ${r.k}">${r.t} · ${s.weekDone||0}/7</span>${s.badges?`<span class="pill">${s.badges} شارة</span>`:""}</div></div></div>`; }).join("")||`<p class="muted small">لا طالبات بعد.</p>`}</div></div>`;
+  }catch(e){ $("#hqBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; }
 };
 
 // ===== شهادات إتمام المستويات + توقيع/ختم المعلمة =====
