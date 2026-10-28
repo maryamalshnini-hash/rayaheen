@@ -1,0 +1,47 @@
+=============== Firestore Rules (Firestore Database ← Rules) ===============
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function signedIn() { return request.auth != null; }
+    function isTeacher() { return signedIn() && exists(/databases/$(db)/documents/teachers/$(request.auth.token.email)); }
+    match /teachers/{email} { allow read: if signedIn(); allow create, update: if signedIn() && request.auth.token.email == email; allow delete: if false; }
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if request.auth.uid == uid && (request.resource.data.role != 'teacher' || isTeacher());
+    }
+    match /homework/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
+    match /submissions/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.studentUid == request.auth.uid;
+      allow update: if isTeacher();
+      allow delete: if isTeacher() || resource.data.studentUid == request.auth.uid;
+    }
+    match /approvals/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
+    match /config/{id} { allow read: if signedIn(); allow write: if isTeacher(); }
+    match /hifzLogs/{id} { allow read: if signedIn(); allow create: if signedIn() && request.resource.data.studentUid == request.auth.uid; }
+  }
+}
+
+=============== Storage Rules (Storage ← Rules) ===============
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /rec/{uid}/{file} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid && request.resource.size < 30 * 1024 * 1024;
+    }
+  }
+}
+
+=============== خطوات الإعداد ===============
+1) console.firebase.google.com ← مشروع جديد.
+2) Authentication ← Get started ← Sign-in method: فعّلي Google و Email/Password.
+   Authentication ← Settings ← Authorized domains: أضيفي نطاق موقع التطبيق (مثل xxx.netlify.app).
+3) Firestore Database ← Create database (production mode) ← Rules: الصقي قواعد Firestore أعلاه ← Publish.
+4) Storage ← Get started ← Rules: الصقي قواعد Storage أعلاه ← Publish.
+5) Firestore ← Start collection: الاسم teachers ← Document ID = بريدك الإلكتروني (نفس بريد دخولك) ← حقل أي شيء مثل name = اسمك.
+   (كل بريد في هذه المجموعة يصبح أستاذة معتمدة؛ وغيرهم طالبات.)
+6) Project settings (الترس) ← Your apps ← </> Web ← سجّلي التطبيق ← انسخي كائن firebaseConfig.
+7) في التطبيق: المزيد ← الحساب والمزامنة ← الصقي firebaseConfig ← حفظ الربط.
+   ولتعمل عند الطالبات تلقائيًا: افتحي index.html (أو رياحين.html) بمحرر نصوص وابحثي عن السطر
+   const FIREBASE_CONFIG = null;  وبدّلي null بكائن firebaseConfig، ثم ارفعي الملف.
