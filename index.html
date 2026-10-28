@@ -773,7 +773,7 @@ function gate(){
 }
 function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
-  try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name); }catch(e){}
+  try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
   const tabOf={assistant:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
@@ -1122,7 +1122,7 @@ VIEWS.about=function(){
 
 VIEWS.listen=listenView; VIEWS.account=accountView; VIEWS.cloudteacher=cloudTeacherView;
 $("#whoPill").style.cursor="pointer"; $("#whoPill").onclick=()=>go("account");
-if(CLOUD.config()) CLOUD.load();
+if(CLOUD.config()) CLOUD.load().then(()=>render());
 // ===== بدء =====
 (function(){ const h=location.hash.replace("#",""); if(h&&VIEWS[h]) route=h; render(); })();
 
