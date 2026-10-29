@@ -893,7 +893,7 @@ function render(){
   try{ const hideF=route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
   try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
-  const tabOf={guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  const tabOf={admin:"more",guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -966,6 +966,7 @@ function teacherHome(){ const hour=new Date().getHours(); const greet=hour<12?"�
     <button data-go="teacher" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>قراءتي المرجعية<span class="cnt">تسجيل الآيات والحروف</span></button>
     <button data-go="settings" style="--lc:var(--lilac)"><span class="art" style="font-size:2rem;line-height:40px">✍️</span>التوقيع والبطاقة<span class="cnt">للشهادات</span></button>
   </div>
+  ${typeof isAdmin==="function"&&isAdmin()?`<div class="card" style="border:2px solid var(--gold)"><div class="row between"><div><h3>🛡️ لوحة المشرفة</h3><p class="small muted">كل الحلقات والمعلمات والطالبات: الدرجات والتقدم والحضور.</p></div><button class="btn gold" data-go="admin">افتحي</button></div></div>`:""}
   ${!cloudOn()?`<div class="note warn">سجّلي الدخول لتظهر طالباتك وتسجيلاتهن.</div>`:""}
   ${!ST.signature?`<div class="card"><div class="row between"><div><h3>توقيعك على الشهادات</h3><p class="small muted">أضيفي توقيعك مرة واحدة ليظهر مع ختم رياحين على شهادات طالباتك.</p></div><button class="btn sm" data-go="settings">إضافة</button></div></div>`:""}
   <p class="small muted">المادة العلمية على كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي)، والحفظ على برنامج «بالقرآن نحيا».</p>`;
@@ -1208,6 +1209,7 @@ VIEWS.more=function(){
   const sec=(t,items)=>`<div class="eyebrow" style="margin:14px 0 6px">${t}</div><div class="grid">${items.join("")}</div>`;
   const T=isTeacher();
   view.innerHTML=`<h1>المزيد</h1>
+  ${typeof isAdmin==="function"&&isAdmin()?sec("الإشراف",[item("admin","🛡️","لوحة المشرفة","كل الحلقات والطالبات: الدرجات والتقدم والحضور","border-color:var(--gold)")]):""}
   ${T?sec("المتابعة",[item("cloudteacher","👩‍🏫","طالباتي","تقدّم كل طالبة ومستواها وحضورها والاستماع لتسجيلاتها","border-color:var(--accent)"),item("homework","📝","الواجبات","إنشاء واجبات ونشرها وتصحيحها"),item("teachers","🏫","غرفة المعلمات","بطاقتك كما تراها الطالبات"),item("teacher","🎙️","قراءتي المرجعية","تسجيل الآيات والحروف لتقارن بها الطالبات")]):""}
   ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("halaqa","👭","حلقتي",ST.ownCircle?"حلقتك التي أنشأتِها وعضواتها":"معلمتي وزميلاتي ونتائجهن، أو أنشئي حلقتك")].concat(ST.ownCircle?[item("cloudteacher","🧭","إدارة حلقتي","تقدّم العضوات وتسجيلاتهن ونقاطهن")]:[],[item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")])))}
   ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("guide","📘","دليل الاستخدام","شرح مبسّط لكل أقسام الموقع خطوة بخطوة"),item("about","ℹ️","عن التطبيق","المصدر العلمي وحدود التصحيح الآلي")])}
@@ -1604,7 +1606,7 @@ async function cloudTeacherView(){
 }
 // ===== صفحة الطالبة الواحدة =====
 VIEWS.student=async function(uid){
-  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ اللوحة</button><button class="btn danger sm" id="rmStu">🗑 حذف الطالبة من الحلقة</button></div><div id="stBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`; $("#back").onclick=()=>go("cloudteacher");
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button><button class="btn danger sm" id="rmStu">🗑 حذف الطالبة من الحلقة</button></div><div id="stBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`; $("#back").onclick=()=>history.length>1?history.back():go("cloudteacher");
   if(!cloudOn()||!(isTeacher()||ST.ownCircle)){ $("#stBox").innerHTML=`<div class="note warn">هذه الصفحة للأستاذة أو منشئة الحلقة.</div>`; return; }
   try{ const d=await CLOUD.db.collection("users").doc(uid).get(); if(!d.exists) throw new Error("لا توجد طالبة"); const u=Object.assign({uid},d.data()); const S=u.state||{}; const subs=await CLOUD.submissionsOf(uid); const logs=await CLOUD.hifzLogsOf(uid);
     const lv=levelOf(u); const A=attStats(u,4); const doneIds=Object.keys(S.done||{}); const lt=u.levelTests||{}; const lhw=Object.values(S.lessonHw||{}); const games=u.games||S.games||{}; const atts=(S.attempts||[]).slice().reverse();
@@ -1850,6 +1852,45 @@ VIEWS.guide=function(){
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><div class="hero"><div><div class="eyebrow">شرح مبسّط</div><h1>دليل استخدام رياحين</h1><p class="small muted">اضغطي أي قسم لفتحه.</p></div>${ART.book}</div>
   <div class="guide">${GUIDE.map(([t,b],i)=>`<details ${i===0?"open":""}><summary>${t}</summary>${b}</details>`).join("")}</div>`;
   $("#back").onclick=()=>history.length>1?history.back():go("home");
+};
+
+// ===== لوحة المشرفة العامة: كل الحلقات والمعلمات والطالبات =====
+const ADMIN_EMAILS=["maryamalshnini@gmail.com"];
+const isAdmin=()=>!!(cloudOn()&&CLOUD.user.email&&ADMIN_EMAILS.includes(CLOUD.user.email.toLowerCase()));
+VIEWS.admin=async function(){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><div class="hero"><div><div class="eyebrow">إشراف عام</div><h1>لوحة المشرفة</h1><p class="small muted">كل الحلقات والمعلمات والطالبات في رياحين: الدرجات والتقدم والحضور.</p></div>${ART.star}</div><div id="adBox"><div class="card"><p class="muted">جارٍ تحميل كل البيانات…</p></div></div>`;
+  $("#back").onclick=()=>history.length>1?history.back():go("home");
+  if(!isAdmin()){ $("#adBox").innerHTML=`<div class="note warn">هذه الصفحة لمشرفة الموقع فقط.</div>`; return; }
+  try{ const [uq,tq,sq]=await Promise.all([CLOUD.db.collection("users").get(),CLOUD.db.collection("teachers").get(),CLOUD.db.collection("submissions").get()]);
+    const users=uq.docs.map(d=>Object.assign({uid:d.id},d.data())); const teachers=tq.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name); const subs=sq.docs.map(d=>d.data());
+    const students=users.filter(u=>u.role!=="teacher"&&!teachers.find(t=>t.email.toLowerCase()===(u.email||"").toLowerCase()&&t.kind!=="study"));
+    const N=CLOUD.normName.bind(CLOUD);
+    const circleOf=s=>{ if(s.teacherEmail){ const t=teachers.find(x=>x.email.toLowerCase()===s.teacherEmail.toLowerCase()); if(t) return {key:t.email,name:t.halaqa||("حلقة "+t.name),teacher:t.name,kind:t.kind}; }
+      if(s.halaqa){ const t=teachers.find(x=>N(x.halaqa)===N(s.halaqa)); return {key:t?t.email:"h:"+N(s.halaqa),name:s.halaqa,teacher:t?t.name:(s.teacherName||"—"),kind:t&&t.kind}; }
+      if(s.teacherName){ const t=teachers.find(x=>N(x.name)===N(s.teacherName)||N(x.alias)===N(s.teacherName)); if(t) return {key:t.email,name:t.halaqa||("حلقة "+t.name),teacher:t.name,kind:t.kind}; }
+      return {key:"none",name:"بلا حلقة (تعلّم فردي)",teacher:"—"}; };
+    const rows=students.map(s=>{ const c=circleOf(s); const a=attStats(s,1).weeks[0]; const nsub=subs.filter(x=>x.studentUid===s.uid); const graded=nsub.filter(x=>x.grade!=null); const avgG=graded.length?Math.round(graded.reduce((t,x)=>t+x.grade,0)/graded.length):null; const auto=nsub.filter(x=>x.autoScore!=null); const avgA=auto.length?Math.round(auto.reduce((t,x)=>t+x.autoScore,0)/auto.length):null; return {s,c,a,lv:levelOf(s),nsub:nsub.length,avgG,avgA}; });
+    const circles={}; rows.forEach(r=>{ (circles[r.c.key]=circles[r.c.key]||{name:r.c.name,teacher:r.c.teacher,kind:r.c.kind,rows:[]}).rows.push(r); });
+    teachers.forEach(t=>{ if(!circles[t.email]) circles[t.email]={name:t.halaqa||("حلقة "+t.name),teacher:t.name,kind:t.kind,rows:[]}; });
+    const cl=Object.entries(circles).sort((a,b)=>b[1].rows.length-a[1].rows.length);
+    let filter="all", q="", sort="pts";
+    const exc=rows.filter(r=>r.a.done>=4).length, abs=rows.filter(r=>r.a.done<=2).length, active=rows.filter(r=>r.s.updated&&Date.now()-r.s.updated<7*864e5).length;
+    const box=$("#adBox");
+    const draw=()=>{ let list=rows.filter(r=>(filter==="all"||r.c.key===filter)&&(!q||N(r.s.fullName||r.s.name||"").includes(q)||N(r.s.email||"").includes(q)));
+      list.sort((a,b)=>sort==="pts"?(b.s.points||0)-(a.s.points||0):sort==="lv"?b.lv-a.lv||(b.s.doneCount||0)-(a.s.doneCount||0):sort==="att"?b.a.done-a.a.done:sort==="grade"?(b.avgG??-1)-(a.avgG??-1):String(a.s.fullName||"").localeCompare(String(b.s.fullName||""),"ar"));
+      $("#adList").innerHTML=`<div class="scroller"><table class="table"><tr><th>الطالبة</th><th>الحلقة</th><th>المستوى</th><th>الدروس</th><th>النقاط</th><th>حضور الأسبوع</th><th>التسجيلات</th><th>متوسط تصحيح المعلمة</th><th>متوسط الآلي</th><th>آخر نشاط</th><th></th></tr>${list.map(r=>`<tr><td><b>${esc(r.s.fullName||r.s.name||"")}</b><div class="small muted" dir="auto">${esc(r.s.email||"")}${r.s.phone?" · "+esc(r.s.phone):""}</div></td><td class="small">${esc(r.c.name)}<div class="muted">${esc(r.c.teacher)}</div></td><td>${r.lv<=4?r.lv:"✓"}</td><td>${r.s.doneCount??0}/${LESSONS.length}</td><td>${r.s.points||0}</td><td><span class="pill ${r.a.rating.k}">${r.a.rating.t} ${r.a.done}/7</span></td><td>${r.nsub}</td><td>${r.avgG!=null?r.avgG+"٪":"—"}</td><td>${r.avgA!=null?r.avgA+"٪":"—"}</td><td class="small">${r.s.updated?fmtDate(r.s.updated):"—"}</td><td><button class="btn sec sm" data-stu="${r.s.uid}">فتح</button></td></tr>`).join("")||`<tr><td colspan="11" class="muted">لا نتائج.</td></tr>`}</table></div><p class="small muted" style="margin-top:6px">${list.length} طالبة</p>`;
+      $("#adList").querySelectorAll("[data-stu]").forEach(b=>b.onclick=()=>go("student",b.dataset.stu)); };
+    box.innerHTML=`<div class="tiles"><div class="tile"><b>${teachers.filter(t=>t.kind!=="study").length}</b><span>معلمة</span></div><div class="tile"><b>${cl.length}</b><span>حلقة</span></div><div class="tile"><b>${rows.length}</b><span>طالبة</span></div><div class="tile"><b>${active}</b><span>نشطة هذا الأسبوع</span></div><div class="tile good"><b>${exc}</b><span>متميزة</span></div><div class="tile bad"><b>${abs}</b><span>غائبة</span></div><div class="tile warn"><b>${subs.filter(x=>x.grade==null).length}</b><span>تسجيل بلا تصحيح</span></div></div>
+      <div class="card"><h3>الحلقات</h3><div class="scroller"><table class="table"><tr><th>الحلقة</th><th>المعلمة</th><th>الطالبات</th><th>متميزات</th><th>غائبات</th><th>متوسط الدروس</th><th>متوسط النقاط</th><th></th></tr>${cl.map(([k,c])=>{ const n=c.rows.length; const avg=f=>n?Math.round(c.rows.reduce((t,r)=>t+f(r),0)/n):0; return `<tr><td><b>${esc(c.name)}</b>${c.kind==="study"?` <span class="pill">مدارسة</span>`:""}</td><td>${esc(c.teacher)}</td><td>${n}</td><td>${c.rows.filter(r=>r.a.done>=4).length}</td><td>${c.rows.filter(r=>r.a.done<=2).length}</td><td>${avg(r=>r.s.doneCount||0)}</td><td>${avg(r=>r.s.points||0)}</td><td><button class="btn sec sm" data-flt="${esc(k)}">عرض الطالبات</button></td></tr>`; }).join("")}</table></div></div>
+      <div class="card"><div class="row between"><h3 id="adTitle">كل الطالبات</h3><div class="row" style="gap:6px"><input id="adQ" placeholder="بحث بالاسم أو البريد" style="min-width:180px"><select id="adF"><option value="all">كل الحلقات</option>${cl.map(([k,c])=>`<option value="${esc(k)}">${esc(c.name)} (${c.rows.length})</option>`).join("")}</select></div></div>
+        <div class="seg" id="adSort">${[["pts","النقاط"],["lv","المستوى"],["att","الحضور"],["grade","الدرجات"],["name","الاسم"]].map(([k,n])=>`<button data-s="${k}" class="${k===sort?"on":""}">${n}</button>`).join("")}</div><div id="adList"></div>
+        <div class="row" style="margin-top:8px"><button class="btn sec sm" id="adCsv">⬇ تصدير الجدول (Excel/CSV)</button></div></div>`;
+    $("#adQ").oninput=()=>{ q=N($("#adQ").value); draw(); }; $("#adF").onchange=()=>{ filter=$("#adF").value; $("#adTitle").textContent=filter==="all"?"كل الطالبات":(circles[filter]||{}).name; draw(); };
+    box.querySelectorAll("[data-flt]").forEach(b=>b.onclick=()=>{ filter=b.dataset.flt; $("#adF").value=filter; $("#adTitle").textContent=(circles[filter]||{}).name; draw(); $("#adList").scrollIntoView({behavior:"smooth"}); });
+    box.querySelectorAll("#adSort button").forEach(b=>b.onclick=()=>{ sort=b.dataset.s; box.querySelectorAll("#adSort button").forEach(x=>x.classList.toggle("on",x===b)); draw(); });
+    $("#adCsv").onclick=()=>{ const head=["الطالبة","البريد","الجوال","الحلقة","المعلمة","المستوى","الدروس","النقاط","أيام الأسبوع المنجزة","التقييم","التسجيلات","متوسط تصحيح المعلمة","متوسط الآلي","آخر نشاط"]; const lines=[head].concat(rows.map(r=>[r.s.fullName||r.s.name||"",r.s.email||"",r.s.phone||"",r.c.name,r.c.teacher,r.lv<=4?r.lv:"إتقان",r.s.doneCount||0,r.s.points||0,r.a.done,r.a.rating.t,r.nsub,r.avgG??"",r.avgA??"",r.s.updated?new Date(r.s.updated).toISOString().slice(0,10):""])); const csv="﻿"+lines.map(l=>l.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n"); downloadsSave("رياحين-كل-الطالبات.csv",new Blob([csv],{type:"text/csv;charset=utf-8"})); };
+    draw();
+  }catch(e){ $("#adBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; }
 };
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
