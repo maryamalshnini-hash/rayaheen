@@ -3,11 +3,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
     function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.email == 'maryamalshnini@gmail.com'; }
     function isTeacher() { return signedIn() && exists(/databases/$(db)/documents/teachers/$(request.auth.token.email)); }
-    match /teachers/{email} { allow read: if signedIn(); allow create, update: if signedIn() && request.auth.token.email == email; allow delete: if false; }
+    match /teachers/{email} { allow read: if signedIn(); allow create, update: if signedIn() && (request.auth.token.email == email || isAdmin()); allow delete: if false; }
     match /users/{uid} {
       allow read: if signedIn();
-      allow write: if request.auth.uid == uid && (request.resource.data.role != 'teacher' || isTeacher());
+      allow write: if (request.auth.uid == uid && (request.resource.data.role != 'teacher' || isTeacher())) || isAdmin();
     }
     match /homework/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
     match /submissions/{id} {
