@@ -266,6 +266,13 @@ input,select,textarea{border-radius:12px!important}
 .ring{background:conic-gradient(var(--pink) calc(var(--p)*1%),var(--surface2) 0)}.ring>div{color:var(--pink)}
 .level-head .n{background:linear-gradient(135deg,var(--accent),var(--pink))}
 .lvbar i{background:linear-gradient(90deg,var(--gold),var(--pink))}
+.fab{left:auto;right:16px}
+.fab2{bottom:calc(136px + env(safe-area-inset-bottom));background-image:linear-gradient(135deg,var(--accent),#5fd0f0)}
+@media (min-width:900px){ .fab{right:24px} }
+.guide details{border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:12px 14px}
+.guide details+details{margin-top:10px}.guide summary{font-weight:800;cursor:pointer;font-family:var(--display);font-size:1.1rem}
+.guide ol,.guide ul{margin:8px 22px 4px 0;padding:0;line-height:1.9}.guide p{margin:6px 0;line-height:1.8}
+main{padding-bottom:170px}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -274,6 +281,7 @@ input,select,textarea{border-radius:12px!important}
     <div class="who" id="whoPill">—</div>
   </header>
   <main><div class="wrap" id="view"></div></main>
+  <button class="fab fab2" id="fabGuide" title="دليل الاستخدام" aria-label="دليل الاستخدام"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h6M8 11h6"/></svg></button>
   <button class="fab" id="fab" title="المساعد الذكي" aria-label="المساعد الذكي"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg></button>
   <nav class="tabs" id="tabs" aria-label="التنقل">
     <button data-go="home"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg>الرئيسية</button>
@@ -869,7 +877,7 @@ function audioTag(blob){ const u=URL.createObjectURL(blob); return `<audio contr
 // ===== التنقل =====
 let route="home", routeArg=null;
 function go(r,arg){ route=r; routeArg=arg; try{ if(r!==route||true) location.hash=r.replace(/[^a-z-]/gi,""); }catch(e){} render(); document.querySelector("main").scrollTop=0; }
-document.addEventListener("DOMContentLoaded",()=>{ const f=$("#fab"); if(f) f.onclick=()=>go("assistant"); });
+document.addEventListener("DOMContentLoaded",()=>{ const f=$("#fab"); if(f) f.onclick=()=>go("assistant"); const g=$("#fabGuide"); if(g) g.onclick=()=>go("guide"); });
 window.addEventListener("hashchange",()=>{ const h=location.hash.replace("#",""); if(h&&h!==route&&VIEWS[h]){ route=h; routeArg=null; render(); } });
 $("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(b.dataset.go); });
 function gate(){
@@ -882,9 +890,10 @@ function gate(){
 }
 function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
+  try{ const hideF=route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
   try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
   if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
-  const tabOf={assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  const tabOf={guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; const r=v(routeArg); if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -1201,7 +1210,7 @@ VIEWS.more=function(){
   view.innerHTML=`<h1>المزيد</h1>
   ${T?sec("المتابعة",[item("cloudteacher","👩‍🏫","طالباتي","تقدّم كل طالبة ومستواها وحضورها والاستماع لتسجيلاتها","border-color:var(--accent)"),item("homework","📝","الواجبات","إنشاء واجبات ونشرها وتصحيحها"),item("teachers","🏫","غرفة المعلمات","بطاقتك كما تراها الطالبات"),item("teacher","🎙️","قراءتي المرجعية","تسجيل الآيات والحروف لتقارن بها الطالبات")]):""}
   ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("halaqa","👭","حلقتي",ST.ownCircle?"حلقتك التي أنشأتِها وعضواتها":"معلمتي وزميلاتي ونتائجهن، أو أنشئي حلقتك")].concat(ST.ownCircle?[item("cloudteacher","🧭","إدارة حلقتي","تقدّم العضوات وتسجيلاتهن ونقاطهن")]:[],[item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")])))}
-  ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("about","ℹ️","عن التطبيق","طريقة الاستخدام والمصدر العلمي")])}
+  ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("guide","📘","دليل الاستخدام","شرح مبسّط لكل أقسام الموقع خطوة بخطوة"),item("about","ℹ️","عن التطبيق","المصدر العلمي وحدود التصحيح الآلي")])}
   <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit;margin-top:12px;display:block" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>📱 تحميل تطبيق أندرويد (APK)</h3><p class="small muted">لآيفون: افتحي الموقع في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
 };
@@ -1822,6 +1831,25 @@ VIEWS.letteraudio=async function(){
         $("#bulkRes").innerHTML=`<div class="note info">جارٍ رفع ${ok.length} ملفًا…</div>`; let done=0; for(const x of ok){ try{ await LAUD.upload(x.L,x.f); done++; $("#bulkRes").innerHTML=`<div class="note info">رُفع ${done} من ${ok.length}…</div>`; }catch(e){ } }
         await draw(); $("#bulkRes").innerHTML=`<div class="note good">رُفع ${done} ملفًا.</div>${bad.length?`<div class="note warn">لم يُعرف الحرف في: ${bad.map(x=>esc(x.f.name)).join("، ")} — ارفعيها يدويًا بزر «رفع» بجانب الحرف.</div>`:""}`; }; i.click(); };
   }; draw();
+};
+
+// ===== دليل الاستخدام داخل الموقع =====
+const GUIDE=[
+ ["١. البداية",`<ol><li>افتحي الموقع من <b>Chrome</b> أو <b>Safari</b>، لا من متصفح واتساب أو تيليجرام.</li><li>اضغطي «تسجيل الدخول باستخدام Google»، أو اكتبي بريدك وكلمة مرور ثم «إنشاء حساب جديد».</li><li>أكملي بياناتك: طالبة أو معلمة، الاسم الرباعي، الجوال، المدينة، اسم الحلقة والأستاذة، والمسار.</li><li>اضغطي «حفظ والبدء».</li></ol><p><b>تثبيته على الجوال:</b> آيفون: Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية». أندرويد: المزيد ← «تحميل تطبيق أندرويد»، أو قائمة Chrome ← «تثبيت التطبيق».</p>`],
+ ["٢. التنقل في الموقع",`<ul><li><b>الرئيسية:</b> تقدّمك ونقاطك و<b>مهامك اليوم</b> واختصارات الأقسام.</li><li><b>الحفظ:</b> مهام الحفظ والمراجعة والخطة والسجل.</li><li><b>الاستماع:</b> القرآن بصوت الشيخ إبراهيم الأخضر مع التكرار والتسريع.</li><li><b>التجويد:</b> المستويات والدروس والاختبارات ومخارج الحروف.</li><li><b>المزيد:</b> تصحيح التلاوة، الألعاب، الواجبات، حلقتي، غرفة المعلمات، النقاط، الإعدادات.</li></ul><p>أنجزي كل «مهام اليوم» ليُحسب يومك منجزًا. والزر الوردي يفتح المساعد الذكي، والزر السماوي فوقه يفتح هذا الدليل.</p>`],
+ ["٣. دروس التجويد",`<ol><li>افتحي «التجويد» واختاري أول درس غير منجز.</li><li>اقرئي الشرح والأمثلة، واستمعي وسجّلي في التدريب.</li><li>حلّي اختبار الدرس؛ عند النجاح يُحسب منجزًا ويظهر <b>واجب الدرس</b>.</li><li>سجّلي قراءة عبارات الواجب؛ يُصحَّح ويصل لمعلمتك.</li><li>بعد دروس المستوى اضغطي «اختبار اجتياز المستوى»؛ عند النجاح تُفتح <b>شهادة الإتمام</b> والمستوى التالي.</li></ol><p><b>متقنة للمستوى؟</b> اختبري الاجتياز مباشرة دون الدروس.</p>`],
+ ["٤. الحفظ والمراجعة",`<p><b>الخطة:</b> الحفظ ← «الخطة» ← اختاري «بالقرآن نحيا» (نصف وجه يوميًا) أو «خطة خاصة» وحدّدي:</p><ul><li>من أي سورة تبدئين وأين تنتهين.</li><li>الوحدة: آيات أو نصف وجه أو وجه.</li><li>مقدار الحفظ اليومي ومقدار المراجعة اليومية.</li><li>أيام الحفظ في الأسبوع (وفي غيرها مراجعة فقط).</li></ul><p><b>جلسة اليوم:</b> استمعي مرتين ← اقرئي 15 مرة ← سمّعي من حفظك بالتسجيل ← «اعتماد وإنهاء المهمة».</p>`],
+ ["٥. تصحيح التلاوة",`<ol><li>المزيد ← «تصحيح التلاوة»، واختاري السورة والآيات (10 على الأكثر).</li><li>استمعي للقارئ، ثم سجّلي تلاوتك كاملة وأوقفي.</li><li>تظهر النسبة والكلمات ملوّنة: أخضر صحيح، أصفر قريب، أحمر ساقط أو محرّف، مع ملاحظات المدود والغنن.</li></ol><p><b>لتصحيح أدق:</b> مكان هادئ، الجوال قريب من فمك، صوت واضح. أول مرة يُحمَّل المحرك القرآني (نحو 30 م.ب).</p>`],
+ ["٦. المخارج والألعاب والمساعد",`<p><b>المخارج:</b> اختاري حرفًا لتقرئي مخرجه وصفاته، واضغطي ▶ لسماعه، ثم انطقيه ساكنًا بعد همزة (أَبْ) وسجّلي.</p><p><b>الألعاب:</b> ست ألعاب، كل واحدة دقيقة: النون الساكنة، الميم الساكنة، المدود، المخارج، الصفات، اللام والراء.</p><p><b>المساعد الذكي:</b> اسأليه عن أي حكم أو عن درسك أو خطأ تلاوتك (25 سؤالًا يوميًا).</p>`],
+ ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
+ ["٨. الحضور والنقاط والجوائز",`<p><b>الحضور:</b> الأسبوع يبدأ السبت. 4 أيام منجزة فأكثر: متميزة · 3: مثالية · يومان فأقل: غائبة.</p><p><b>النقاط:</b> درس 20 · اختبار كامل +10 · واجب 15 · مهمة حفظ 10 · يوم منجز 10 · 7 أيام متتالية 50 · تلاوة 5–10 · الألعاب.</p><p><b>الرتب:</b> مبتدئة ← مجتهدة (150) ← متقنة (400) ← ماهرة (800) ← متميزة (1500) ← نجمة رياحين (3000). والجوائز والشهادات التحفيزية في «نقاطي وجوائزي».</p>`],
+ ["٩. للمعلمة",`<ul><li><b>البطاقة</b> (الإعدادات): الجوال، المدينة، الحلقة، النبذة، واسمك كما تكتبه الطالبات.</li><li><b>التوقيع والختم:</b> ارسمي التوقيع أو ارفعي صورته، وارفعي صورة ختمك إن شئتِ.</li><li><b>طالباتي:</b> ملخص الحضور والتسجيلات، وصفحة لكل طالبة: المستويات، الحضور، الاستماع للتسجيلات وتقييمها، الإجابات، الحفظ، منح الجوائز، حذفها من الحلقة.</li><li><b>الواجبات:</b> العنوان والسورة والآيات والموعد، فيصل لطالباتك.</li><li><b>أصوات الحروف:</b> المخارج ← «إدارة الأصوات»: سجّلي أو ارفعي نطق كل حرف.</li></ul>`],
+ ["١٠. حل المشكلات",`<ul><li><b>عالقة على «جارٍ الاتصال»:</b> تأكدي من الإنترنت ← «إعادة المحاولة»، أو افتحي من Chrome/Safari.</li><li><b>التحديث لا يظهر:</b> حدّثي الصفحة (Ctrl+F5)، أو أغلقي التطبيق وافتحيه.</li><li><b>زر جوجل لا يعمل:</b> افتحي في Chrome/Safari مباشرة، أو ادخلي بالبريد.</li><li><b>المايك لا يعمل:</b> اسمحي للموقع بالميكروفون من إعدادات المتصفح.</li><li><b>لا تظهر طالبة في لوحة المعلمة:</b> تأكدي أنها انضمت من غرفة المعلمات أو كتبت اسم الحلقة.</li></ul><p>بياناتك محفوظة في حسابك على السحابة، فإن غيّرتِ الجهاز ادخلي بالحساب نفسه.</p>`]
+];
+VIEWS.guide=function(){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><div class="hero"><div><div class="eyebrow">شرح مبسّط</div><h1>دليل استخدام رياحين</h1><p class="small muted">اضغطي أي قسم لفتحه.</p></div>${ART.book}</div>
+  <div class="guide">${GUIDE.map(([t,b],i)=>`<details ${i===0?"open":""}><summary>${t}</summary>${b}</details>`).join("")}</div>`;
+  $("#back").onclick=()=>history.length>1?history.back():go("home");
 };
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
