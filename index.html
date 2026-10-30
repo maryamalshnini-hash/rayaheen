@@ -324,6 +324,12 @@ main{padding-bottom:170px}
   body.inroom main{padding-right:16px}
 }
 body.inroom .tabs{display:none}
+.gpick{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gpick label{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:2px solid var(--line);border-radius:14px;cursor:pointer;font-weight:800;background:var(--surface)}.gpick label.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-deep)}.gpick input{position:absolute;opacity:0;pointer-events:none}
+.rtools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;background:#171a22;border-radius:14px;padding:8px}.rtools button{background:#2f3341;color:#fff;border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer}.rtools button.recon{background:#d6473f}
+.q6{grid-template-columns:repeat(3,1fr)}
+.hello{display:flex;align-items:center;gap:14px;padding:4px 2px}.hello h1{margin:0;font-size:1.6rem}.hello .ring{flex:none}
+.hstats{display:flex;flex-direction:column;gap:6px}.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font:inherit;font-weight:800;cursor:pointer;white-space:nowrap}.chip.gold{background:linear-gradient(135deg,#ffe27a,var(--gold));border:0;color:#3d2c00}
+@media (min-width:700px){.hstats{flex-direction:row}}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -723,7 +729,7 @@ const CLOUD={
   async signUpEmail(email,pw){ await this.load(); const r=await this.auth.createUserWithEmailAndPassword(email,pw); if(ST.fullName) await r.user.updateProfile({displayName:ST.fullName}); },
   async reset(email){ await this.load(); await this.auth.sendPasswordResetEmail(email); },
   async signOut(){ if(this.auth) await this.auth.signOut(); this.user=null; },
-  profile(){ return {uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",teacherEmail:ST.teacherEmail||"",phone:ST.phone||"",city:ST.city||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,weekDone:ATT.summary().done,weekEntered:ATT.summary().entered,weekRating:ATT.summary().rating.t,weekStart:ATT.weekStart().getTime(),attendance:ST.attendance||{},points:ST.points||0,meetAtt:ST.meetAtt||{},rank:(typeof PTS!=="undefined"?PTS.rank().t:""),games:ST.games||{},badges:(typeof badgesList==="function"?badgesList().filter(b=>b.on).length:0),attemptsCount:ST.attempts.length,updated:Date.now()}; },
+  profile(){ return {gender:ST.gender||"f",uid:this.user.uid,email:this.user.email||"",fullName:ST.fullName||ST.name||this.user.displayName||"",name:ST.name||"",halaqa:ST.halaqa||"",teacherName:ST.teacherName||"",teacherEmail:ST.teacherEmail||"",phone:ST.phone||"",city:ST.city||"",role:ST.role,track:ST.track,hifzAmount:ST.hifzAmount,reviewAmount:ST.reviewAmount,levelTests:ST.levelTests,doneCount:Object.keys(ST.done).length,hifzDay:ST.hifz&&ST.hifz.plan?(ST.hifz.plan.mode==="nahya"?ST.hifz.day:ST.hifz.memorized.length):null,hifzMode:ST.hifz&&ST.hifz.plan?ST.hifz.plan.mode:null,weekDone:ATT.summary().done,weekEntered:ATT.summary().entered,weekRating:ATT.summary().rating.t,weekStart:ATT.weekStart().getTime(),attendance:ST.attendance||{},points:ST.points||0,meetAtt:ST.meetAtt||{},rank:(typeof PTS!=="undefined"?PTS.rank().t:""),games:ST.games||{},badges:(typeof badgesList==="function"?badgesList().filter(b=>b.on).length:0),attemptsCount:ST.attempts.length,updated:Date.now()}; },
   stateSlim(){ const s=Object.assign({},ST); delete s.textCache; delete s.pin; delete s.aiChat; return s; },
   async afterLogin(){
     const u=this.user; const ref=this.db.collection("users").doc(u.uid); let snap=null; try{ snap=await ref.get(); }catch(e){ this.error=this.msg(e); return; }
@@ -767,11 +773,11 @@ const CLOUD={
   myNames(){ return [ST.teacherAlias,ST.fullName,ST.name].map(x=>this.normName(x)).filter(x=>x.length>=3); },
   isMine(u){ if(u.role==="teacher") return false; if(u.teacherEmail&&this.user&&u.teacherEmail.toLowerCase()===(this.user.email||"").toLowerCase()) return true; if(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa)) return true; const t=this.normName(u.teacherName); if(!t) return false; return this.myNames().some(n=>t===n||t.includes(n)||n.includes(t)); },
   // غرفة المعلمات (عالمي): كل معلمة لها بطاقة عامة
-  async registerTeacher(){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,created:Date.now()},{merge:true}); ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); await this.saveTeacherProfile(); },
-  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",signature:ST.signature||"",stamp:ST.stamp||"",updated:Date.now()},{merge:true}); },
+  async registerTeacher(){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,gender:ST.gender||"f",created:Date.now()},{merge:true}); ST.role="teacher"; ST.isTeacherAccount=true; if(!ST.pin) ST.pin="1400"; save(); await this.saveTeacherProfile(); },
+  async saveTeacherProfile(){ if(!this.user||!this.user.email||ST.role!=="teacher") return; await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||"",alias:ST.teacherAlias||"",gender:ST.gender||"f",email:this.user.email,uid:this.user.uid,phone:ST.phone||"",city:ST.city||"",halaqa:ST.halaqa||"",bio:ST.bio||"",signature:ST.signature||"",stamp:ST.stamp||"",updated:Date.now()},{merge:true}); },
   // حلقة مدارسة تنشئها الطالبة لنفسها ولزميلاتها
-  async createCircle(name,bio){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,halaqa:name,bio:bio||"",kind:"study",phone:"",city:ST.city||"",updated:Date.now(),created:Date.now()},{merge:true}); ST.ownCircle=true; ST.halaqa=name; ST.teacherEmail=this.user.email; ST.teacherName=ST.fullName||ST.name; save(); await this.push(true); },
-  async teachersList(){ const q=await this.db.collection("teachers").get(); return q.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name&&!t.hidden).sort((a,b)=>(b.updated||0)-(a.updated||0)); },
+  async createCircle(name,bio){ if(!this.user||!this.user.email) throw new Error("سجّلي الدخول أولًا"); await this.db.collection("teachers").doc(this.user.email).set({name:ST.fullName||ST.name||this.user.displayName||"",email:this.user.email,uid:this.user.uid,halaqa:name,bio:bio||"",kind:"study",gender:ST.gender||"f",phone:"",city:ST.city||"",updated:Date.now(),created:Date.now()},{merge:true}); ST.ownCircle=true; ST.halaqa=name; ST.teacherEmail=this.user.email; ST.teacherName=ST.fullName||ST.name; save(); await this.push(true); },
+  async teachersList(){ const q=await this.db.collection("teachers").get(); return q.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name&&!t.hidden&&(isAdmin()||(t.gender||"f")===(ST.gender||"f"))).sort((a,b)=>(b.updated||0)-(a.updated||0)); },
   async joinTeacher(t){ ST.teacherEmail=t.email; ST.teacherName=t.name; if(t.halaqa) ST.halaqa=t.halaqa; save(); await this.push(true); await this.pullShared(); },
   async giveAward(a){ const d=await this.db.collection("teachers").doc(this.user.email).get(); const list=(d.exists&&d.data().awards)||[]; list.push(Object.assign({id:"aw"+Date.now(),date:Date.now(),by:ST.fullName||ST.name},a)); if(list.length>400) list.splice(0,list.length-400); await this.db.collection("teachers").doc(this.user.email).set({awards:list},{merge:true}); },
   async leaderboard(){ const q=await this.db.collection("users").get(); const all=q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>u.role!=="teacher"); const mine=all.filter(u=>(ST.teacherEmail&&u.teacherEmail===ST.teacherEmail)||(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa))||u.uid===(this.user&&this.user.uid)); return mine.sort((a,b)=>(b.points||0)-(a.points||0)); },
@@ -814,7 +820,7 @@ function accountView(){
   view.innerHTML=`<div class="row between">${CLOUD.user?`<button class="btn sec sm" id="back">→ المزيد</button>`:`<span class="brand" style="font-family:var(--display);font-size:1.3rem">رياحين</span>`}</div><div id="accBox" class="card stack"><p class="muted">جارٍ الاتصال بالسحابة…</p></div>`; const bk=$("#back"); if(bk) bk.onclick=()=>go("more");
   CLOUD.load().then(ok=>{ const box=$("#accBox"); if(!box)return; if(!ok){ box.innerHTML=`<div class="note bad">${esc(CLOUD.error||"تعذّر تحميل Firebase (تحققي من الإنترنت)")}</div><button class="btn danger sm" id="fbClear">إلغاء الربط</button>`; $("#fbClear").onclick=()=>CLOUD.setConfig(null); return; }
     if(CLOUD.user&&!ST.fullName){ const u=CLOUD.user; if(u.displayName){ ST.fullName=u.displayName; ST.name=u.displayName.split(/\s+/)[0]; }
-      box.innerHTML=`<h1>أكملي بياناتك</h1><p class="small muted">مرحبًا ${esc(u.email||"")}. هذه البيانات تظهر لمعلمتك وفي تقاريرك.</p><label class="f">أنا<select id="roleSel"><option value="student">طالبة</option><option value="teacher">معلمة (أنشئ حلقة وأتابع طالباتي)</option></select></label>${profileFormHtml()}<button class="btn" id="profSave">حفظ والبدء</button><div id="profMsg"></div>`; wireProfileForm(); $("#roleSel").onchange=()=>{ const t=$("#roleSel").value==="teacher"; const ti=$("#teacherIn"); if(ti) ti.closest("label").hidden=t; const tp=$("#tPickL"); if(tp) tp.hidden=t; }; $("#profSave").onclick=async()=>{ if(!readProfileForm())return; save(); try{ if($("#roleSel").value==="teacher"){ $("#profMsg").innerHTML=`<div class="note info">جارٍ إنشاء حساب المعلمة…</div>`; await CLOUD.registerTeacher(); } await CLOUD.push(true); go("home"); }catch(e){ $("#profMsg").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; } }; return; }
+      box.innerHTML=`<h1>أكملي بياناتك</h1><p class="small muted">مرحبًا ${esc(u.email||"")}. هذه البيانات تظهر لمعلمتك وفي تقاريرك.</p><label class="f">أنا<select id="roleSel"><option value="student">طالب / طالبة</option><option value="teacher">معلم / معلمة (أنشئ حلقة وأتابع طلابي)</option></select></label>${profileFormHtml()}<button class="btn" id="profSave">حفظ والبدء</button><div id="profMsg"></div>`; wireProfileForm(); $("#roleSel").onchange=()=>{ const t=$("#roleSel").value==="teacher"; const ti=$("#teacherIn"); if(ti) ti.closest("label").hidden=t; const tp=$("#tPickL"); if(tp) tp.hidden=t; }; $("#profSave").onclick=async()=>{ if(!readProfileForm())return; save(); try{ if($("#roleSel").value==="teacher"){ $("#profMsg").innerHTML=`<div class="note info">جارٍ إنشاء حساب المعلمة…</div>`; await CLOUD.registerTeacher(); } await CLOUD.push(true); go("home"); }catch(e){ $("#profMsg").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; } }; return; }
     if(CLOUD.user){ const u=CLOUD.user; box.innerHTML=`<h1>الحساب</h1><div class="row between"><div><b>${esc(ST.fullName||u.displayName||"")}</b><div class="small muted">${esc(u.email||"")}${ST.halaqa?" · "+esc(ST.halaqa):""}</div></div><span class="pill good">${ST.role==="teacher"?"أستاذة معتمدة":"متصل ومتزامن"}</span></div>
       ${CLOUD.error?`<div class="note warn">${esc(CLOUD.error)}</div>`:""}<p class="small muted">تُحفظ بياناتك وتقدمك في السحابة تلقائيًا، وتصلك الواجبات والتصحيح من الأستاذة مباشرة. ${ST.halaqa?"":"اكتبي اسم الحلقة في الإعدادات (نفس الاسم عند الأستاذة) لتصلك واجباتها."}</p>
       <div class="row"><button class="btn sec" id="syncNow">مزامنة الآن</button>${isTeacher()?`<button class="btn" data-go="cloudteacher">لوحة المعلمة</button>`:`<button class="btn sec" data-go="teachers">غرفة المعلمات</button><button class="btn sec" id="beTeacher">أنا معلمة: فعّلي حساب معلمة</button>`}<button class="btn danger" id="signOut">تسجيل الخروج</button></div>`;
@@ -955,15 +961,19 @@ function render(){
 }
 const VIEWS={};
 
-function profileFormHtml(){ return `<label class="f">الاسم الرباعي<input type="text" id="fullIn" value="${esc(ST.fullName)}" placeholder="مثال: نورة محمد عبدالله العلي"></label>
+function profileFormHtml(){ return `<div class="gpick" role="radiogroup" aria-label="الجنس"><label class="${isMale()?"":"on"}"><input type="radio" name="gIn" value="f" ${isMale()?"":"checked"}>👩 أنثى</label><label class="${isMale()?"on":""}"><input type="radio" name="gIn" value="m" ${isMale()?"checked":""}>👨 ذكر</label></div>
+    <p class="small muted noGtx" style="margin-top:-6px">الحلقات منفصلة: الطلاب مع المعلمين، والطالبات مع المعلمات.</p>
+    <label class="f">الاسم الرباعي<input type="text" id="fullIn" value="${esc(ST.fullName)}" placeholder="مثال: نورة محمد عبدالله العلي"></label>
     <div class="row"><label class="f">رقم الجوال (واتساب)<input type="tel" id="phoneIn" dir="ltr" value="${esc(ST.phone||"")}" placeholder="05xxxxxxxx"></label><label class="f">المدينة / الدولة<input type="text" id="cityIn" value="${esc(ST.city||"")}" placeholder="مثال: الرياض"></label></div>
     <div class="row"><label class="f">اسم الحلقة<input type="text" id="halaqaIn" value="${esc(ST.halaqa)}" placeholder="مثال: حلقة رياحين"></label><label class="f">اسم الأستاذة<input type="text" id="teacherIn" value="${esc(ST.teacherName)}" placeholder="أو اختاريها من القائمة"></label></div>
     ${!isTeacher()?`<label class="f" id="tPickL">اختاري معلمتك وحلقتك<select id="tPick"><option value="">— ${cloudOn()?"جارٍ تحميل المعلمات…":"سجّلي الدخول لعرض المعلمات"} —</option></select><span class="small muted">تختارين من المعلمات والحلقات المسجّلة في رياحين، فتُربطين بها مباشرة.</span></label>`:""}
     <label class="f">المسار<select id="trackIn"><option value="both" ${ST.track==="both"?"selected":""}>حفظ ومراجعة مع تصحيح التلاوة</option><option value="hifz" ${ST.track==="hifz"?"selected":""}>حفظ ومراجعة</option><option value="tilawa" ${ST.track==="tilawa"?"selected":""}>تصحيح التلاوة والتجويد فقط</option></select></label>
     <div class="row" id="amountRow" ${ST.track==="tilawa"?"hidden":""}><label class="f">مقدار الحفظ اليومي<input type="text" id="hifzAmtIn" value="${esc(ST.hifzAmount)}" placeholder="مثال: نصف وجه"></label><label class="f">مقدار المراجعة اليومية<input type="text" id="revAmtIn" value="${esc(ST.reviewAmount)}" placeholder="مثال: أربع صفحات"></label></div>`; }
-function wireProfileForm(){ const t=$("#trackIn"); if(t) t.onchange=()=>{ $("#amountRow").hidden=t.value==="tilawa"; };
-  const sel=$("#tPick"); if(sel&&cloudOn()) CLOUD.teachersList().then(list=>{ list=list.filter(x=>!x.hidden); window._tPickList=list; sel.innerHTML=`<option value="">— بلا حلقة الآن (تعلّم فردي) —</option>`+list.map(x=>`<option value="${esc(x.email)}" ${ST.teacherEmail&&ST.teacherEmail.toLowerCase()===x.email.toLowerCase()?"selected":""}>${esc(x.halaqa||"حلقة "+x.name)} — ${x.kind==="study"?"منشئتها":"الأستاذة"} ${esc(x.name)}${x.city?" · "+esc(x.city):""}</option>`).join(""); sel.onchange=()=>{ const x=list.find(y=>y.email===sel.value); if(x){ $("#teacherIn").value=x.name; if(x.halaqa) $("#halaqaIn").value=x.halaqa; } }; }).catch(()=>{ sel.innerHTML=`<option value="">— تعذّر تحميل المعلمات —</option>`; }); }
-function readProfileForm(){ const f=$("#fullIn").value.trim(); if(!f){ toast("اكتبي الاسم الرباعي"); return false; } ST.fullName=f; ST.name=f.split(/\s+/)[0]; ST.halaqa=$("#halaqaIn").value.trim(); const tn=$("#teacherIn").value.trim(); if(tn!==ST.teacherName&&ST.teacherEmail&&CLOUD.normName(tn)!==CLOUD.normName(ST.teacherName)) ST.teacherEmail=""; ST.teacherName=tn; ST.phone=$("#phoneIn").value.trim(); ST.city=$("#cityIn").value.trim(); const tp=$("#tPick"); if(tp&&tp.options.length>1){ if(tp.value){ ST.teacherEmail=tp.value; const x=(window._tPickList||[]).find(y=>y.email===tp.value); if(x){ ST.teacherName=x.name; if(x.halaqa) ST.halaqa=x.halaqa; } } else if(!ST.ownCircle){ ST.teacherEmail=""; } } ST.track=$("#trackIn").value; ST.hifzAmount=$("#hifzAmtIn").value.trim(); ST.reviewAmount=$("#revAmtIn").value.trim(); return true; }
+function wireProfileForm(){ document.querySelectorAll('input[name="gIn"]').forEach(r=>r.onchange=()=>{ const prev=ST.gender; ST.gender=r.value; document.querySelectorAll(".gpick label").forEach(l=>l.classList.toggle("on",l.querySelector("input").checked)); if(prev!==ST.gender){ const sel=$("#tPick"); if(sel) wireTeacherPick(sel); } });
+  const t=$("#trackIn"); if(t) t.onchange=()=>{ $("#amountRow").hidden=t.value==="tilawa"; };
+  const sel=$("#tPick"); if(sel) wireTeacherPick(sel); }
+function wireTeacherPick(sel){ if(!cloudOn()) return; CLOUD.teachersList().then(list=>{ list=list.filter(x=>!x.hidden); window._tPickList=list; sel.innerHTML=`<option value="">— بلا حلقة الآن (تعلّم فردي) —</option>`+list.map(x=>`<option value="${esc(x.email)}" ${ST.teacherEmail&&ST.teacherEmail.toLowerCase()===x.email.toLowerCase()?"selected":""}>${esc(x.halaqa||"حلقة "+x.name)} — ${x.kind==="study"?"منشئتها":"الأستاذة"} ${esc(x.name)}${x.city?" · "+esc(x.city):""}</option>`).join(""); sel.onchange=()=>{ const x=list.find(y=>y.email===sel.value); if(x){ $("#teacherIn").value=x.name; if(x.halaqa) $("#halaqaIn").value=x.halaqa; } }; }).catch(()=>{ sel.innerHTML=`<option value="">— تعذّر تحميل المعلمات —</option>`; }); }
+function readProfileForm(){ const f=$("#fullIn").value.trim(); if(!f){ toast("اكتبي الاسم الرباعي"); return false; } const gi=document.querySelector('input[name="gIn"]:checked'); if(gi) ST.gender=gi.value; ST.fullName=f; ST.name=f.split(/\s+/)[0]; ST.halaqa=$("#halaqaIn").value.trim(); const tn=$("#teacherIn").value.trim(); if(tn!==ST.teacherName&&ST.teacherEmail&&CLOUD.normName(tn)!==CLOUD.normName(ST.teacherName)) ST.teacherEmail=""; ST.teacherName=tn; ST.phone=$("#phoneIn").value.trim(); ST.city=$("#cityIn").value.trim(); const tp=$("#tPick"); if(tp&&tp.options.length>1){ if(tp.value){ ST.teacherEmail=tp.value; const x=(window._tPickList||[]).find(y=>y.email===tp.value); if(x){ ST.teacherName=x.name; if(x.halaqa) ST.halaqa=x.halaqa; } } else if(!ST.ownCircle){ ST.teacherEmail=""; } } ST.track=$("#trackIn").value; ST.hifzAmount=$("#hifzAmtIn").value.trim(); ST.reviewAmount=$("#revAmtIn").value.trim(); return true; }
 // شريط الأسبوع (نشاط كل يوم) على طريقة منصات التعلّم
 function weekStripHtml(){ const days=new Set((ST.pointsLog||[]).map(l=>new Date(l.date).toDateString())); (ST.attempts||[]).forEach(a=>a.date&&days.add(new Date(a.date).toDateString()));
   const names=["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"]; const today=new Date(); const arr=[]; for(let i=6;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); arr.push(d); }
@@ -973,7 +983,7 @@ function weekStripHtml(){ const days=new Set((ST.pointsLog||[]).map(l=>new Date(
 VIEWS.home=function(){
   if(!ST.fullName&&!ST.name){ view.innerHTML=`<div class="card stack"><h1>أهلًا بك في رياحين</h1><p class="lesson-body">تطبيق لتعلّم أحكام التجويد وتطبيقها صوتيًا، على ترتيب كتاب «هدي المجيد في أحكام التجويد» للمهندسة هدى العمروسي. تتدرجين في ثلاثة مستويات ثم مستوى الإتقان، وفي كل درس شرح وأمثلة وتدريب صوتي واختبار.</p>
     ${profileFormHtml()}
-    <label class="f">أنا<select id="roleIn"><option value="student">طالبة</option><option value="teacher">أستاذة الحلقة</option></select></label>
+    <label class="f">أنا<select id="roleIn"><option value="student">طالب / طالبة</option><option value="teacher">معلم / معلمة الحلقة</option></select></label>
     <button class="btn" id="startBtn">ابدئي</button></div>`;
     wireProfileForm(); $("#startBtn").onclick=()=>{ if(!readProfileForm())return; ST.role=$("#roleIn").value; save(); render(); }; return; }
   if(isTeacher()){ teacherHome(); return; }
@@ -984,42 +994,28 @@ VIEWS.home=function(){
   const hour=new Date().getHours(); const greet=hour<12?"صباح الخير":hour<18?"مساء الخير":"مساء النور";
   const totalLessons=LESSONS.length, totalDone=Object.keys(ST.done).length; const pct=Math.round(totalDone/totalLessons*100); const att=ATT.summary(); const B=badgesList();
   view.innerHTML=`
-  <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p><div style="margin-top:6px"><button class="btn gold sm" data-go="rewards">${PTS.rank().ic} ${PTS.total()} نقطة · ${esc(PTS.rank().t)}</button></div>
-    <div class="row" style="margin-top:8px;gap:10px;align-items:center"><div class="ring" style="--p:${pct}"><div>${pct}٪</div></div><div class="small"><b>${totalDone}</b> من ${totalLessons} درسًا<br><span class="muted">${streakDays()} يومًا متتاليًا · ${B.filter(b=>b.on).length}/${B.length} شارات</span></div></div></div>${ART.mushaf}</div>
+  <div class="hello"><div class="ring" style="--p:${pct}"><div>${pct}٪</div></div><div style="flex:1;min-width:0"><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${totalDone} من ${totalLessons} درسًا</p></div>
+    <div class="hstats"><button class="chip gold" data-go="rewards">${PTS.rank().ic} ${PTS.total()}</button><button class="chip" data-go="progress">🔥 ${streakDays()}</button></div></div>
   ${cl<=4&&next?`<div class="cont"><div class="cont-ic">${ART.book}</div><div style="flex:1;min-width:0"><div class="eyebrow">واصلي التعلّم · ${esc(L.title)}</div><h2>${esc(next.title)}</h2><div class="lvbar" style="margin-top:8px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted" style="margin-top:4px">الدرس ${doneN+1} من ${ls.length} · ${ls.length?Math.round(doneN/ls.length*100):0}٪ من المستوى</p></div><button class="btn lg" id="contBtn">▶ متابعة</button></div>`:""}
-  ${weekStripHtml()}
 
   <div class="card"><div class="row between"><h3>مهامك اليوم</h3><span class="small muted">${fmtDate(Date.now())}</span></div>
     <div class="stack" style="margin-top:10px">
       ${T?(T.finished?`<div class="todo done"><span class="dot"></span><span>أتممتِ برنامج الحفظ كاملًا</span></div>`:`<div class="todo ${hzDone===hzTotal&&hzTotal?"done":""}"><span class="dot"></span><span style="flex:1">الحفظ والمراجعة: ${hzDone} من ${hzTotal} مهام</span><button class="btn sm" data-go="hifz">${hzDone===hzTotal&&hzTotal?"عرض":"ابدئي"}</button></div>`):`<div class="todo"><span class="dot"></span><span style="flex:1">لم تُضبط خطة الحفظ بعد</span><button class="btn sm sec" data-go="hifz">ضبط الخطة</button></div>`}
-      ${cl<=4?`<div class="todo ${!next?"done":""}"><span class="dot"></span><span style="flex:1">التجويد: ${next?`درس «${esc(next.title)}»`:`اختبار اجتياز ${esc(L.title)}`}</span><button class="btn sm sec" id="${next?"goNext":"goTest"}">افتحي</button></div>`:""}
+      ${cl<=4&&!next?`<div class="todo ${!next?"done":""}"><span class="dot"></span><span style="flex:1">التجويد: ${next?`درس «${esc(next.title)}»`:`اختبار اجتياز ${esc(L.title)}`}</span><button class="btn sm sec" id="${next?"goNext":"goTest"}">افتحي</button></div>`:""}
       ${(()=>{ const p=Object.values(ST.lessonHw||{}).filter(h=>!h.done); return p.length?`<div class="todo"><span class="dot" style="background:var(--gold)"></span><span style="flex:1">${p.length===1?"واجب درس: "+esc(p[0].title.replace("واجب درس ","")):p.length+" واجبات دروس معلّقة"}</span><button class="btn sm" data-go="homework">الواجبات</button></div>`:""; })()}
       ${!isTeacher()&&cloudOn()&&!ST.teacherEmail?`<div class="todo"><span class="dot" style="background:var(--sky)"></span><span style="flex:1">انضمّي إلى معلمتك من غرفة المعلمات</span><button class="btn sm sec" data-go="teachers">غرفة المعلمات</button></div>`:""}
       ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
     </div></div>
-  <div class="sect"><h3>📚 التعلّم</h3><div class="quick">
-    <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} في المستوى ${cl}`:"مكتمل"}</span></button>
+  <div class="quick q6">
+    <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} · المستوى ${cl}`:"مكتمل"}</span></button>
     <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
     <button data-go="hifz" style="--lc:var(--good)"><span class="art">${ART.hifz}</span>الحفظ<span class="cnt">${T?(T.progressText.split("·")[0].trim()):"الخطة"}</span></button>
     <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
-    <button data-go="makharij" style="--lc:var(--lilac)"><span class="art">${ART.lips}</span>المخارج<span class="cnt">29 حرفًا</span></button>
-    <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
-  </div></div>
-  <div class="sect"><h3>👭 حلقتي</h3><div class="quick">
     <button data-go="meetings" style="--lc:var(--sky)"><span class="art emo">🎥</span>لقاءات الحلقة<span class="cnt">مباشر وتسجيلات</span></button>
-    <button data-go="halaqa" style="--lc:var(--pink)"><span class="art emo">👭</span>حلقتي<span class="cnt">${ST.halaqa?esc(ST.halaqa):"المعلمة والزميلات"}</span></button>
-    <button data-go="assistant" style="--lc:var(--accent)"><span class="art emo">🤖</span>المساعد الذكي<span class="cnt">اسألي عن أي حكم</span></button>
-  </div></div>
-  <div class="sect"><h3>🏆 التحفيز</h3><div class="quick">
-    <button data-go="games" style="--lc:var(--warn)"><span class="art emo">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
-    <button data-go="rewards" style="--lc:var(--gold)"><span class="art emo">🏅</span>نقاطي وجوائزي<span class="cnt">${PTS.total()} نقطة</span></button>
-    <button data-go="progress" style="--lc:var(--sky)"><span class="art emo">📈</span>تقدّمي<span class="cnt">${att.rating.t} · ${B.filter(b=>b.on).length} شارات</span></button>
+    <button data-go="rewards" style="--lc:var(--gold)"><span class="art emo">🏅</span>نقاطي<span class="cnt">${PTS.total()} نقطة</span></button>
   </div>
 
-  ${cl<=4?`<div class="card lv lvcolor-${cl}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="eyebrow">مستواك في التجويد</div><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
-    <div class="progress" style="margin-top:10px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted">أتممتِ ${doneN} من ${ls.length} دروس</p></div>`:
-    `<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p class="small muted">${ST.halaqa?esc(ST.halaqa):""}${ST.teacherName?" · الأستاذة "+esc(ST.teacherName):""}</p><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`}
-  ${last.length?`<div class="card"><div class="eyebrow">آخر محاولاتك</div><div class="stack" style="margin-top:8px">${last.map(a=>`<div class="row between"><span>${esc(a.label)}</span><span class="pill ${a.score>=ST.passPct?"good":a.score>=55?"warn":"bad"}">${a.score??"—"}٪</span></div>`).join("")}</div></div>`:""}
+  ${cl>4?`<div class="cert"><h2>أتممتِ مستوى الإتقان</h2><div class="name">${esc(ST.fullName||ST.name)}</div><p>اجتزتِ جميع مستويات رياحين في أحكام التجويد. تقبّل الله.</p></div>`:""}
   <p class="small muted">المادة العلمية على كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي)، والحفظ على برنامج «بالقرآن نحيا».</p>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
   if(cloudOn()&&ST.teacherEmail) nextMeetingsForMe().then(list=>{ const o=list.find(x=>x.start-Date.now()<24*3600000); const box=view.querySelector(".todo")&&view.querySelector(".todo").parentElement; if(!o||!box||route!=="home") return; const st=meetState(o); box.insertAdjacentHTML("afterbegin",`<div class="todo" style="border:1.5px solid var(--sky)"><span class="dot" style="background:var(--pink)"></span><span style="flex:1">🎥 ${esc(o.m.title||"لقاء الحلقة")} · ${fmtMeet(o.start)}${st==="open"?" · <b>الآن</b>":""}</span><button class="btn sm ${st==="open"?"":"sec"}" id="homeJoin">${st==="open"?"انضمام":"التفاصيل"}</button></div>`); $("#homeJoin").onclick=()=>st==="open"?joinMeeting(o):go("meetings"); });
@@ -1055,7 +1051,7 @@ function badgesList(){ const done=Object.keys(ST.done).length; const lt=ST.level
 }
 // ===== المستويات =====
 VIEWS.levels=function(){
-  view.innerHTML=`<h1>المستويات</h1>${!isTeacher()&&!levelPassed(1)?`<div class="note info">كل طالبة تبدأ من المستوى المبتدئ. إن كنتِ متقنة له، اضغطي «اختبار اجتياز المستوى» مباشرة دون دراسة الدروس، فإن نجحتِ انتقلتِ للمستوى التالي.</div>`:""}`+LEVELS.map(L=>{ const ls=lessonsOf(L.n); const unlocked=levelUnlocked(L.n); const passed=levelPassed(L.n); const doneN=ls.filter(l=>ST.done[l.id]).length;
+  view.innerHTML=`<h1>المستويات</h1>${!isTeacher()&&!levelPassed(1)?`<div class="note info">كل طالبة تبدأ من المستوى المبتدئ. إن كنتِ متقنةً له، اضغطي «اختبار اجتياز المستوى» مباشرة دون دراسة الدروس، فإن نجحتِ انتقلتِ للمستوى التالي.</div>`:""}`+LEVELS.map(L=>{ const ls=lessonsOf(L.n); const unlocked=levelUnlocked(L.n); const passed=levelPassed(L.n); const doneN=ls.filter(l=>ST.done[l.id]).length;
     return `<div class="card lv lvcolor-${L.n} ${unlocked?"":"lock"}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="row between"><h2>${esc(L.title)}</h2>${passed?`<span class="pill good">مُجتاز</span>`:unlocked?`<span class="pill acc">مفتوح</span>`:`<span class="pill">مقفل</span>`}</div><p class="muted small">${esc(L.desc)}</p></div></div>
     ${ls.length?`<div class="progress" style="margin:10px 0 4px"><i style="width:${Math.round(doneN/ls.length*100)}%"></i></div>`:""}
     <div class="stack" style="margin-top:10px">${ls.map((l,i)=>`<button class="lesson-item" data-l="${l.id}" ${unlocked?"":"disabled"}><span class="mark ${ST.done[l.id]?"done":""}">${ST.done[l.id]?"✓":i+1}</span><span class="t"><b>${esc(l.title)}</b><span class="small muted">${esc(l.bookPages||"")}${ST.quiz[l.id]?` · اختبار الدرس ${ST.quiz[l.id]}٪`:""}</span></span></button>`).join("")}</div>
@@ -1293,6 +1289,7 @@ VIEWS.more=function(){
 VIEWS.progress=function(){
   const atts=ST.attempts.slice().reverse(); const att=ATT.summary(); const B=badgesList(); const totalDone=Object.keys(ST.done).length;
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><h1>تقدّم ${esc(ST.name)}</h1>
+  ${weekStripHtml()}
   <div class="tiles"><div class="tile"><b>${totalDone}</b><span>درسًا من ${LESSONS.length}</span></div><div class="tile ${att.rating.k}"><b>${att.done}</b><span>أيام منجزة هذا الأسبوع</span></div><div class="tile"><b>${streakDays()}</b><span>يوم متتالٍ</span></div><div class="tile"><b>${ST.attempts.length}</b><span>تلاوات مسجّلة</span></div><div class="tile gold"><b>${gamesSummary().total}</b><span>نقاط الألعاب</span></div></div>
   <div class="card"><h3>الشهادات والمستويات</h3><div class="stack" style="margin-top:8px">${LEVELS.map(L=>{ const ls=lessonsOf(L.n); const t=ST.levelTests[L.n]||{}; const dn=ls.filter(l=>ST.done[l.id]).length; return `<div class="row between" style="gap:8px"><div style="flex:1;min-width:0"><b>${esc(L.title)}</b> <span class="small muted">${ls.length?dn+"/"+ls.length+" دروس":"اختبار شامل"}${t.mcq!=null?" · نظري "+t.mcq+"٪":""}${t.recite!=null?" · تلاوة "+t.recite+"٪":""}</span>${ls.length?`<div class="lvbar" style="margin-top:4px"><i style="width:${Math.round(dn/ls.length*100)}%"></i></div>`:""}</div>${t.passed?`<button class="btn gold sm" data-cert="${L.n}">🎓 الشهادة</button>`:t.pendingApproval?`<span class="pill warn">بانتظار الاعتماد</span>`:levelUnlocked(L.n)?`<span class="pill acc">مفتوح</span>`:`<span class="pill">مقفل</span>`}</div>`; }).join("")}</div>
   ${attendanceCardHtml()}
@@ -1360,6 +1357,56 @@ $("#whoPill").style.cursor="pointer"; $("#whoPill").onclick=()=>go("account");
 if(CLOUD.config()) CLOUD.load().then(()=>render());
 // ===== بدء =====
 applyTheme(); (function(){ const h=location.hash.replace("#",""); if(h&&VIEWS[h]) route=h; render(); })();
+
+// ===== للرجال والنساء: تحويل صيغة الخطاب إلى المذكّر للمستخدمين الذكور =====
+// الحلقات منفصلة: الطالب يرى حلقات المعلمين، والطالبة ترى حلقات المعلمات؛ فكل الأطراف من جنس المستخدم.
+function isMale(){ return ST.gender==="m"; }
+const G_WORDS={
+ // أسماء
+ "الطالبة":"الطالب","طالبة":"طالب","الطالبات":"الطلاب","طالبات":"طلاب","طالباتي":"طلابي","طالباتك":"طلابك","طالباتها":"طلابها",
+ "المعلمة":"المعلم","معلمة":"معلم","المعلمات":"المعلمين","معلمات":"معلمين","معلمتك":"معلمك","معلمتي":"معلمي","معلمتها":"معلمها","معلمتنا":"معلمنا",
+ "الأستاذة":"الأستاذ","أستاذة":"أستاذ","أستاذتك":"أستاذك",
+ "الزميلات":"الزملاء","زميلاتي":"زملائي","زميلاتك":"زملائك","زميلاتها":"زملائه","صديقاتك":"أصدقائك","المشاركات":"المشاركين",
+ "مبتدئة":"مبتدئ","مجتهدة":"مجتهد","متقنة":"متقن","ماهرة":"ماهر","متميزة":"متميز","مديرة":"مدير","منشئتها":"منشئها","المستخدمة":"المستخدم","متقنة،":"متقن،",
+ "لتميزها":"لتميزه","لإتقانها":"لإتقانه","لمثابرتها":"لمثابرته","وحرصها":"وحرصه","جهدها":"جهده","وتعاونها":"وتعاونه","حفظها":"حفظه",
+ "أنتِ":"أنتَ",
+ // أفعال الأمر
+ "اضغطي":"اضغط","اختاري":"اختر","افتحي":"افتح","اكتبي":"اكتب","استمعي":"استمع","ارفعي":"ارفع","أوقفي":"أوقف","راجعي":"راجع","أعيدي":"أعد","أنشئي":"أنشئ","استخدمي":"استخدم","اقرئي":"اقرأ","اسمحي":"اسمح","ابدئي":"ابدأ","تأكدي":"تأكد","انطقي":"انطق","اطلبي":"اطلب","جرّبي":"جرّب","انتبهي":"انتبه","أضيفي":"أضف","أكملي":"أكمل","حدّدي":"حدّد","حدّثي":"حدّث","أجيبي":"أجب","ارسمي":"ارسم","احذري":"احذر","سمّعي":"سمّع","ضعي":"ضع","فعّلي":"فعّل","الصقي":"الصق","تحققي":"تحقق","أغلقي":"أغلق","تابعي":"تابع","أنجزي":"أنجز","اسألي":"اسأل","استوردي":"استورد","أدخلي":"أدخل","ابحثي":"ابحث","انظري":"انظر","ادخلي":"ادخل","ركزي":"ركّز","قارني":"قارن","انسخي":"انسخ","جهّزي":"جهّز","أرسلي":"أرسل","استمري":"استمر","واصلي":"واصل","انضمّي":"انضم","انضمي":"انضم","أطيلي":"أطل","أخرجي":"أخرج","احبسي":"احبس","كرّري":"كرّر","اضبطي":"اضبط","عيّني":"عيّن","اعتمدي":"اعتمد","صدّري":"صدّر","حلّي":"حلّ","اختبري":"اختبر","تعلّمي":"تعلّم","غيّري":"غيّر","ردّدي":"ردّد","سجّلي":"سجّل","سجلي":"سجل","اسمعي":"اسمع","شغّلي":"شغّل","ثبّتي":"ثبّت","احفظي":"احفظ","اعرضي":"اعرض","امنحي":"امنح","احذفي":"احذف","انقلي":"انقل","اتركي":"اترك","اقرئيها":"اقرأها","تحدّثي":"تحدّث","قولي":"قل","اذكري":"اذكر","اشرحي":"اشرح","أخبري":"أخبر","عودي":"عد","اجعلي":"اجعل","حاولي":"حاول","انتظري":"انتظر","ادعي":"ادع","أنهي":"أنهِ","ارجعي":"ارجع","اخرجي":"اخرج","افحصي":"افحص","حمّلي":"حمّل","ارفقي":"أرفق","وزّعي":"وزّع","لاحظي":"لاحظ","حدثي":"حدث",
+ // مضارع المخاطبة
+ "تختارين":"تختار","تبدئين":"تبدأ","تنتهين":"تنتهي","تدخلين":"تدخل","ستتصلين":"ستتصل","تستطيعين":"تستطيع","تتابعين":"تتابع","تعملين":"تعمل","تتدرجين":"تتدرج","فتُربطين":"فتُربط","تحتاجين":"تحتاج","تريدين":"تريد","تسمعين":"تسمع","ترين":"ترى","تجدين":"تجد","تستطيعي":"تستطيع","تكتبي":"تكتب","تنضمّي":"تنضم","تنضمي":"تنضم","لتقرئي":"لتقرأ","لتحافظي":"لتحافظ","لتصبحي":"لتصبح","لترسليه":"لترسله","تطيلي":"تطيل","تتأكدي":"تتأكد","تنسي":"تنس","تقلقي":"تقلق","تحصلين":"تحصل","تكسبين":"تكسب","تصلين":"تصل","تنتقلين":"تنتقل","تحفظين":"تحفظ","تراجعين":"تراجع","تسجّلين":"تسجّل","تتعلمين":"تتعلم","تقرئين":"تقرأ","تشاهدين":"تشاهد","لتأذن":"ليأذن","متقنةً":"متقنًا"
+};
+const G_SUFFIX=["ها","ه","هم","هن","ني"]; // سجّليها → سجّلها
+const G_RE=/[ء-يـً-ْ]+/g;
+function gWord(w){
+  const pre=w.match(/^(ولل|فلل|و|ف|ل|ب|ك|وال|فال|بال|لل|ول|فل|وب|فب)?/)[0];
+  const tryOne=(x)=>{ if(G_WORDS[x]) return G_WORDS[x];
+    for(const s of G_SUFFIX){ if(x.endsWith("ي"+s)){ const st=x.slice(0,-s.length); if(G_WORDS[st]) return G_WORDS[st]+s; } }
+    // ماضي المخاطبة: أتممتِ → أتممتَ ، لكِ → لكَ (بلا تشكيل آخر)
+    if(/[تك]ِ$/.test(x)&&!/[ً-ُّْ]/.test(x)&&(x.match(/ِ/g)||[]).length===1) return x.slice(0,-1)+"َ";
+    return null; };
+  let r=tryOne(w); if(r) return r;
+  if(pre){ for(let i=pre.length;i>0;i--){ const p=w.slice(0,i), rest=w.slice(i); if(rest.length<2) continue; r=tryOne(rest); if(r) return p+r; } }
+  return w; }
+const G_NOUNS="(?:ال|لل|و|وال|ل)?(?:طالبة|طالبات|معلمة|معلمات|أستاذة)|معلمتك|معلمتها|معلمتي";
+const G_TNOUN=/^ت(?:لاو|وقي|صحي|حمي|سجي|نبي|وقي|علي|قدّ|قد|قري|قيي|اري|مري|جوي|طبي|حدي|فاص|ع)/;
+const G_V1=new RegExp("(^|[^\\u0600-\\u06FF])(تُ?)([\\u0600-\\u06FF]{2,})(\\s+)("+G_NOUNS+")(?![\\u0600-\\u06FF])","g");
+const G_V2=new RegExp("(^|[^\\u0600-\\u06FF])("+G_NOUNS+")(\\s+)(تُ?)([\\u0600-\\u06FF]{2,})","g");
+function gVerbs(s){ return s.replace(G_V1,(m,a,t,rest,sp,n)=>G_TNOUN.test(t+rest)?m:a+(t==="تُ"?"يُ":"ي")+rest+sp+n).replace(G_V2,(m,a,n,sp,t,rest)=>G_TNOUN.test(t+rest)?m:a+n+sp+(t==="تُ"?"يُ":"ي")+rest); }
+function gtx(s){ if(!isMale()||!s||typeof s!=="string") return s; return gVerbs(s).replace(G_RE,gWord); }
+const G_SKIP=".rmsg,.quran,.ayah,.noGtx,textarea,input,script,style,#rbCanvas";
+function gNode(n){ if(!isMale()) return;
+  if(n.nodeType===3){ const p=n.parentElement; if(!p||p.closest(G_SKIP)) return; const v=n.nodeValue, t=gtx(v); if(t!==v) n.nodeValue=t; return; }
+  if(n.nodeType!==1||n.matches(G_SKIP)) return;
+  if(n.placeholder){ const t=gtx(n.placeholder); if(t!==n.placeholder) n.placeholder=t; }
+  if(n.title){ const t=gtx(n.title); if(t!==n.title) n.title=t; }
+  const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT); let x; while((x=w.nextNode())){ if(x.nodeType===1){ if(x.placeholder){ const t=gtx(x.placeholder); if(t!==x.placeholder) x.placeholder=t; } if(x.title){ const t=gtx(x.title); if(t!==x.title) x.title=t; } continue; } gNode(x); } }
+(function gInit(){
+  const start=()=>{ const mo=new MutationObserver(ms=>{ if(!isMale()) return; for(const m of ms){ if(m.type==="characterData") gNode(m.target); else m.addedNodes.forEach(gNode); } }); mo.observe(document.body,{childList:true,subtree:true,characterData:true}); gNode(document.body); };
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",start); else start();
+  const oc=window.confirm.bind(window), op=window.prompt.bind(window), oa=window.alert.bind(window);
+  window.confirm=m=>oc(gtx(m)); window.prompt=(m,d)=>op(gtx(m),d); window.alert=m=>oa(gtx(m));
+  const ft=CanvasRenderingContext2D.prototype.fillText; CanvasRenderingContext2D.prototype.fillText=function(t,...a){ return ft.call(this,(this.canvas&&this.canvas.id==="rbCanvas")?t:gtx(String(t)),...a); };
+})();
 
 // ===== وحدة الحفظ والمراجعة =====
 function hifzState(){ if(!ST.hifz) ST.hifz={plan:null,log:[],memorized:[],day:0,dayDone:{},counters:{}}; const H=ST.hifz; H.memorized=H.memorized||[]; H.log=H.log||[]; H.day=H.day||0; H.dayDone=H.dayDone||{}; H.counters=H.counters||{}; migrateHifzPlan(H); return H; }
@@ -1532,7 +1579,7 @@ const AI_SYSTEM=`أنتِ «مساعدة رياحين»، معلّمة تجوي�
 - لا تفتي في مسائل فقهية أو عقدية خارج التجويد والحفظ؛ وجّهي الطالبة لسؤال أستاذة الحلقة.
 - لا تخترعي أحاديث أو أقوالًا؛ إن لم تتأكدي قولي ذلك.
 - استعملي عناوين قصيرة ونقاطًا (- ) عند الحاجة، واجعلي الرد في حدود 150 كلمة ما لم يُطلب التفصيل.`;
-function ctxText(c){ const L=[]; if(c.name) L.push(`اسم الطالبة: ${c.name}`); if(c.role==="teacher") L.push("المستخدمة: أستاذة الحلقة"); if(c.level) L.push(`مستواها: ${c.level}`); if(c.track) L.push(`مسارها: ${c.track}`); if(c.lessonTitle) L.push(`درسها الحالي: «${c.lessonTitle}»${c.lessonDone?" (أنهته)":""}`); if(c.lessonSummary) L.push(`ملخص الدرس من الكتاب:\n${c.lessonSummary}`); if(c.lastAttempts&&c.lastAttempts.length) L.push(`آخر نتائج تلاوتها:\n- ${c.lastAttempts.join("\n- ")}`); if(c.hifzToday) L.push(`مهام حفظها اليوم: ${c.hifzToday}`); return L.length?`[سياق الطالبة]\n${L.join("\n")}`:""; }
+function ctxText(c){ const L=[]; if(isMale()) L.push("تنبيه: المستخدم ذكر؛ خاطبه بصيغة المذكّر (أنتَ، اضغط، طالب، معلم) لا بصيغة المؤنث."); if(c.name) L.push(`اسم الطالبة: ${c.name}`); if(c.role==="teacher") L.push("المستخدمة: أستاذة الحلقة"); if(c.level) L.push(`مستواها: ${c.level}`); if(c.track) L.push(`مسارها: ${c.track}`); if(c.lessonTitle) L.push(`درسها الحالي: «${c.lessonTitle}»${c.lessonDone?" (أنهته)":""}`); if(c.lessonSummary) L.push(`ملخص الدرس من الكتاب:\n${c.lessonSummary}`); if(c.lastAttempts&&c.lastAttempts.length) L.push(`آخر نتائج تلاوتها:\n- ${c.lastAttempts.join("\n- ")}`); if(c.hifzToday) L.push(`مهام حفظها اليوم: ${c.hifzToday}`); return L.length?`[سياق الطالبة]\n${L.join("\n")}`:""; }
 const AI={
   url(){ return (ST.aiUrl||AI_URL_DEFAULT||"").trim().replace(/\/+$/,""); },
   ready(){ return !!this.url()||!!(typeof FIREBASE_CONFIG!=="undefined"&&FIREBASE_CONFIG&&/^https?:/.test(location.protocol)); },
@@ -2159,15 +2206,14 @@ function roomRenderBar(){ const bar=$("#roomBar"); if(!bar||!ROOM.id) return; co
   bar.innerHTML=`<button class="rbtn ${ROOM.mic?"":"off"}" id="rMic" title="المايك">${ROOM.mic?"🎙️":"🔇"}<span>${ROOM.mic?"كتم":(ROOM.host||ROOM.canSpeak?"تحدّث":"المايك")}</span></button>
     <button class="rbtn ${ROOM.cam?"":"off"}" id="rCam">📷<span>${ROOM.cam?"إيقاف":"الكاميرا"}</span></button>
     ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button>`}
-    ${ROOM.host?`<button class="rbtn ${ROOM.board?"on":""}" id="rBoardB">🖊️<span>${ROOM.board?"إغلاق السبورة":"السبورة"}</span></button><button class="rbtn ${ROOM.state.poll?"on":""}" id="rPollB">📊<span>${ROOM.state.poll?"إنهاء الاستطلاع":"استطلاع"}</span></button>`:""}
-    ${ROOM.host?`<button class="rbtn ${ROOM.rec?"rec":""}" id="rRec">⏺<span>${ROOM.rec?"إيقاف التسجيل "+roomRecTime():"تسجيل"}</span></button>`:""}
+    ${ROOM.host?`<button class="rbtn ${ROOM.rec?"rec":ROOM.tools||ROOM.board||ROOM.state.poll?"on":""}" id="rTools">${ROOM.rec?"⏺":"🧰"}<span>${ROOM.rec?roomRecTime():"أدوات"}</span></button>`:""}
     <button class="rbtn" id="rReact">😊<span>تفاعل</span></button>
     <button class="rbtn ${ROOM.panel==="people"?"on":""}" id="rPeople">👥<span>المشاركات${ROOM.host&&hands?` (${hands}✋)`:""}</span></button>
     <button class="rbtn ${ROOM.panel==="chat"?"on":""}" id="rChat">💬<span>المحادثة${ROOM.unread?` (${ROOM.unread})`:""}</span></button>
     <button class="rbtn leave" id="rLeave">📞<span>${ROOM.host?"إنهاء":"مغادرة"}</span></button>`;
   $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
-  const bb=$("#rBoardB"); if(bb) bb.onclick=roomToggleBoard; const pb=$("#rPollB"); if(pb) pb.onclick=()=>ROOM.state.poll?roomEndPoll():roomPollForm();
-  const rr=$("#rRec"); if(rr) rr.onclick=()=>ROOM.rec?roomRecStop():roomRecStart();
+  const tl=$("#rTools"); if(tl) tl.onclick=()=>{ const ex=$("#rToolBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rToolBox" class="rtools"><button id="rBoardB">🖊️ ${ROOM.board?"إغلاق السبورة":"السبورة"}</button><button id="rPollB">📊 ${ROOM.state.poll?(ROOM.state.poll.reveal?"إخفاء الاستطلاع":"إظهار النتيجة"):"استطلاع سريع"}</button><button id="rRec" class="${ROOM.rec?"recon":""}">⏺ ${ROOM.rec?"إيقاف التسجيل":"تسجيل اللقاء"}</button></div>`); const close=()=>{ const b=$("#rToolBox"); if(b) b.remove(); };
+    $("#rBoardB").onclick=()=>{ close(); roomToggleBoard(); }; $("#rPollB").onclick=()=>{ close(); ROOM.state.poll?roomEndPoll():roomPollForm(); }; $("#rRec").onclick=()=>{ close(); ROOM.rec?roomRecStop():roomRecStart(); }; };
   $("#rReact").onclick=()=>{ const ex=$("#rReactBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rReactBox" class="rreact">${REACTIONS.map(e=>`<button data-re="${e}">${e}</button>`).join("")}</div>`); $("#rReactBox").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",react:b.dataset.re,at:Date.now()}).catch(()=>{}); $("#rReactBox").remove(); }); };
   $("#rPeople").onclick=()=>{ ROOM.panel=ROOM.panel==="people"?null:"people"; roomRenderBar(); roomRenderPanel(); }; $("#rChat").onclick=()=>{ ROOM.panel=ROOM.panel==="chat"?null:"chat"; ROOM.unread=0; roomRenderBar(); roomRenderPanel(); };
   $("#rLeave").onclick=async()=>{ if(ROOM.host&&!confirm("إنهاء اللقاء لجميع المشاركات؟")) return; await roomLeave(); go("meetings"); }; }
@@ -2251,7 +2297,7 @@ function roomPollForm(){ const p=$("#rPanel"); ROOM.panel="poll"; p.hidden=false
 async function roomEndPoll(){ const P=ROOM.state.poll; if(!P) return; if(!P.reveal){ await hostSetState({poll:Object.assign({},P,{reveal:true})}); roomRenderBar(); return; } await hostSetState({poll:null}); roomRenderBar(); }
 function roomRenderPoll(){ const box=$("#rPoll"); if(!box) return; const P=ROOM.state&&ROOM.state.poll; if(!P){ box.hidden=true; box.innerHTML=""; return; }
   const vs=Object.values(ROOM.votes||{}).filter(v=>v.poll===P.id); const counts=P.opts.map((_,i)=>vs.filter(v=>v.opt===i).length); const tot=vs.length; const mine=ROOM.votes&&ROOM.votes[ROOM.me]&&ROOM.votes[ROOM.me].poll===P.id?ROOM.votes[ROOM.me].opt:null; const show=ROOM.host||P.reveal||mine!==null;
-  box.hidden=false; box.className="rpoll"; box.innerHTML=`<div class="row between"><b>📊 ${esc(P.q)}</b><span class="small">${tot} إجابة</span></div><div class="stack" style="gap:6px;margin-top:8px">${P.opts.map((o,i)=>{ const pc=tot?Math.round(counts[i]/tot*100):0; const ok=P.reveal&&P.correct===i; return `<button class="rpopt ${mine===i?"me":""} ${ok?"ok":""}" data-vote="${i}" ${ROOM.host||P.reveal?"disabled":""}><i style="width:${show?pc:0}%"></i><span>${ok?"✅ ":""}${esc(o)}</span>${show?`<b>${pc}٪</b>`:""}</button>`; }).join("")}</div>${ROOM.host?`<p class="small" style="margin-top:6px;opacity:.8">${P.reveal?"اضغطي «إنهاء الاستطلاع» لإخفائه.":"اضغطي «إنهاء الاستطلاع» لإظهار النتيجة"+(P.correct>=0?" والإجابة الصحيحة":"")+" للجميع."}</p>`:""}`;
+  box.hidden=false; box.className="rpoll"; box.innerHTML=`<div class="row between"><b>📊 ${esc(P.q)}</b><span class="small">${tot} إجابة</span></div><div class="stack" style="gap:6px;margin-top:8px">${P.opts.map((o,i)=>{ const pc=tot?Math.round(counts[i]/tot*100):0; const ok=P.reveal&&P.correct===i; return `<button class="rpopt ${mine===i?"me":""} ${ok?"ok":""}" data-vote="${i}" ${ROOM.host||P.reveal?"disabled":""}><i style="width:${show?pc:0}%"></i><span>${ok?"✅ ":""}${esc(o)}</span>${show?`<b>${pc}٪</b>`:""}</button>`; }).join("")}</div>${ROOM.host?`<p class="small" style="margin-top:6px;opacity:.8">${P.reveal?"لإخفائه: 🧰 أدوات ← إخفاء الاستطلاع.":"لإظهار النتيجة"+(P.correct>=0?" والإجابة الصحيحة":"")+" للجميع: 🧰 أدوات ← إظهار النتيجة."}</p>`:""}`;
   box.querySelectorAll("[data-vote]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,vote:P.id,opt:+b.dataset.vote,at:Date.now()}).catch(e=>toast(CLOUD.msg(e))); }); }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
