@@ -297,6 +297,10 @@ main{padding-bottom:170px}
 .rpanel .muted{color:#6c7484}.rperson{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #eee;font-size:.9rem}
 .rchat{max-height:45vh;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0}.rmsg{background:#f1f3f8;border-radius:12px;padding:6px 10px;font-size:.88rem}.rmsg.me{background:#dbf3fb;align-self:flex-start}
 .rpanel .chatbar input{flex:1;border:1.5px solid #ddd;border-radius:10px;padding:8px}
+.rbtn.rec{background:#d6473f;animation:recp 1.2s infinite}@keyframes recp{50%{opacity:.7}}
+.rreact{display:flex;gap:6px;justify-content:center;background:#171a22;border-radius:14px;padding:6px}.rreact button{font-size:1.6rem;background:none;border:0;cursor:pointer}
+.rstage{position:relative;overflow:hidden}.rfloat{position:absolute;bottom:10px;display:flex;flex-direction:column;align-items:center;animation:rfl 3.2s ease-out forwards;pointer-events:none;z-index:4}.rfloat span{font-size:2.2rem}.rfloat small{font-size:.65rem;background:rgba(0,0,0,.5);color:#fff;border-radius:6px;padding:0 4px}
+@keyframes rfl{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-260px);opacity:0}}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -1880,7 +1884,7 @@ const GUIDE=[
  ["٤. الحفظ والمراجعة",`<p><b>الخطة:</b> الحفظ ← «الخطة» ← اختاري «بالقرآن نحيا» (نصف وجه يوميًا) أو «خطة خاصة» وحدّدي:</p><ul><li>من أي سورة تبدئين وأين تنتهين.</li><li>الوحدة: آيات أو نصف وجه أو وجه.</li><li>مقدار الحفظ اليومي ومقدار المراجعة اليومية.</li><li>أيام الحفظ في الأسبوع (وفي غيرها مراجعة فقط).</li></ul><p><b>جلسة اليوم:</b> استمعي مرتين ← اقرئي 15 مرة ← سمّعي من حفظك بالتسجيل ← «اعتماد وإنهاء المهمة».</p>`],
  ["٥. تصحيح التلاوة",`<ol><li>المزيد ← «تصحيح التلاوة»، واختاري السورة والآيات (10 على الأكثر).</li><li>استمعي للقارئ، ثم سجّلي تلاوتك كاملة وأوقفي.</li><li>تظهر النسبة والكلمات ملوّنة: أخضر صحيح، أصفر قريب، أحمر ساقط أو محرّف، مع ملاحظات المدود والغنن.</li></ol><p><b>لتصحيح أدق:</b> مكان هادئ، الجوال قريب من فمك، صوت واضح. أول مرة يُحمَّل المحرك القرآني (نحو 30 م.ب).</p>`],
  ["٦. المخارج والألعاب والمساعد",`<p><b>المخارج:</b> اختاري حرفًا لتقرئي مخرجه وصفاته، واضغطي ▶ لسماعه، ثم انطقيه ساكنًا بعد همزة (أَبْ) وسجّلي.</p><p><b>الألعاب:</b> ست ألعاب، كل واحدة دقيقة: النون الساكنة، الميم الساكنة، المدود، المخارج، الصفات، اللام والراء.</p><p><b>المساعد الذكي:</b> اسأليه عن أي حكم أو عن درسك أو خطأ تلاوتك (25 سؤالًا يوميًا).</p>`],
- ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (تتسع لنحو 30 طالبة): المايك مكتوم حتى تأذن المعلمة بعد رفع اليد، ومع المعلمة مشاركة الشاشة وتثبيت فيديو طالبة وفتح النقاش للجميع، وللجميع محادثة نصية، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
+ ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (تتسع لنحو 50 مشاركة؛ وللأعداد الأكبر يُلصق رابط Meet أو Zoom): المايك مكتوم حتى تأذن المعلمة بعد رفع اليد، ومع المعلمة مشاركة الشاشة وتثبيت فيديو طالبة وفتح النقاش للجميع، وللجميع محادثة نصية، ولها زر ⏺ «تسجيل»: يُحفظ الصوت في «تسجيلات اللقاءات» لتسمعه الطالبات لاحقًا، ويُنزَّل الملف الكامل (مع الشاشة) على جهاز المعلمة، وللجميع تفاعلات 👍❤️🤲، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
  ["٨. الحضور والنقاط والجوائز",`<p><b>الحضور:</b> الأسبوع يبدأ السبت. 4 أيام منجزة فأكثر: متميزة · 3: مثالية · يومان فأقل: غائبة.</p><p><b>النقاط:</b> درس 20 · اختبار كامل +10 · واجب 15 · مهمة حفظ 10 · يوم منجز 10 · 7 أيام متتالية 50 · تلاوة 5–10 · الألعاب.</p><p><b>الرتب:</b> مبتدئة ← مجتهدة (150) ← متقنة (400) ← ماهرة (800) ← متميزة (1500) ← نجمة رياحين (3000). والجوائز والشهادات التحفيزية في «نقاطي وجوائزي».</p>`],
  ["٩. للمعلمة",`<ul><li><b>البطاقة</b> (الإعدادات): الجوال، المدينة، الحلقة، النبذة، واسمك كما تكتبه الطالبات.</li><li><b>التوقيع والختم:</b> ارسمي التوقيع أو ارفعي صورته، وارفعي صورة ختمك إن شئتِ.</li><li><b>طالباتي:</b> ملخص الحضور والتسجيلات، وصفحة لكل طالبة: المستويات، الحضور، الاستماع للتسجيلات وتقييمها، الإجابات، الحفظ، منح الجوائز، حذفها من الحلقة.</li><li><b>الواجبات:</b> العنوان والسورة والآيات والموعد، فيصل لطالباتك.</li><li><b>أصوات الحروف:</b> المخارج ← «إدارة الأصوات»: سجّلي أو ارفعي نطق كل حرف.</li></ul>`],
  ["١٠. حل المشكلات",`<ul><li><b>عالقة على «جارٍ الاتصال»:</b> تأكدي من الإنترنت ← «إعادة المحاولة»، أو افتحي من Chrome/Safari.</li><li><b>التحديث لا يظهر:</b> حدّثي الصفحة (Ctrl+F5)، أو أغلقي التطبيق وافتحيه.</li><li><b>زر جوجل لا يعمل:</b> افتحي في Chrome/Safari مباشرة، أو ادخلي بالبريد.</li><li><b>المايك لا يعمل:</b> اسمحي للموقع بالميكروفون من إعدادات المتصفح.</li><li><b>لا تظهر طالبة في لوحة المعلمة:</b> تأكدي أنها انضمت من غرفة المعلمات أو كتبت اسم الحلقة.</li></ul><p>بياناتك محفوظة في حسابك على السحابة، فإن غيّرتِ الجهاز ادخلي بالحساب نفسه.</p>`]
@@ -1960,16 +1964,20 @@ VIEWS.meetings=async function(){
   if(!T&&!manage){ $("#mtBox").innerHTML=`<div class="card"><p>لم تنضمّي إلى حلقة بعد.</p><button class="btn sm" data-go="teachers" style="margin-top:8px">🏫 غرفة المعلمات</button></div>`; view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)); return; }
   const meetings=(T&&T.meetings)||[]; const occ=meetings.flatMap(m=>meetOccurrences(m,14)).sort((a,b)=>a.start-b.start);
   const occHtml=occ.length?occ.slice(0,10).map(o=>{ const st=meetState(o); const done=ST.meetAtt&&ST.meetAtt[o.key]; return `<div class="row between" style="padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${esc(o.m.title||"لقاء الحلقة")}</b><div class="small muted">${fmtMeet(o.start)} · ${o.m.dur||60} دقيقة${o.m.notes?" · "+esc(o.m.notes):""}</div></div><div class="row" style="gap:6px">${st==="open"?`<span class="pill good">● الآن</span>`:""}${done&&!manage?`<span class="pill good">✓ حضرتِ</span>`:""}<button class="btn ${st==="open"?"":"sec"} sm" data-join="${esc(o.key)}" ${st==="open"||manage?"":"disabled"}>${manage?"🎥 بدء اللقاء":st==="open"?"🎥 انضمام":"يُفتح قبل الموعد بربع ساعة"}</button></div></div>`; }).join(""):`<p class="muted small">لا لقاءات مجدولة خلال الأسبوعين القادمين.</p>`;
-  let html=`<div class="card"><h3>اللقاءات القادمة</h3><div style="margin-top:6px">${occHtml}</div><p class="small muted" style="margin-top:8px">اللقاء داخل رياحين نفسه. أول مرة يطلب المتصفح إذن المايك (والكاميرا إن شغّلتِها)؛ اسمحي له. يتسع لنحو 30 طالبة: المعلمة تأذن بالتحدث، وتشارك شاشتها، وتثبّت فيديو طالبة، ومعها محادثة نصية.</p></div>`;
+  let html=`<div class="card"><h3>اللقاءات القادمة</h3><div style="margin-top:6px">${occHtml}</div><p class="small muted" style="margin-top:8px">اللقاء داخل رياحين نفسه. أول مرة يطلب المتصفح إذن المايك (والكاميرا إن شغّلتِها)؛ اسمحي له. يتسع لنحو 50 مشاركة: المعلمة تأذن بالتحدث، وتشارك شاشتها، وتثبّت فيديو طالبة، وتسجّل اللقاء (⏺)، ومع الجميع محادثة وتفاعلات.</p></div>`;
   if(manage){ const DN=[6,0,1,2,3,4,5];
     html+=`<div class="card stack"><h3>➕ لقاء جديد</h3><div class="row"><label class="f">العنوان<input id="mT" placeholder="مثال: لقاء التسميع اليومي" value="لقاء الحلقة"></label><label class="f">النوع<select id="mR"><option value="weekly">أسبوعي متكرر</option><option value="once">مرة واحدة</option></select></label></div>
       <div class="f" id="mDaysL"><span>الأيام</span><div class="row" style="gap:6px;margin-top:4px" id="mDays">${DN.map(d=>`<label class="pill" style="cursor:pointer"><input type="checkbox" value="${d}" style="margin:0 0 0 4px">${DAY_NAMES[d]}</label>`).join("")}</div></div>
       <div class="row"><label class="f" id="mDateL" hidden>التاريخ<input type="date" id="mDate"></label><label class="f">الوقت<input type="time" id="mTime" value="20:00"></label><label class="f">المدة (دقيقة)<input type="number" id="mDur" value="60" min="15" max="240"></label></div>
-      <label class="f">رابط خارجي (اختياري) <span class="small muted">(اتركيه فارغًا ليكون اللقاء داخل رياحين، أو الصقي رابط Google Meet أو Zoom لأكثر من 30 مشاركة)</span><input id="mLink" dir="ltr" placeholder="https://meet.google.com/..."></label>
+      <label class="f">رابط خارجي (اختياري) <span class="small muted">(اتركيه فارغًا ليكون اللقاء داخل رياحين، أو الصقي رابط Google Meet أو Zoom لأكثر من 50 مشاركة (مثل 150))</span><input id="mLink" dir="ltr" placeholder="https://meet.google.com/..."></label>
       <label class="f">ملاحظة للطالبات<input id="mNotes" placeholder="مثال: جهّزي تسميع حفظ الأمس"></label><button class="btn" id="mAdd">حفظ اللقاء</button></div>`;
     if(meetings.length){ html+=`<div class="card"><h3>اللقاءات المجدولة</h3><div class="stack" style="margin-top:6px">${meetings.map(m=>`<div class="row between"><div><b>${esc(m.title||"لقاء")}</b><div class="small muted">${m.repeat==="weekly"?"كل "+(m.days||[]).map(d=>DAY_NAMES[d]).join("، "):"يوم "+esc(m.date)} · ${esc(m.time)} · ${m.dur||60} د · ${m.link?`<span dir="ltr">${esc(m.link.replace(/^https?:\/\//,""))}</span>`:"داخل رياحين"}</div></div><button class="btn danger sm" data-delm="${esc(m.id)}">حذف</button></div>`).join("")}</div></div>`;
       html+=`<div class="card"><h3>حضور اللقاءات</h3><div id="mAtt"><p class="muted small">جارٍ التحميل…</p></div></div>`; } }
+  const recs=(T&&T.meetRecordings)||[];
+  html+=`<div class="card"><h3>🎧 تسجيلات اللقاءات (${recs.length})</h3>${recs.length?`<div class="stack" style="margin-top:6px">${recs.map(r=>`<div class="q"><div class="row between"><div><b>${esc(r.title)}</b><div class="small muted">${fmtMeet(r.date)} · ${Math.floor(r.dur/60)} دقيقة</div></div><span class="row" style="gap:6px"><button class="btn sec sm" data-play="${esc(r.id)}">▶ استماع</button>${manage?`<button class="btn danger sm" data-delr="${esc(r.id)}">حذف</button>`:""}</span></div><div data-pbox="${esc(r.id)}"></div></div>`).join("")}</div>`:`<p class="small muted">${manage?"ابدئي التسجيل من زر ⏺ داخل اللقاء، فيُحفظ الصوت هنا لطالباتك، والملف الكامل على جهازك.":"لا تسجيلات بعد."}</p>`}</div>`;
   $("#mtBox").innerHTML=html;
+  $("#mtBox").querySelectorAll("[data-play]").forEach(b=>b.onclick=async()=>{ const r=recs.find(x=>x.id===b.dataset.play); const box=$("#mtBox").querySelector(`[data-pbox="${r.id}"]`); box.innerHTML=`<p class="small muted">جارٍ التحميل…</p>`; try{ const u=await CLOUD.audioUrl(r.url); box.innerHTML=`<audio controls autoplay src="${u}" style="width:100%"></audio>`; }catch(e){ box.innerHTML=`<p class="small muted">${esc(CLOUD.msg(e))}</p>`; } });
+  $("#mtBox").querySelectorAll("[data-delr]").forEach(b=>b.onclick=async()=>{ if(!confirm("حذف التسجيل؟")) return; try{ await CLOUD.db.collection("teachers").doc(CLOUD.user.email).set({meetRecordings:recs.filter(x=>x.id!==b.dataset.delr)},{merge:true}); go("meetings"); }catch(e){ toast(CLOUD.msg(e)); } });
   $("#mtBox").querySelectorAll("[data-join]").forEach(b=>b.onclick=()=>{ const o=occ.find(x=>x.key===b.dataset.join); if(!o) return; o.T=T; joinMeeting(o); });
   if(!manage) return;
   const sync=()=>{ const once=$("#mR").value==="once"; $("#mDaysL").hidden=once; $("#mDateL").hidden=!once; }; $("#mR").onchange=sync; sync();
@@ -1985,17 +1993,17 @@ VIEWS.meetings=async function(){
     $("#mAtt").innerHTML=past.length?`<div class="scroller"><table class="table"><tr><th>اللقاء</th><th>الحاضرات</th><th>الغائبات</th></tr>${past.map(o=>{ const pres=students.filter(s=>s.meetAtt&&s.meetAtt[o.key]); const abs=students.filter(s=>!(s.meetAtt&&s.meetAtt[o.key])); return `<tr><td class="small"><b>${esc(o.m.title)}</b><div class="muted">${fmtMeet(o.start)}</div></td><td class="small"><span class="pill good">${pres.length}</span> ${pres.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td><td class="small"><span class="pill bad">${abs.length}</span> ${abs.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td></tr>`; }).join("")}</table></div>`:`<p class="muted small">لم يُعقد لقاء بعد.</p>`; }catch(e){ $("#mAtt").innerHTML=`<p class="small muted">${esc(CLOUD.msg(e))}</p>`; } }
 };
 
-// ===== غرفة اللقاء داخل الموقع — نموذج «المعلمة محور الاتصال» يتسع لنحو 30 مشاركة =====
+// ===== غرفة اللقاء داخل الموقع — نموذج «المعلمة محور الاتصال» يتسع لنحو 50 مشاركة =====
 // كل طالبة تتصل بالمعلمة فقط. المعلمة تُرسل لكل طالبة: صوتها + صورتها/شاشتها + مزيجًا صوتيًا لمن أُذن لهن بالتحدث + الفيديو المثبّت.
 // الإشارات وحالة الغرفة والمحادثة عبر Firestore: rooms/{id} (الحالة) · peers · signals · chat
 const ICE_SERVERS=[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},{urls:["turn:openrelay.metered.ca:80","turn:openrelay.metered.ca:443","turn:openrelay.metered.ca:443?transport=tcp"],username:"openrelayproject",credential:"openrelayproject"}];
-const MAX_ROOM=31;
+const MAX_ROOM=51; const REACTIONS=["👍","❤️","🤲","👏","🌸","😊"];
 const ROOM={ id:null };
 function roomIdFor(T,o){ return (T.email+"__"+o.key).replace(/[^\w@.-]/g,"_"); }
 function rref(){ return CLOUD.db.collection("rooms").doc(ROOM.id); }
 function roomSend(to,type,data){ return rref().collection("signals").add({from:ROOM.me,to,type,data:JSON.parse(JSON.stringify(data)),at:Date.now()}); }
 function newRoomState(){ return { id:null, me:null, host:false, hostId:null, local:null, camTrack:null, screenTrack:null, peers:{}, unsub:[], hb:null, mic:false, cam:false, hand:false, state:{speakers:[],open:false,spotlight:null}, chat:[], panel:null, closing:false, ctx:null, unread:0 }; }
-async function roomJoin(roomId,title,{host=false,video=false}={}){
+async function roomJoin(roomId,title,{host=false,video=false}={}){ ROOM.title=title;
   await roomLeave(); Object.assign(ROOM,newRoomState(),{id:roomId,me:CLOUD.user.uid,host,title});
   ROOM.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
   ROOM.mic=host; ROOM.local.getAudioTracks().forEach(t=>t.enabled=host);
@@ -2006,7 +2014,7 @@ async function roomJoin(roomId,title,{host=false,video=false}={}){
   ROOM.hb=setInterval(()=>{ meRef.set({lastSeen:Date.now()},{merge:true}).catch(()=>{}); },8000);
   const t0=Date.now();
   // حالة الغرفة (للطالبات: من يُسمح لها بالتحدث، والفيديو المثبّت)
-  ROOM.unsub.push(rref().onSnapshot(d=>{ const s=d.exists?d.data():null; if(!s) return; ROOM.state={speakers:s.speakers||[],open:!!s.open,spotlight:s.spotlight||null,hostName:s.hostName}; ROOM.hostId=s.host; if(!ROOM.host) roomApplyMicRights(); else roomRemix(); roomRender(); }));
+  ROOM.unsub.push(rref().onSnapshot(d=>{ const s=d.exists?d.data():null; if(!s) return; ROOM.state={speakers:s.speakers||[],open:!!s.open,spotlight:s.spotlight||null,hostName:s.hostName,recording:!!s.recording}; ROOM.hostId=s.host; if(!ROOM.host) roomApplyMicRights(); else roomRemix(); roomRender(); }));
   // المشاركات
   ROOM.unsub.push(rref().collection("peers").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ const id=ch.doc.id; if(id===ROOM.me) return; const data=ch.doc.data();
       if(ch.type==="removed"||Date.now()-(data.lastSeen||0)>40000){ roomDrop(id); return; }
@@ -2018,7 +2026,7 @@ async function roomJoin(roomId,title,{host=false,video=false}={}){
   // الإشارات الموجّهة لي
   ROOM.unsub.push(rref().collection("signals").where("to","==",ROOM.me).onSnapshot(s=>{ s.docChanges().forEach(async ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); ch.doc.ref.delete().catch(()=>{}); if(m.at<t0-60000) return; await roomSignal(m); }); }));
   // المحادثة
-  ROOM.unsub.push(rref().collection("chat").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ if(ch.type==="added"){ ROOM.chat.push(ch.doc.data()); if(ROOM.panel!=="chat"&&ch.doc.data().from!==ROOM.me) ROOM.unread++; } }); ROOM.chat.sort((a,b)=>a.at-b.at); roomRenderPanel(); roomRenderBar(); }));
+  ROOM.unsub.push(rref().collection("chat").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); if(m.react){ if(m.at>t0-5000) roomFloat(m); return; } ROOM.chat.push(m); if(ROOM.panel!=="chat"&&m.from!==ROOM.me) ROOM.unread++; }); ROOM.chat.sort((a,b)=>a.at-b.at); roomRenderPanel(); roomRenderBar(); }));
   window.addEventListener("pagehide",roomLeave);
   roomRender();
 }
@@ -2059,21 +2067,21 @@ function roomUnmix(id){ for(const L of Object.values(ROOM.peers)){ if(L.mixIn&&L
 async function roomRespot(){ if(!ROOM.host) return; const sid=ROOM.state.spotlight; const track=sid&&ROOM.peers[sid]?ROOM.peers[sid].camTrack:null;
   for(const [id,P] of Object.entries(ROOM.peers)){ if(!P.pc) continue; const t=P.pc.getTransceivers()[3]; if(t) await t.sender.replaceTrack(id===sid?null:(track||null)).catch(()=>{}); } }
 async function roomHostVideo(){ for(const P of Object.values(ROOM.peers)){ if(!P.pc) continue; const t=P.pc.getTransceivers()[1]; if(t) await t.sender.replaceTrack(ROOM.screenTrack||ROOM.camTrack||null).catch(()=>{}); roomTuneVideo(P.pc); } }
-function roomTuneVideo(pc){ const n=Object.keys(ROOM.peers).length; pc.getSenders().forEach(s=>{ if(!s.track||s.track.kind!=="video") return; const p=s.getParameters(); p.encodings=p.encodings&&p.encodings.length?p.encodings:[{}]; const screen=s.track===ROOM.screenTrack; p.encodings[0].maxBitrate=screen?(n>15?250000:500000):(n>15?90000:n>8?150000:300000); if(!screen) p.encodings[0].scaleResolutionDownBy=n>15?2:1; s.setParameters(p).catch(()=>{}); }); }
+function roomTuneVideo(pc){ const n=Object.keys(ROOM.peers).length; pc.getSenders().forEach(s=>{ if(!s.track||s.track.kind!=="video") return; const p=s.getParameters(); p.encodings=p.encodings&&p.encodings.length?p.encodings:[{}]; const screen=s.track===ROOM.screenTrack; p.encodings[0].maxBitrate=screen?(n>30?150000:n>15?250000:500000):(n>30?60000:n>15?90000:n>8?150000:300000); if(!screen) p.encodings[0].scaleResolutionDownBy=n>15?2:1; s.setParameters(p).catch(()=>{}); }); }
 async function hostSetState(patch){ ROOM.state=Object.assign({},ROOM.state,patch); await rref().set(patch,{merge:true}); roomRemix(); roomRespot(); roomRender(); }
 // ---------- مشترك ----------
 function roomWirePC(pc,id){ const P=ROOM.peers[id]; pc.onicecandidate=e=>{ if(e.candidate) roomSend(id,"ice",e.candidate.toJSON()).catch(()=>{}); };
   pc.onconnectionstatechange=()=>{ P.state=pc.connectionState; if(pc.connectionState==="failed"){ if(!ROOM.host&&P.info.host) setTimeout(()=>roomCallHost(id),1500); } roomRender(); }; }
 async function roomSignal(m){ try{
   if(m.type==="offer"&&ROOM.host){ await roomAnswer(m); return; }
-  if(m.type==="full"){ toast("الغرفة ممتلئة (الحد 30 طالبة)"); return; }
+  if(m.type==="full"){ toast("الغرفة ممتلئة (الحد 50 طالبة)"); return; }
   const P=ROOM.peers[m.from]; if(!P||!P.pc){ if(m.type==="ice"){ (ROOM.peers[m.from]=ROOM.peers[m.from]||{info:{},streams:{},pending:[]}).pending=(P&&P.pending)||[]; ROOM.peers[m.from].pending.push(m.data); } return; }
   const pc=P.pc; if(m.type==="answer"){ if(pc.signalingState==="have-local-offer"){ await pc.setRemoteDescription(m.data); for(const c of (P.pending||[]).splice(0)) await pc.addIceCandidate(c).catch(()=>{}); } }
   else if(m.type==="ice"){ if(pc.remoteDescription) await pc.addIceCandidate(m.data).catch(()=>{}); else (P.pending=P.pending||[]).push(m.data); }
 }catch(e){ console.warn("signal",e); } }
 function roomDrop(id){ const P=ROOM.peers[id]; if(!P) return; if(ROOM.host) roomUnmix(id); try{ P.pc&&P.pc.close(); }catch(e){} delete ROOM.peers[id];
   if(ROOM.host&&(ROOM.state.speakers.includes(id)||ROOM.state.spotlight===id)) hostSetState({speakers:ROOM.state.speakers.filter(x=>x!==id),spotlight:ROOM.state.spotlight===id?null:ROOM.state.spotlight}); roomRender(); }
-async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; ROOM.closing=true; const id=ROOM.id, me=ROOM.me, host=ROOM.host;
+async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; if(ROOM.rec) await roomRecStop(); ROOM.closing=true; const id=ROOM.id, me=ROOM.me, host=ROOM.host;
   (ROOM.unsub||[]).forEach(u=>{ try{u();}catch(e){} }); clearInterval(ROOM.hb);
   Object.values(ROOM.peers||{}).forEach(P=>{ try{ P.pc&&P.pc.close(); }catch(e){} try{ P.sinkEl&&(P.sinkEl.srcObject=null); }catch(e){} });
   [ROOM.local,ROOM.camTrack&&new MediaStream([ROOM.camTrack]),ROOM.screenTrack&&new MediaStream([ROOM.screenTrack])].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));
@@ -2093,7 +2101,7 @@ function roomToggleHand(){ ROOM.hand=!ROOM.hand; roomSetMe({hand:ROOM.hand,handA
 function roomSendChat(text){ text=String(text||"").trim().slice(0,500); if(!text) return; rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",host:ROOM.host,text,at:Date.now()}).catch(e=>toast(CLOUD.msg(e))); }
 // ---------- العرض ----------
 function roomTileHtml(id,name,{me,muted,cam,hand,host,state,speaking,spot}){ return `<div class="rtile ${hand?"hand":""} ${spot?"spot":""}" data-tile="${id}">${cam?`<video autoplay playsinline muted></video>`:`<div class="rav">${esc(initials(name))}</div>`}<div class="rname">${hand?"✋ ":""}${host?"👩‍🏫 ":""}${esc(name)}${me?" (أنا)":""} ${muted?"🔇":"🎙️"}${state&&state!=="connected"&&!me?` <span class="small">· ${state==="failed"||state==="disconnected"?"انقطع":"يتصل…"}</span>`:""}</div></div>`; }
-function roomRender(){ const stage=$("#rStage"); if(!stage||!ROOM.id) return; const n=Object.keys(ROOM.peers).filter(id=>ROOM.peers[id].info&&ROOM.peers[id].info.name).length+1; const cnt=$("#roomCount"); if(cnt) cnt.textContent=n;
+function roomRender(){ const stage=$("#rStage"); if(!stage||!ROOM.id) return; const rb=$("#rRecBadge"); if(rb) rb.hidden=!ROOM.state.recording; const n=Object.keys(ROOM.peers).filter(id=>ROOM.peers[id].info&&ROOM.peers[id].info.name).length+1; const cnt=$("#roomCount"); if(cnt) cnt.textContent=n;
   if(ROOM.host){ // المعلمة: شبكة كل الطالبات
     const items=[["me",ST.fullName||ST.name,{me:true,muted:!ROOM.mic,cam:!!(ROOM.screenTrack||ROOM.camTrack),host:true}]].concat(Object.entries(ROOM.peers).filter(([id,P])=>P.info&&P.info.name).sort((a,b)=>(b[1].info.hand?1:0)-(a[1].info.hand?1:0)).map(([id,P])=>[id,P.info.name,{muted:P.info.muted,cam:!!(P.camTrack&&P.info.cam),hand:P.info.hand,state:P.state,spot:ROOM.state.spotlight===id}]));
     stage.innerHTML=`<div class="rgrid ${items.length>9?"dense":""}">${items.map(([id,n,o])=>roomTileHtml(id,n,o)).join("")}</div>`;
@@ -2114,10 +2122,14 @@ function roomRenderBar(){ const bar=$("#roomBar"); if(!bar||!ROOM.id) return; co
   bar.innerHTML=`<button class="rbtn ${ROOM.mic?"":"off"}" id="rMic" title="المايك">${ROOM.mic?"🎙️":"🔇"}<span>${ROOM.mic?"كتم":(ROOM.host||ROOM.canSpeak?"تحدّث":"المايك")}</span></button>
     <button class="rbtn ${ROOM.cam?"":"off"}" id="rCam">📷<span>${ROOM.cam?"إيقاف":"الكاميرا"}</span></button>
     ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button>`}
+    ${ROOM.host?`<button class="rbtn ${ROOM.rec?"rec":""}" id="rRec">⏺<span>${ROOM.rec?"إيقاف التسجيل "+roomRecTime():"تسجيل"}</span></button>`:""}
+    <button class="rbtn" id="rReact">😊<span>تفاعل</span></button>
     <button class="rbtn ${ROOM.panel==="people"?"on":""}" id="rPeople">👥<span>المشاركات${ROOM.host&&hands?` (${hands}✋)`:""}</span></button>
     <button class="rbtn ${ROOM.panel==="chat"?"on":""}" id="rChat">💬<span>المحادثة${ROOM.unread?` (${ROOM.unread})`:""}</span></button>
     <button class="rbtn leave" id="rLeave">📞<span>${ROOM.host?"إنهاء":"مغادرة"}</span></button>`;
   $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
+  const rr=$("#rRec"); if(rr) rr.onclick=()=>ROOM.rec?roomRecStop():roomRecStart();
+  $("#rReact").onclick=()=>{ const ex=$("#rReactBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rReactBox" class="rreact">${REACTIONS.map(e=>`<button data-re="${e}">${e}</button>`).join("")}</div>`); $("#rReactBox").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",react:b.dataset.re,at:Date.now()}).catch(()=>{}); $("#rReactBox").remove(); }); };
   $("#rPeople").onclick=()=>{ ROOM.panel=ROOM.panel==="people"?null:"people"; roomRenderBar(); roomRenderPanel(); }; $("#rChat").onclick=()=>{ ROOM.panel=ROOM.panel==="chat"?null:"chat"; ROOM.unread=0; roomRenderBar(); roomRenderPanel(); };
   $("#rLeave").onclick=async()=>{ if(ROOM.host&&!confirm("إنهاء اللقاء لجميع المشاركات؟")) return; await roomLeave(); go("meetings"); }; }
 function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.panel; if(!ROOM.panel) return;
@@ -2133,7 +2145,7 @@ function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.
   $("#rPX").onclick=()=>{ ROOM.panel=null; roomRenderBar(); roomRenderPanel(); }; }
 VIEWS.room=async function(arg){
   const {roomId,title,o,host}=arg||{}; if(!roomId){ go("meetings"); return; }
-  view.innerHTML=`<div class="rroom"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="pill acc">👥 <span id="roomCount">1</span></span></div>
+  view.innerHTML=`<div class="rroom"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="row" style="gap:6px"><span class="pill bad" id="rRecBadge" hidden>🔴 يُسجَّل</span><span class="pill acc">👥 <span id="roomCount">1</span></span></span></div>
     <div id="roomPre" class="card stack" style="text-align:center"><p>${host?"أنتِ مديرة اللقاء: يتحدث الجميع حين تأذنين، وتستطيعين مشاركة الشاشة وتثبيت فيديو طالبة.":"تدخلين والمايك مكتوم. ارفعي يدك لتأذن لكِ المعلمة بالتحدث."}</p><div class="row" style="justify-content:center"><button class="btn lg" id="rJoinA">🎙️ دخول</button><button class="btn sec lg" id="rJoinV">📷 دخول مع الكاميرا</button></div><p class="small muted">يتسع اللقاء لنحو 30 طالبة. استخدمي سماعة لتجنّب الصدى.${host?" يُفضَّل للمعلمة اتصال إنترنت قوي (ألياف أو 5G) لأنها توزّع الصوت على الجميع.":""}</p></div>
     <div id="rStage" class="rstage" hidden></div><div id="rPanel" class="rpanel" hidden></div><div id="rAudio" hidden></div>
     <div class="rbar" id="roomBar" hidden></div></div>`;
@@ -2141,5 +2153,29 @@ VIEWS.room=async function(arg){
     catch(e){ console.warn(e); $("#roomPre").innerHTML=`<div class="note bad">${e&&e.name==="NotAllowedError"?"لم يُسمح بالمايك. اسمحي للموقع بالمايك من إعدادات المتصفح ثم أعيدي المحاولة.":e&&e.code==="permission-denied"?"غرفة اللقاءات تحتاج تفعيلًا في Firebase.":"تعذّر الدخول: "+esc(e.message||e)}</div><button class="btn sm" onclick="go('meetings')" style="margin-top:8px">رجوع</button>`; } };
   $("#rJoinA").onclick=()=>start(false); $("#rJoinV").onclick=()=>start(true);
 };
+
+// ---------- التفاعلات ----------
+function roomFloat(m){ const st=$("#rStage"); if(!st) return; const el=document.createElement("div"); el.className="rfloat"; el.style.left=(10+Math.random()*70)+"%"; el.innerHTML=`<span>${esc(m.react)}</span><small>${esc((m.name||"").split(" ")[0])}</small>`; st.appendChild(el); setTimeout(()=>el.remove(),3200); }
+// ---------- تسجيل اللقاء (للمعلمة) ----------
+// يسجّل الصوت (المعلمة + كل من تحدّثت) دائمًا، والصورة/الشاشة إن كانت مفعّلة. الصوت يُحفظ في «تسجيلات اللقاءات» للطالبات، والملف الكامل يُنزَّل لجهاز المعلمة.
+function roomRecTime(){ const s=Math.floor((Date.now()-(ROOM.recStart||Date.now()))/1000); return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
+function roomRecWire(){ if(!ROOM.recDest) return; ROOM.recIn=ROOM.recIn||{}; const want=new Set(speakerIds());
+  for(const id of Object.keys(ROOM.recIn)) if(!want.has(id)){ try{ ROOM.recIn[id].disconnect(); }catch(e){} delete ROOM.recIn[id]; }
+  for(const id of want){ if(ROOM.recIn[id]) continue; const src=roomSource(id); if(!src) continue; const g=ROOM.ctx.createGain(); src.connect(g); g.connect(ROOM.recDest); ROOM.recIn[id]=g; } }
+async function roomRecStart(){ if(!ROOM.host||ROOM.rec) return; if(!confirm("بدء تسجيل اللقاء؟ سيظهر للجميع أن اللقاء يُسجَّل.")) return;
+  const ctx=ROOM.ctx; ROOM.recDest=ctx.createMediaStreamDestination(); ROOM.recHost=ctx.createMediaStreamSource(ROOM.local); ROOM.recHost.connect(ROOM.recDest); ROOM.recIn={}; roomRecWire();
+  const aMime=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(m=>MediaRecorder.isTypeSupported(m))||"";
+  ROOM.recA=new MediaRecorder(ROOM.recDest.stream,Object.assign({audioBitsPerSecond:32000},aMime?{mimeType:aMime}:{})); ROOM.recAChunks=[]; ROOM.recA.ondataavailable=e=>e.data.size&&ROOM.recAChunks.push(e.data); ROOM.recA.start(5000);
+  const v=ROOM.screenTrack||ROOM.camTrack; if(v){ const vMime=["video/webm;codecs=vp8,opus","video/webm","video/mp4"].find(m=>MediaRecorder.isTypeSupported(m))||""; ROOM.recV=new MediaRecorder(new MediaStream([v,ROOM.recDest.stream.getAudioTracks()[0]]),Object.assign({videoBitsPerSecond:600000,audioBitsPerSecond:48000},vMime?{mimeType:vMime}:{})); ROOM.recVChunks=[]; ROOM.recV.ondataavailable=e=>e.data.size&&ROOM.recVChunks.push(e.data); ROOM.recV.start(5000); }
+  ROOM.rec=true; ROOM.recStart=Date.now(); ROOM.recTick=setInterval(()=>{ roomRecWire(); roomRenderBar(); },3000); await hostSetState({recording:true}); roomRenderBar(); toast("بدأ التسجيل"); }
+async function roomRecStop(){ if(!ROOM.rec) return; ROOM.rec=false; clearInterval(ROOM.recTick); const stopRec=r=>new Promise(res=>{ if(!r||r.state==="inactive") return res(); r.onstop=res; r.stop(); });
+  await stopRec(ROOM.recA); await stopRec(ROOM.recV); const dur=Math.round((Date.now()-ROOM.recStart)/1000); const when=new Date(ROOM.recStart); const stamp=when.toISOString().slice(0,16).replace(/[:T]/g,"-");
+  const aBlob=new Blob(ROOM.recAChunks||[],{type:(ROOM.recA&&ROOM.recA.mimeType)||"audio/webm"}); const vBlob=ROOM.recVChunks&&ROOM.recVChunks.length?new Blob(ROOM.recVChunks,{type:ROOM.recV.mimeType||"video/webm"}):null;
+  try{ ROOM.recHost.disconnect(); Object.values(ROOM.recIn||{}).forEach(g=>g.disconnect()); }catch(e){} ROOM.recDest=null; ROOM.recA=ROOM.recV=null;
+  try{ await hostSetState({recording:false}); }catch(e){}
+  downloadsSave(`لقاء-${(ROOM.title||"الحلقة").replace(/\s+/g,"-")}-${stamp}.${vBlob?"webm":"webm"}`,vBlob||aBlob);
+  // رفع الصوت للسحابة لتسمعه الطالبات
+  if(aBlob.size>500&&aBlob.size<40*1024*1024){ toast("جارٍ حفظ تسجيل الصوت للطالبات…"); try{ const url=await CLOUD.uploadAudio(aBlob,`rec/${CLOUD.user.uid}/meeting-${Date.now()}.webm`); const ref=CLOUD.db.collection("teachers").doc(CLOUD.user.email); const d=await ref.get(); const list=(d.exists&&d.data().meetRecordings)||[]; list.unshift({id:"r"+Date.now(),title:ROOM.title||"لقاء الحلقة",date:ROOM.recStart,dur,url,size:aBlob.size}); await ref.set({meetRecordings:list.slice(0,60)},{merge:true}); toast("حُفظ التسجيل في «تسجيلات اللقاءات»"); }catch(e){ toast("حُفظ التسجيل على جهازك، وتعذّر رفعه: "+CLOUD.msg(e)); } }
+  roomRenderBar(); }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
