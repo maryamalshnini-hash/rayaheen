@@ -1,4 +1,4 @@
-<!doctype html><html lang="ar" dir="rtl" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1ea7d8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
+<!doctype html><html lang="ar" dir="rtl" data-theme="light" data-pal="emerald"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>img{max-width:100%}[hidden]{display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0a4f41"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="رياحين"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-192.png"><title>رياحين</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap">
 <style>
@@ -240,15 +240,15 @@ audio{width:100%;max-width:420px}
 .card{border-radius:var(--radius);border-color:transparent}
 .card:not(.soft):hover{box-shadow:0 2px 4px rgba(120,90,20,.06),0 12px 30px rgba(120,90,20,.12)}
 .btn{border-radius:12px;font-weight:700;letter-spacing:.1px}
-.btn:not(.sec):not(.danger):not(.gold){background-image:linear-gradient(135deg,var(--accent),#5fd0f0);border-color:transparent;box-shadow:0 4px 12px rgba(30,167,216,.28)}
+.btn:not(.sec):not(.danger):not(.gold){background-image:linear-gradient(135deg,var(--accent),var(--accent2,#5fd0f0));border-color:transparent;box-shadow:0 4px 12px var(--accent-glow,rgba(30,167,216,.28))}
 .btn.gold{background-image:linear-gradient(135deg,#f5b800,#ffd34d);border-color:transparent;color:#3a2d00}
 .tabs{border-top:0;box-shadow:0 -6px 24px rgba(120,90,20,.10);padding-top:6px}
 .tabs button{border-top:0;border-radius:14px;margin:0 3px;padding:7px 2px 9px}
 .tabs button.on{background:var(--accent-soft);color:var(--accent-deep);border-top-color:transparent}
 .tabs button.on svg{stroke-width:2.2}
-.hero{background:linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5);border:0}
+.hero{background:var(--hero,linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5));border:0}
 :root[data-theme="dark"] .hero,:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg,var(--accent-soft),var(--surface) 70%)}
-@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5)} }
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .hero{background:var(--hero,linear-gradient(135deg,#e9f7fc,#fffbe6 55%,#fff0f5))} }
 .quick button{border:0;background:color-mix(in srgb,var(--lc,var(--accent)) 10%,var(--surface));border-radius:18px;box-shadow:var(--shadow);transition:transform .15s}
 .quick button:hover{transform:translateY(-2px)}
 .quick button .cnt{color:var(--muted)}
@@ -259,15 +259,15 @@ input,select,textarea{border-radius:12px!important}
 .f input:focus,.f select:focus,.f textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .lesson-item{border-radius:14px}
 .game-ico{background:var(--accent-soft)}
-.fab{background-image:linear-gradient(135deg,var(--pink),#ffb347)}
+.fab{background-image:var(--fabg,linear-gradient(135deg,var(--pink),#ffb347))}
 .stu{border-radius:16px;border:0;box-shadow:var(--shadow)}
-.stu .av{background-image:linear-gradient(135deg,var(--accent),var(--pink))}
+.stu .av{background-image:linear-gradient(135deg,var(--accent),var(--hl,var(--pink)))}
 .level-head .n{background:var(--accent)}
-.ring{background:conic-gradient(var(--pink) calc(var(--p)*1%),var(--surface2) 0)}.ring>div{color:var(--pink)}
-.level-head .n{background:linear-gradient(135deg,var(--accent),var(--pink))}
-.lvbar i{background:linear-gradient(90deg,var(--gold),var(--pink))}
+.ring{background:conic-gradient(var(--hl,var(--pink)) calc(var(--p)*1%),var(--surface2) 0)}.ring>div{color:var(--hl,var(--pink))}
+.level-head .n{background:linear-gradient(135deg,var(--accent),var(--hl,var(--pink)))}
+.lvbar i{background:linear-gradient(90deg,var(--gold),var(--hl,var(--pink)))}
 .fab{left:auto;right:16px}
-.fab2{bottom:calc(136px + env(safe-area-inset-bottom));background-image:linear-gradient(135deg,var(--accent),#5fd0f0)}
+.fab2{bottom:calc(136px + env(safe-area-inset-bottom));background-image:linear-gradient(135deg,var(--accent),var(--accent2,#5fd0f0))}
 @media (min-width:900px){ .fab{right:24px} }
 .guide details{border-radius:14px;background:var(--surface);box-shadow:var(--shadow);padding:12px 14px}
 .guide details+details{margin-top:10px}.guide summary{font-weight:800;cursor:pointer;font-family:var(--display);font-size:1.1rem}
@@ -330,6 +330,19 @@ body.inroom .tabs{display:none}
 .hello{display:flex;align-items:center;gap:14px;padding:4px 2px}.hello h1{margin:0;font-size:1.6rem}.hello .ring{flex:none}
 .hstats{display:flex;flex-direction:column;gap:6px}.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font:inherit;font-weight:800;cursor:pointer;white-space:nowrap}.chip.gold{background:linear-gradient(135deg,#ffe27a,var(--gold));border:0;color:#3d2c00}
 @media (min-width:700px){.hstats{flex-direction:row}}
+/* ===== لوحات الألوان ===== */
+:root[data-theme="light"][data-pal="emerald"]{--bg:#f6f7f2;--surface:#fff;--surface2:#eef3ea;--line:#e1e8da;--fg:#1d2925;--muted:#65736c;--accent:#0f7b63;--accent2:#1fa184;--accent-deep:#0a5a49;--accent-soft:#e0f1ea;--accent-glow:rgba(15,123,99,.25);--gold:#c79a2c;--gold-soft:#f8efd6;--hl:#c79a2c;--pink:#d9779a;--sky:#2f8fb5;--hdr1:#0a4f41;--hdr2:#0f6b56;--hdr3:#14806a;--hero:linear-gradient(135deg,#e6f2ec,#fbf6e6);--fabg:linear-gradient(135deg,#c79a2c,#e3bb55);--shadow:0 1px 2px rgba(20,60,45,.05),0 6px 18px rgba(20,60,45,.07)}
+:root[data-theme="light"][data-pal="lilac"]{--bg:#faf8fd;--surface:#fff;--surface2:#f2edfa;--line:#e7def5;--fg:#2a2338;--muted:#716a80;--accent:#6c4ab6;--accent2:#9271d6;--accent-deep:#4f3290;--accent-soft:#ece5fa;--accent-glow:rgba(108,74,182,.25);--gold:#e0a43a;--gold-soft:#fbf0db;--hl:#e07aa6;--pink:#e07aa6;--sky:#5f8fe0;--hdr1:#4f3290;--hdr2:#6c4ab6;--hdr3:#b06bb8;--hero:linear-gradient(135deg,#efe9fb,#fdf0f6);--fabg:linear-gradient(135deg,#e07aa6,#f0a3c3);--shadow:0 1px 2px rgba(60,30,110,.05),0 6px 18px rgba(60,30,110,.08)}
+:root[data-theme="light"][data-pal="navy"]{--bg:#f8f6f1;--surface:#fff;--surface2:#f1ede3;--line:#e6e0d2;--fg:#1e2633;--muted:#6b7280;--accent:#1f4e79;--accent2:#2f6aa0;--accent-deep:#163a5b;--accent-soft:#e3ecf5;--accent-glow:rgba(31,78,121,.25);--gold:#c88d2e;--gold-soft:#f7ecd8;--hl:#c88d2e;--pink:#c9737f;--sky:#3b82b8;--hdr1:#132f4c;--hdr2:#1f4e79;--hdr3:#2a5f8f;--hero:linear-gradient(135deg,#e7eef6,#f8f1e3);--fabg:linear-gradient(135deg,#c88d2e,#e0ad57);--shadow:0 1px 2px rgba(20,35,60,.05),0 6px 18px rgba(20,35,60,.08)}
+:root[data-theme="light"][data-pal="rose"]{--bg:#fdf8f8;--surface:#fff;--surface2:#fbefef;--line:#f3e0e0;--fg:#33232a;--muted:#7a6a70;--accent:#b5476b;--accent2:#d06a8b;--accent-deep:#8c3050;--accent-soft:#f9e4eb;--accent-glow:rgba(181,71,107,.25);--gold:#d39b3a;--gold-soft:#faf0dc;--hl:#d39b3a;--pink:#d06a8b;--sky:#4f93b8;--hdr1:#8c3050;--hdr2:#b5476b;--hdr3:#d0787f;--hero:linear-gradient(135deg,#fbe9ef,#fdf4e3);--fabg:linear-gradient(135deg,#d39b3a,#e8b960);--shadow:0 1px 2px rgba(90,30,50,.05),0 6px 18px rgba(90,30,50,.08)}
+/* تصميم أنظف: ترويسة بلون واحد وحدّ ذهبي، بطاقات بحدود رفيعة */
+:root[data-pal]:not([data-pal="sky"]) .top{background-image:linear-gradient(120deg,var(--hdr1),var(--hdr2) 60%,var(--hdr3));border-bottom:3px solid var(--gold)}
+:root[data-pal]:not([data-pal="sky"]) .card{border:1px solid var(--line)}
+:root[data-pal]:not([data-pal="sky"]) .quick button{background:var(--surface);border:1px solid var(--line);box-shadow:none}
+:root[data-pal]:not([data-pal="sky"]) .quick button .art{background:color-mix(in srgb,var(--lc,var(--accent)) 12%,transparent);border-radius:14px;padding:6px}
+:root[data-pal]:not([data-pal="sky"]) .cont{border-inline-start-color:var(--gold)}
+:root[data-pal]:not([data-pal="sky"]) .tabs{box-shadow:0 -1px 0 var(--line)}
+.palpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.palpick button{border:2px solid var(--line);border-radius:14px;background:var(--surface);padding:10px;cursor:pointer;font:inherit;font-weight:700;display:flex;flex-direction:column;gap:6px;align-items:center}.palpick button.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.palpick .sw{display:flex;gap:3px}.palpick .sw i{width:20px;height:20px;border-radius:50%}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -856,7 +869,8 @@ const DB={
 const DEFAULT_STATE=()=>({name:"",fullName:"",halaqa:"",teacherName:"",track:"both",hifzAmount:"نصف وجه",reviewAmount:"أربع صفحات",role:"student",pin:"1400",reciter:"akhdar",passPct:80,requireTeacher:false,
   done:{},quiz:{},levelTests:{},attempts:[],homework:[],submissions:[],customAudio:"",textCache:{},letterRefs:[],seenIntro:false});
 let ST=DEFAULT_STATE();
-function applyTheme(){ try{ document.documentElement.dataset.theme=(ST&&ST.theme)||"light"; }catch(e){} }
+const PALETTES=[["emerald","زمرّدي وذهبي",["#0f7b63","#c79a2c","#f6f7f2"]],["navy","كحلي ورملي",["#1f4e79","#c88d2e","#f8f6f1"]],["lilac","بنفسجي ووردي",["#6c4ab6","#e07aa6","#faf8fd"]],["rose","عنابي وذهبي",["#b5476b","#d39b3a","#fdf8f8"]],["sky","سماوي ووردي وأصفر",["#1ea7d8","#f26b9b","#f5b800"]]];
+function applyTheme(){ try{ const r=document.documentElement; r.dataset.theme=(ST&&ST.theme)||"light"; r.dataset.pal=(ST&&ST.palette)||"emerald"; const m=document.querySelector('meta[name="theme-color"]'); if(m) m.content=getComputedStyle(r).getPropertyValue("--hdr1").trim()||"#0a4f41"; }catch(e){} }
 function load(){ try{ const s=localStorage.getItem("ry_state"); if(s) ST=Object.assign(DEFAULT_STATE(),JSON.parse(s)); }catch(e){} try{ const t=localStorage.getItem("ry_text"); ST.textCache=Object.assign(t?JSON.parse(t):{},ST.textCache||{}); }catch(e){} }
 let _textSaved=0;
 function save(){ ST.updated=Date.now(); const tc=ST.textCache; try{ const keys=Object.keys(tc||{}); if(keys.length!==_textSaved){ try{ localStorage.setItem("ry_text",JSON.stringify(tc)); _textSaved=keys.length; }catch(e){ ST.textCache={}; try{ localStorage.removeItem("ry_text"); }catch(_){} } } ST.textCache={}; localStorage.setItem("ry_state",JSON.stringify(ST)); }catch(e){ console.warn("save",e); try{ const slim=Object.assign({},ST,{pointsLog:(ST.pointsLog||[]).slice(-50),attempts:(ST.attempts||[]).slice(-60)}); localStorage.setItem("ry_state",JSON.stringify(slim)); }catch(_){ } } finally{ ST.textCache=tc||{}; } if(window.CLOUD&&CLOUD.user) CLOUD.schedulePush(); }
@@ -1324,6 +1338,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>${isTeacher()?"بطاقة المعلمة":"بيانات الطالبة"}</h3>${profileFormHtml()}</div>
   ${isTeacher()?signaturePadHtml():""}
   <div class="card stack"><h3>التدريب والاختبارات</h3>
+    <div class="f">ألوان التطبيق<div class="palpick" id="palPick">${PALETTES.map(([k,t,c])=>`<button type="button" data-pal="${k}" class="${(ST.palette||"emerald")===k?"on":""}"><span class="sw">${c.map(x=>`<i style="background:${x}"></i>`).join("")}</span>${t}</button>`).join("")}</div></div>
     <label class="f">مظهر التطبيق<select id="themeIn"><option value="light" ${(ST.theme||"light")==="light"?"selected":""}>فاتح (الافتراضي)</option><option value="dark" ${ST.theme==="dark"?"selected":""}>داكن</option></select></label>
     <label class="f">القارئ المرجعي الافتراضي<select id="rc">${RECITERS.map(r=>`<option value="${r.id}" ${r.id===ST.reciter?"selected":""}>${r.name}</option>`).join("")}</select></label>
     <label class="f">نسبة اجتياز الدروس والمستويات (٪)<input type="number" id="pp" min="50" max="100" value="${ST.passPct}"></label>
@@ -1335,6 +1350,7 @@ VIEWS.settings=function(){
   <div class="card stack"><h3>نسخة احتياطية</h3><p class="small muted">تُحفظ بياناتك في هذا المتصفح فقط. صدّري نسخة كاملة (مع التسجيلات) لنقلها إلى جهاز آخر.</p><div class="row"><button class="btn sec" id="bk">تصدير نسخة كاملة</button><button class="btn sec" id="rs">استعادة نسخة</button><button class="btn danger" id="reset">مسح كل البيانات</button></div></div>`;
   $("#back").onclick=()=>go("more");
   wireProfileForm(); if(isTeacher()){ wireSignaturePad(); ["trackIn","teacherIn"].forEach(id=>{ const el=$("#"+id); if(el) el.closest("label").hidden=true; }); const ar=$("#amountRow"); if(ar) ar.hidden=true; }
+  view.querySelectorAll("#palPick [data-pal]").forEach(b=>b.onclick=()=>{ ST.palette=b.dataset.pal; save(); applyTheme(); view.querySelectorAll("#palPick [data-pal]").forEach(x=>x.classList.toggle("on",x===b)); });
   $("#sv").onclick=()=>{ if(!readProfileForm())return; ST.theme=$("#themeIn").value; applyTheme(); ST.reciter=$("#rc").value; ST.passPct=Math.min(100,Math.max(50,+$("#pp").value||80)); ST.requireTeacher=$("#rq").checked; ST.asr=$("#asrIn").value; ST.customAudio=$("#ca").value.trim(); if(isTeacher()&&$("#aliasIn")) ST.teacherAlias=$("#aliasIn").value.trim(); if(isTeacher()&&$("#bioIn")) ST.bio=$("#bioIn").value.trim(); if(isTeacher()&&cloudOn()) CLOUD.saveTeacherProfile().catch(()=>{}); if(isTeacher()&&$("#aiUrlIn")){ ST.aiUrl=$("#aiUrlIn").value.trim(); if(cloudOn()) CLOUD.setConfig({aiUrl:ST.aiUrl}).catch(()=>{}); } save(); toast("حُفظت الإعدادات"); render(); };
   $("#bk").onclick=async()=>{ const d=await DB.open().catch(()=>null); const blobs={}; if(d){ const keys=await new Promise(res=>{ const r=d.transaction("blobs").objectStore("blobs").getAllKeys(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); }); for(const k of keys){ const b=await DB.get(k); if(b) blobs[k]=await blobToB64(b); } } downloadsSave(`رياحين-نسخة-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-backup",state:ST,blobs})],{type:"application/json"})); };
   $("#rs").onclick=async()=>{ const f=await pickFile(".json"); if(!f)return; try{ const j=JSON.parse(await f.text()); if(j.type!=="rayaheen-backup")throw 0; ST=Object.assign(DEFAULT_STATE(),j.state); for(const k in (j.blobs||{})) await DB.put(k,b64ToBlob(j.blobs[k])); save(); toast("استُعيدت النسخة"); go("home"); }catch(e){ toast("الملف ليس نسخة صالحة"); } };
