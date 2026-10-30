@@ -301,6 +301,29 @@ main{padding-bottom:170px}
 .rreact{display:flex;gap:6px;justify-content:center;background:#171a22;border-radius:14px;padding:6px}.rreact button{font-size:1.6rem;background:none;border:0;cursor:pointer}
 .rstage{position:relative;overflow:hidden}.rfloat{position:absolute;bottom:10px;display:flex;flex-direction:column;align-items:center;animation:rfl 3.2s ease-out forwards;pointer-events:none;z-index:4}.rfloat span{font-size:2.2rem}.rfloat small{font-size:.65rem;background:rgba(0,0,0,.5);color:#fff;border-radius:6px;padding:0 4px}
 @keyframes rfl{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-260px);opacity:0}}
+.rboard{background:#20232d;border-radius:14px;padding:8px;margin-bottom:8px}.rboard canvas{width:100%;aspect-ratio:16/9;background:#fff;border-radius:10px;touch-action:none;display:block;cursor:crosshair}
+.rbtools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center}.rbtools button{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer}.rbtools button.on{border-color:#fff;box-shadow:0 0 0 2px #1ea7d8}.rbtools .w{border-radius:8px;background:#2f3341;color:#fff;font-weight:800;width:auto;padding:0 8px}
+.rpoll{background:linear-gradient(135deg,#1b6f93,#7b3d8f);color:#fff;border-radius:14px;padding:12px;margin-bottom:8px}.rpopt{position:relative;display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.16);color:#fff;font:inherit;cursor:pointer;overflow:hidden;text-align:right}.rpopt i{position:absolute;inset:0 0 0 auto;background:rgba(255,255,255,.28);transition:width .4s}.rpopt span,.rpopt b{position:relative}.rpopt.me{outline:2px solid #f5b800}.rpopt.ok{background:rgba(46,158,91,.55)}.rpopt:disabled{cursor:default}
+/* ===== مظهر منصات التعلّم ===== */
+.sect h3{margin:0 4px 10px;font-size:1.05rem}
+.quick .art.emo{font-size:2rem;line-height:40px}
+.cont{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow);border-inline-start:6px solid var(--accent)}
+.cont h2{margin:2px 0 0;font-size:1.25rem}.cont-ic{width:64px;flex:none}.cont-ic svg{width:64px;height:auto}
+@media (max-width:560px){.cont{flex-wrap:wrap}.cont .btn{width:100%}.cont-ic{width:48px}.cont-ic svg{width:48px}}
+.wdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px;text-align:center}.wd i{display:grid;place-items:center;width:36px;height:36px;margin:0 auto 4px;border-radius:50%;background:var(--bg2,#f3f1ea);border:2px dashed var(--line);font-style:normal;font-weight:800;color:#fff}.wd.on i{background:linear-gradient(135deg,var(--gold),#ff9f43);border:0}.wd.today i{box-shadow:0 0 0 3px var(--accent-soft)}.wd span{font-size:.7rem;color:var(--muted)}
+.quick button{transition:transform .15s,box-shadow .15s}.quick button:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(30,167,216,.16)}
+/* شريط جانبي على الشاشات الكبيرة */
+@media (min-width:1000px){
+  .top{z-index:11}
+  .tabs{top:0;bottom:0;right:0;left:auto;width:220px;flex-direction:column;justify-content:flex-start;gap:4px;padding:96px 10px 18px;border-top:0;border-left:1px solid var(--line);box-shadow:none}
+  .tabs button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;font-size:.95rem;padding:12px 14px;margin:0;font-weight:700}
+  .tabs button svg{width:22px;height:22px}
+  main{padding-right:244px;padding-bottom:40px}
+  .wrap{max-width:1040px}
+  .quick{grid-template-columns:repeat(6,1fr)}
+  body.inroom main{padding-right:16px}
+}
+body.inroom .tabs{display:none}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -922,9 +945,9 @@ function gate(){
 }
 function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
-  try{ const hideF=route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
-  try{ const f=$("#fab"); if(f) f.hidden=route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
-  if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline);
+  try{ const hideF=route==="room"||route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
+  try{ const f=$("#fab"); if(f) f.hidden=route==="room"||route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
+  if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=route==="room"||!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); document.body.classList.toggle("inroom",route==="room");
   const tabOf={room:"more",meetings:"more",admin:"more",guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
@@ -941,6 +964,11 @@ function profileFormHtml(){ return `<label class="f">الاسم الرباعي<i
 function wireProfileForm(){ const t=$("#trackIn"); if(t) t.onchange=()=>{ $("#amountRow").hidden=t.value==="tilawa"; };
   const sel=$("#tPick"); if(sel&&cloudOn()) CLOUD.teachersList().then(list=>{ list=list.filter(x=>!x.hidden); window._tPickList=list; sel.innerHTML=`<option value="">— بلا حلقة الآن (تعلّم فردي) —</option>`+list.map(x=>`<option value="${esc(x.email)}" ${ST.teacherEmail&&ST.teacherEmail.toLowerCase()===x.email.toLowerCase()?"selected":""}>${esc(x.halaqa||"حلقة "+x.name)} — ${x.kind==="study"?"منشئتها":"الأستاذة"} ${esc(x.name)}${x.city?" · "+esc(x.city):""}</option>`).join(""); sel.onchange=()=>{ const x=list.find(y=>y.email===sel.value); if(x){ $("#teacherIn").value=x.name; if(x.halaqa) $("#halaqaIn").value=x.halaqa; } }; }).catch(()=>{ sel.innerHTML=`<option value="">— تعذّر تحميل المعلمات —</option>`; }); }
 function readProfileForm(){ const f=$("#fullIn").value.trim(); if(!f){ toast("اكتبي الاسم الرباعي"); return false; } ST.fullName=f; ST.name=f.split(/\s+/)[0]; ST.halaqa=$("#halaqaIn").value.trim(); const tn=$("#teacherIn").value.trim(); if(tn!==ST.teacherName&&ST.teacherEmail&&CLOUD.normName(tn)!==CLOUD.normName(ST.teacherName)) ST.teacherEmail=""; ST.teacherName=tn; ST.phone=$("#phoneIn").value.trim(); ST.city=$("#cityIn").value.trim(); const tp=$("#tPick"); if(tp&&tp.options.length>1){ if(tp.value){ ST.teacherEmail=tp.value; const x=(window._tPickList||[]).find(y=>y.email===tp.value); if(x){ ST.teacherName=x.name; if(x.halaqa) ST.halaqa=x.halaqa; } } else if(!ST.ownCircle){ ST.teacherEmail=""; } } ST.track=$("#trackIn").value; ST.hifzAmount=$("#hifzAmtIn").value.trim(); ST.reviewAmount=$("#revAmtIn").value.trim(); return true; }
+// شريط الأسبوع (نشاط كل يوم) على طريقة منصات التعلّم
+function weekStripHtml(){ const days=new Set((ST.pointsLog||[]).map(l=>new Date(l.date).toDateString())); (ST.attempts||[]).forEach(a=>a.date&&days.add(new Date(a.date).toDateString()));
+  const names=["أحد","إثنين","ثلاثاء","أربعاء","خميس","جمعة","سبت"]; const today=new Date(); const arr=[]; for(let i=6;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); arr.push(d); }
+  const n=arr.filter(d=>days.has(d.toDateString())).length;
+  return `<div class="card week"><div class="row between"><h3>🔥 نشاطك هذا الأسبوع</h3><span class="pill ${n>=5?"good":n>=3?"gold":""}">${n} / 7 أيام</span></div><div class="wdays">${arr.map(d=>{ const on=days.has(d.toDateString()); const t=d.toDateString()===today.toDateString(); return `<div class="wd ${on?"on":""} ${t?"today":""}"><i>${on?"✓":""}</i><span>${names[d.getDay()]}</span></div>`; }).join("")}</div><p class="small muted" style="margin-top:6px">${n>=5?"ما شاء الله! استمري على هذا الثبات.":"أنجزي شيئًا كل يوم — ولو آية — لتحافظي على سلسلتك."}</p></div>`; }
 // ===== الرئيسية =====
 VIEWS.home=function(){
   if(!ST.fullName&&!ST.name){ view.innerHTML=`<div class="card stack"><h1>أهلًا بك في رياحين</h1><p class="lesson-body">تطبيق لتعلّم أحكام التجويد وتطبيقها صوتيًا، على ترتيب كتاب «هدي المجيد في أحكام التجويد» للمهندسة هدى العمروسي. تتدرجين في ثلاثة مستويات ثم مستوى الإتقان، وفي كل درس شرح وأمثلة وتدريب صوتي واختبار.</p>
@@ -958,6 +986,8 @@ VIEWS.home=function(){
   view.innerHTML=`
   <div class="hero"><div><div class="eyebrow">${greet}</div><h1>${esc(ST.name)}</h1><p class="small muted">${ST.halaqa?esc(ST.halaqa)+" · ":""}${tr}${cloudOn()?" · متزامن":""}</p><div style="margin-top:6px"><button class="btn gold sm" data-go="rewards">${PTS.rank().ic} ${PTS.total()} نقطة · ${esc(PTS.rank().t)}</button></div>
     <div class="row" style="margin-top:8px;gap:10px;align-items:center"><div class="ring" style="--p:${pct}"><div>${pct}٪</div></div><div class="small"><b>${totalDone}</b> من ${totalLessons} درسًا<br><span class="muted">${streakDays()} يومًا متتاليًا · ${B.filter(b=>b.on).length}/${B.length} شارات</span></div></div></div>${ART.mushaf}</div>
+  ${cl<=4&&next?`<div class="cont"><div class="cont-ic">${ART.book}</div><div style="flex:1;min-width:0"><div class="eyebrow">واصلي التعلّم · ${esc(L.title)}</div><h2>${esc(next.title)}</h2><div class="lvbar" style="margin-top:8px"><i style="width:${ls.length?Math.round(doneN/ls.length*100):0}%"></i></div><p class="small muted" style="margin-top:4px">الدرس ${doneN+1} من ${ls.length} · ${ls.length?Math.round(doneN/ls.length*100):0}٪ من المستوى</p></div><button class="btn lg" id="contBtn">▶ متابعة</button></div>`:""}
+  ${weekStripHtml()}
 
   <div class="card"><div class="row between"><h3>مهامك اليوم</h3><span class="small muted">${fmtDate(Date.now())}</span></div>
     <div class="stack" style="margin-top:10px">
@@ -967,18 +997,23 @@ VIEWS.home=function(){
       ${!isTeacher()&&cloudOn()&&!ST.teacherEmail?`<div class="todo"><span class="dot" style="background:var(--sky)"></span><span style="flex:1">انضمّي إلى معلمتك من غرفة المعلمات</span><button class="btn sm sec" data-go="teachers">غرفة المعلمات</button></div>`:""}
       ${hw.length?`<div class="todo"><span class="dot" style="background:var(--warn)"></span><span style="flex:1">${hw.length} واجب من الأستاذة لم يُسلَّم</span><button class="btn sm sec" data-go="homework">الواجبات</button></div>`:""}
     </div></div>
-  <div class="quick">
-    <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
+  <div class="sect"><h3>📚 التعلّم</h3><div class="quick">
+    <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} في المستوى ${cl}`:"مكتمل"}</span></button>
     <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
     <button data-go="hifz" style="--lc:var(--good)"><span class="art">${ART.hifz}</span>الحفظ<span class="cnt">${T?(T.progressText.split("·")[0].trim()):"الخطة"}</span></button>
-    <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} في المستوى ${cl}`:"مكتمل"}</span></button>
+    <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
     <button data-go="makharij" style="--lc:var(--lilac)"><span class="art">${ART.lips}</span>المخارج<span class="cnt">29 حرفًا</span></button>
     <button data-go="homework" style="--lc:var(--gold)"><span class="art">${ART.sheet}</span>الواجبات<span class="cnt">${hw.length?hw.length+" معلّق":"لا شيء معلّق"}</span></button>
-    <button data-go="games" style="--lc:var(--warn)"><span class="art" style="font-size:2rem;line-height:40px">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
-    <button data-go="rewards" style="--lc:var(--gold)"><span class="art" style="font-size:2rem;line-height:40px">🏆</span>نقاطي وجوائزي<span class="cnt">${PTS.total()} نقطة</span></button>
-    <button data-go="meetings" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">🎥</span>لقاءات الحلقة<span class="cnt">انضمي مباشرة</span></button>
-    <button data-go="halaqa" style="--lc:var(--pink)"><span class="art" style="font-size:2rem;line-height:40px">👭</span>حلقتي<span class="cnt">${ST.halaqa?esc(ST.halaqa):"المعلمة والزميلات"}</span></button>
-    <button data-go="progress" style="--lc:var(--sky)"><span class="art" style="font-size:2rem;line-height:40px">📈</span>تقدّمي<span class="cnt">${att.rating.t} · ${B.filter(b=>b.on).length} شارات</span></button>
+  </div></div>
+  <div class="sect"><h3>👭 حلقتي</h3><div class="quick">
+    <button data-go="meetings" style="--lc:var(--sky)"><span class="art emo">🎥</span>لقاءات الحلقة<span class="cnt">مباشر وتسجيلات</span></button>
+    <button data-go="halaqa" style="--lc:var(--pink)"><span class="art emo">👭</span>حلقتي<span class="cnt">${ST.halaqa?esc(ST.halaqa):"المعلمة والزميلات"}</span></button>
+    <button data-go="assistant" style="--lc:var(--accent)"><span class="art emo">🤖</span>المساعد الذكي<span class="cnt">اسألي عن أي حكم</span></button>
+  </div></div>
+  <div class="sect"><h3>🏆 التحفيز</h3><div class="quick">
+    <button data-go="games" style="--lc:var(--warn)"><span class="art emo">🎮</span>ألعاب التجويد<span class="cnt">${GAMES.length} ألعاب</span></button>
+    <button data-go="rewards" style="--lc:var(--gold)"><span class="art emo">🏅</span>نقاطي وجوائزي<span class="cnt">${PTS.total()} نقطة</span></button>
+    <button data-go="progress" style="--lc:var(--sky)"><span class="art emo">📈</span>تقدّمي<span class="cnt">${att.rating.t} · ${B.filter(b=>b.on).length} شارات</span></button>
   </div>
 
   ${cl<=4?`<div class="card lv lvcolor-${cl}"><div class="level-head"><div class="n">${L.n}</div><div style="flex:1;min-width:0"><div class="eyebrow">مستواك في التجويد</div><h2>${esc(L.title)}</h2><p class="muted small">${esc(L.desc)}</p></div></div>
@@ -988,6 +1023,7 @@ VIEWS.home=function(){
   <p class="small muted">المادة العلمية على كتاب «هدي المجيد في أحكام التجويد» (هدى العمروسي)، والحفظ على برنامج «بالقرآن نحيا».</p>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
   if(cloudOn()&&ST.teacherEmail) nextMeetingsForMe().then(list=>{ const o=list.find(x=>x.start-Date.now()<24*3600000); const box=view.querySelector(".todo")&&view.querySelector(".todo").parentElement; if(!o||!box||route!=="home") return; const st=meetState(o); box.insertAdjacentHTML("afterbegin",`<div class="todo" style="border:1.5px solid var(--sky)"><span class="dot" style="background:var(--pink)"></span><span style="flex:1">🎥 ${esc(o.m.title||"لقاء الحلقة")} · ${fmtMeet(o.start)}${st==="open"?" · <b>الآن</b>":""}</span><button class="btn sm ${st==="open"?"":"sec"}" id="homeJoin">${st==="open"?"انضمام":"التفاصيل"}</button></div>`); $("#homeJoin").onclick=()=>st==="open"?joinMeeting(o):go("meetings"); });
+  const cb=$("#contBtn"); if(cb) cb.onclick=()=>go("lesson",next.id);
   const gn=$("#goNext"); if(gn) gn.onclick=()=>go("lesson",next.id); const gt=$("#goTest"); if(gt) gt.onclick=()=>go("leveltest",cl);
 };
 
@@ -1884,7 +1920,7 @@ const GUIDE=[
  ["٤. الحفظ والمراجعة",`<p><b>الخطة:</b> الحفظ ← «الخطة» ← اختاري «بالقرآن نحيا» (نصف وجه يوميًا) أو «خطة خاصة» وحدّدي:</p><ul><li>من أي سورة تبدئين وأين تنتهين.</li><li>الوحدة: آيات أو نصف وجه أو وجه.</li><li>مقدار الحفظ اليومي ومقدار المراجعة اليومية.</li><li>أيام الحفظ في الأسبوع (وفي غيرها مراجعة فقط).</li></ul><p><b>جلسة اليوم:</b> استمعي مرتين ← اقرئي 15 مرة ← سمّعي من حفظك بالتسجيل ← «اعتماد وإنهاء المهمة».</p>`],
  ["٥. تصحيح التلاوة",`<ol><li>المزيد ← «تصحيح التلاوة»، واختاري السورة والآيات (10 على الأكثر).</li><li>استمعي للقارئ، ثم سجّلي تلاوتك كاملة وأوقفي.</li><li>تظهر النسبة والكلمات ملوّنة: أخضر صحيح، أصفر قريب، أحمر ساقط أو محرّف، مع ملاحظات المدود والغنن.</li></ol><p><b>لتصحيح أدق:</b> مكان هادئ، الجوال قريب من فمك، صوت واضح. أول مرة يُحمَّل المحرك القرآني (نحو 30 م.ب).</p>`],
  ["٦. المخارج والألعاب والمساعد",`<p><b>المخارج:</b> اختاري حرفًا لتقرئي مخرجه وصفاته، واضغطي ▶ لسماعه، ثم انطقيه ساكنًا بعد همزة (أَبْ) وسجّلي.</p><p><b>الألعاب:</b> ست ألعاب، كل واحدة دقيقة: النون الساكنة، الميم الساكنة، المدود، المخارج، الصفات، اللام والراء.</p><p><b>المساعد الذكي:</b> اسأليه عن أي حكم أو عن درسك أو خطأ تلاوتك (25 سؤالًا يوميًا).</p>`],
- ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (تتسع لنحو 50 مشاركة؛ وللأعداد الأكبر يُلصق رابط Meet أو Zoom): المايك مكتوم حتى تأذن المعلمة بعد رفع اليد، ومع المعلمة مشاركة الشاشة وتثبيت فيديو طالبة وفتح النقاش للجميع، وللجميع محادثة نصية، ولها زر ⏺ «تسجيل»: يُحفظ الصوت في «تسجيلات اللقاءات» لتسمعه الطالبات لاحقًا، ويُنزَّل الملف الكامل (مع الشاشة) على جهاز المعلمة، وللجميع تفاعلات 👍❤️🤲، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
+ ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (تتسع لنحو 50 مشاركة؛ وللأعداد الأكبر يُلصق رابط Meet أو Zoom): المايك مكتوم حتى تأذن المعلمة بعد رفع اليد، ومع المعلمة مشاركة الشاشة وتثبيت فيديو طالبة وفتح النقاش للجميع، وللجميع محادثة نصية، ولها زر ⏺ «تسجيل»: يُحفظ الصوت في «تسجيلات اللقاءات» لتسمعه الطالبات لاحقًا، ويُنزَّل الملف الكامل (مع الشاشة) على جهاز المعلمة، وسبورة 🖊️ تكتب عليها المعلمة فتراها الطالبات، واستطلاع سريع 📊 تُجيب عنه الطالبات وتظهر النتيجة والإجابة الصحيحة، وللجميع تفاعلات 👍❤️🤲، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
  ["٨. الحضور والنقاط والجوائز",`<p><b>الحضور:</b> الأسبوع يبدأ السبت. 4 أيام منجزة فأكثر: متميزة · 3: مثالية · يومان فأقل: غائبة.</p><p><b>النقاط:</b> درس 20 · اختبار كامل +10 · واجب 15 · مهمة حفظ 10 · يوم منجز 10 · 7 أيام متتالية 50 · تلاوة 5–10 · الألعاب.</p><p><b>الرتب:</b> مبتدئة ← مجتهدة (150) ← متقنة (400) ← ماهرة (800) ← متميزة (1500) ← نجمة رياحين (3000). والجوائز والشهادات التحفيزية في «نقاطي وجوائزي».</p>`],
  ["٩. للمعلمة",`<ul><li><b>البطاقة</b> (الإعدادات): الجوال، المدينة، الحلقة، النبذة، واسمك كما تكتبه الطالبات.</li><li><b>التوقيع والختم:</b> ارسمي التوقيع أو ارفعي صورته، وارفعي صورة ختمك إن شئتِ.</li><li><b>طالباتي:</b> ملخص الحضور والتسجيلات، وصفحة لكل طالبة: المستويات، الحضور، الاستماع للتسجيلات وتقييمها، الإجابات، الحفظ، منح الجوائز، حذفها من الحلقة.</li><li><b>الواجبات:</b> العنوان والسورة والآيات والموعد، فيصل لطالباتك.</li><li><b>أصوات الحروف:</b> المخارج ← «إدارة الأصوات»: سجّلي أو ارفعي نطق كل حرف.</li></ul>`],
  ["١٠. حل المشكلات",`<ul><li><b>عالقة على «جارٍ الاتصال»:</b> تأكدي من الإنترنت ← «إعادة المحاولة»، أو افتحي من Chrome/Safari.</li><li><b>التحديث لا يظهر:</b> حدّثي الصفحة (Ctrl+F5)، أو أغلقي التطبيق وافتحيه.</li><li><b>زر جوجل لا يعمل:</b> افتحي في Chrome/Safari مباشرة، أو ادخلي بالبريد.</li><li><b>المايك لا يعمل:</b> اسمحي للموقع بالميكروفون من إعدادات المتصفح.</li><li><b>لا تظهر طالبة في لوحة المعلمة:</b> تأكدي أنها انضمت من غرفة المعلمات أو كتبت اسم الحلقة.</li></ul><p>بياناتك محفوظة في حسابك على السحابة، فإن غيّرتِ الجهاز ادخلي بالحساب نفسه.</p>`]
@@ -2014,7 +2050,7 @@ async function roomJoin(roomId,title,{host=false,video=false}={}){ ROOM.title=ti
   ROOM.hb=setInterval(()=>{ meRef.set({lastSeen:Date.now()},{merge:true}).catch(()=>{}); },8000);
   const t0=Date.now();
   // حالة الغرفة (للطالبات: من يُسمح لها بالتحدث، والفيديو المثبّت)
-  ROOM.unsub.push(rref().onSnapshot(d=>{ const s=d.exists?d.data():null; if(!s) return; ROOM.state={speakers:s.speakers||[],open:!!s.open,spotlight:s.spotlight||null,hostName:s.hostName,recording:!!s.recording}; ROOM.hostId=s.host; if(!ROOM.host) roomApplyMicRights(); else roomRemix(); roomRender(); }));
+  ROOM.unsub.push(rref().onSnapshot(d=>{ const s=d.exists?d.data():null; if(!s) return; ROOM.state={speakers:s.speakers||[],open:!!s.open,spotlight:s.spotlight||null,hostName:s.hostName,recording:!!s.recording,poll:s.poll||null}; roomRenderPoll(); ROOM.hostId=s.host; if(!ROOM.host) roomApplyMicRights(); else roomRemix(); roomRender(); }));
   // المشاركات
   ROOM.unsub.push(rref().collection("peers").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ const id=ch.doc.id; if(id===ROOM.me) return; const data=ch.doc.data();
       if(ch.type==="removed"||Date.now()-(data.lastSeen||0)>40000){ roomDrop(id); return; }
@@ -2026,7 +2062,8 @@ async function roomJoin(roomId,title,{host=false,video=false}={}){ ROOM.title=ti
   // الإشارات الموجّهة لي
   ROOM.unsub.push(rref().collection("signals").where("to","==",ROOM.me).onSnapshot(s=>{ s.docChanges().forEach(async ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); ch.doc.ref.delete().catch(()=>{}); if(m.at<t0-60000) return; await roomSignal(m); }); }));
   // المحادثة
-  ROOM.unsub.push(rref().collection("chat").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); if(m.react){ if(m.at>t0-5000) roomFloat(m); return; } ROOM.chat.push(m); if(ROOM.panel!=="chat"&&m.from!==ROOM.me) ROOM.unread++; }); ROOM.chat.sort((a,b)=>a.at-b.at); roomRenderPanel(); roomRenderBar(); }));
+  ROOM.votes={};
+  ROOM.unsub.push(rref().collection("chat").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); if(m.vote){ const o=ROOM.votes[m.from]; if(!o||o.poll!==m.vote||o.at<=m.at) ROOM.votes[m.from]={poll:m.vote,opt:m.opt,at:m.at}; roomRenderPoll(); return; } if(m.react){ if(m.at>t0-5000) roomFloat(m); return; } ROOM.chat.push(m); if(ROOM.panel!=="chat"&&m.from!==ROOM.me) ROOM.unread++; }); ROOM.chat.sort((a,b)=>a.at-b.at); roomRenderPanel(); roomRenderBar(); }));
   window.addEventListener("pagehide",roomLeave);
   roomRender();
 }
@@ -2081,7 +2118,7 @@ async function roomSignal(m){ try{
 }catch(e){ console.warn("signal",e); } }
 function roomDrop(id){ const P=ROOM.peers[id]; if(!P) return; if(ROOM.host) roomUnmix(id); try{ P.pc&&P.pc.close(); }catch(e){} delete ROOM.peers[id];
   if(ROOM.host&&(ROOM.state.speakers.includes(id)||ROOM.state.spotlight===id)) hostSetState({speakers:ROOM.state.speakers.filter(x=>x!==id),spotlight:ROOM.state.spotlight===id?null:ROOM.state.spotlight}); roomRender(); }
-async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; if(ROOM.rec) await roomRecStop(); ROOM.closing=true; const id=ROOM.id, me=ROOM.me, host=ROOM.host;
+async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; if(ROOM.rec) await roomRecStop(); if(ROOM.board){ try{ await roomToggleBoard(); }catch(e){} } ROOM.closing=true; const id=ROOM.id, me=ROOM.me, host=ROOM.host;
   (ROOM.unsub||[]).forEach(u=>{ try{u();}catch(e){} }); clearInterval(ROOM.hb);
   Object.values(ROOM.peers||{}).forEach(P=>{ try{ P.pc&&P.pc.close(); }catch(e){} try{ P.sinkEl&&(P.sinkEl.srcObject=null); }catch(e){} });
   [ROOM.local,ROOM.camTrack&&new MediaStream([ROOM.camTrack]),ROOM.screenTrack&&new MediaStream([ROOM.screenTrack])].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));
@@ -2122,17 +2159,19 @@ function roomRenderBar(){ const bar=$("#roomBar"); if(!bar||!ROOM.id) return; co
   bar.innerHTML=`<button class="rbtn ${ROOM.mic?"":"off"}" id="rMic" title="المايك">${ROOM.mic?"🎙️":"🔇"}<span>${ROOM.mic?"كتم":(ROOM.host||ROOM.canSpeak?"تحدّث":"المايك")}</span></button>
     <button class="rbtn ${ROOM.cam?"":"off"}" id="rCam">📷<span>${ROOM.cam?"إيقاف":"الكاميرا"}</span></button>
     ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button>`}
+    ${ROOM.host?`<button class="rbtn ${ROOM.board?"on":""}" id="rBoardB">🖊️<span>${ROOM.board?"إغلاق السبورة":"السبورة"}</span></button><button class="rbtn ${ROOM.state.poll?"on":""}" id="rPollB">📊<span>${ROOM.state.poll?"إنهاء الاستطلاع":"استطلاع"}</span></button>`:""}
     ${ROOM.host?`<button class="rbtn ${ROOM.rec?"rec":""}" id="rRec">⏺<span>${ROOM.rec?"إيقاف التسجيل "+roomRecTime():"تسجيل"}</span></button>`:""}
     <button class="rbtn" id="rReact">😊<span>تفاعل</span></button>
     <button class="rbtn ${ROOM.panel==="people"?"on":""}" id="rPeople">👥<span>المشاركات${ROOM.host&&hands?` (${hands}✋)`:""}</span></button>
     <button class="rbtn ${ROOM.panel==="chat"?"on":""}" id="rChat">💬<span>المحادثة${ROOM.unread?` (${ROOM.unread})`:""}</span></button>
     <button class="rbtn leave" id="rLeave">📞<span>${ROOM.host?"إنهاء":"مغادرة"}</span></button>`;
   $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
+  const bb=$("#rBoardB"); if(bb) bb.onclick=roomToggleBoard; const pb=$("#rPollB"); if(pb) pb.onclick=()=>ROOM.state.poll?roomEndPoll():roomPollForm();
   const rr=$("#rRec"); if(rr) rr.onclick=()=>ROOM.rec?roomRecStop():roomRecStart();
   $("#rReact").onclick=()=>{ const ex=$("#rReactBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rReactBox" class="rreact">${REACTIONS.map(e=>`<button data-re="${e}">${e}</button>`).join("")}</div>`); $("#rReactBox").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",react:b.dataset.re,at:Date.now()}).catch(()=>{}); $("#rReactBox").remove(); }); };
   $("#rPeople").onclick=()=>{ ROOM.panel=ROOM.panel==="people"?null:"people"; roomRenderBar(); roomRenderPanel(); }; $("#rChat").onclick=()=>{ ROOM.panel=ROOM.panel==="chat"?null:"chat"; ROOM.unread=0; roomRenderBar(); roomRenderPanel(); };
   $("#rLeave").onclick=async()=>{ if(ROOM.host&&!confirm("إنهاء اللقاء لجميع المشاركات؟")) return; await roomLeave(); go("meetings"); }; }
-function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.panel; if(!ROOM.panel) return;
+function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.panel; if(!ROOM.panel||ROOM.panel==="poll") return;
   if(ROOM.panel==="chat"){ const keep=$("#rChatIn")?$("#rChatIn").value:""; p.innerHTML=`<div class="row between"><b>💬 المحادثة</b><button class="btn sec sm" id="rPX">✕</button></div><div class="rchat" id="rChatList">${ROOM.chat.map(m=>`<div class="rmsg ${m.from===ROOM.me?"me":""}"><b>${m.host?"👩‍🏫 ":""}${esc(m.name)}</b><div>${esc(m.text)}</div></div>`).join("")||`<p class="small muted">لا رسائل بعد.</p>`}</div><form class="chatbar" id="rChatF"><input id="rChatIn" placeholder="اكتبي رسالة…" autocomplete="off" value="${esc(keep)}"><button class="btn sm">إرسال</button></form>`;
     const L=$("#rChatList"); L.scrollTop=L.scrollHeight; $("#rChatF").onsubmit=e=>{ e.preventDefault(); roomSendChat($("#rChatIn").value); $("#rChatIn").value=""; }; }
   else { const ppl=Object.entries(ROOM.peers).filter(([id,P])=>P.info&&P.info.name).sort((a,b)=>(b[1].info.hand?1:0)-(a[1].info.hand?1:0)||(a[1].info.handAt||0)-(b[1].info.handAt||0));
@@ -2147,7 +2186,7 @@ VIEWS.room=async function(arg){
   const {roomId,title,o,host}=arg||{}; if(!roomId){ go("meetings"); return; }
   view.innerHTML=`<div class="rroom"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="row" style="gap:6px"><span class="pill bad" id="rRecBadge" hidden>🔴 يُسجَّل</span><span class="pill acc">👥 <span id="roomCount">1</span></span></span></div>
     <div id="roomPre" class="card stack" style="text-align:center"><p>${host?"أنتِ مديرة اللقاء: يتحدث الجميع حين تأذنين، وتستطيعين مشاركة الشاشة وتثبيت فيديو طالبة.":"تدخلين والمايك مكتوم. ارفعي يدك لتأذن لكِ المعلمة بالتحدث."}</p><div class="row" style="justify-content:center"><button class="btn lg" id="rJoinA">🎙️ دخول</button><button class="btn sec lg" id="rJoinV">📷 دخول مع الكاميرا</button></div><p class="small muted">يتسع اللقاء لنحو 30 طالبة. استخدمي سماعة لتجنّب الصدى.${host?" يُفضَّل للمعلمة اتصال إنترنت قوي (ألياف أو 5G) لأنها توزّع الصوت على الجميع.":""}</p></div>
-    <div id="rStage" class="rstage" hidden></div><div id="rPanel" class="rpanel" hidden></div><div id="rAudio" hidden></div>
+    <div id="rPoll" hidden></div><div id="rBoard" class="rboard" hidden></div><div id="rStage" class="rstage" hidden></div><div id="rPanel" class="rpanel" hidden></div><div id="rAudio" hidden></div>
     <div class="rbar" id="roomBar" hidden></div></div>`;
   const start=async(video)=>{ try{ $("#roomPre").innerHTML=`<p class="muted">جارٍ الدخول…</p>`; await roomJoin(roomId,title,{host:!!host,video}); if(o&&!host) markMeetAttendance(o); $("#roomPre").hidden=true; $("#rStage").hidden=false; $("#roomBar").hidden=false; roomRenderBar(); roomRender(); }
     catch(e){ console.warn(e); $("#roomPre").innerHTML=`<div class="note bad">${e&&e.name==="NotAllowedError"?"لم يُسمح بالمايك. اسمحي للموقع بالمايك من إعدادات المتصفح ثم أعيدي المحاولة.":e&&e.code==="permission-denied"?"غرفة اللقاءات تحتاج تفعيلًا في Firebase.":"تعذّر الدخول: "+esc(e.message||e)}</div><button class="btn sm" onclick="go('meetings')" style="margin-top:8px">رجوع</button>`; } };
@@ -2177,5 +2216,42 @@ async function roomRecStop(){ if(!ROOM.rec) return; ROOM.rec=false; clearInterva
   // رفع الصوت للسحابة لتسمعه الطالبات
   if(aBlob.size>500&&aBlob.size<40*1024*1024){ toast("جارٍ حفظ تسجيل الصوت للطالبات…"); try{ const url=await CLOUD.uploadAudio(aBlob,`rec/${CLOUD.user.uid}/meeting-${Date.now()}.webm`); const ref=CLOUD.db.collection("teachers").doc(CLOUD.user.email); const d=await ref.get(); const list=(d.exists&&d.data().meetRecordings)||[]; list.unshift({id:"r"+Date.now(),title:ROOM.title||"لقاء الحلقة",date:ROOM.recStart,dur,url,size:aBlob.size}); await ref.set({meetRecordings:list.slice(0,60)},{merge:true}); toast("حُفظ التسجيل في «تسجيلات اللقاءات»"); }catch(e){ toast("حُفظ التسجيل على جهازك، وتعذّر رفعه: "+CLOUD.msg(e)); } }
   roomRenderBar(); }
+
+// ---------- السبورة (للمعلمة) — تُبثّ للطالبات كمشاركة شاشة ----------
+async function roomToggleBoard(){ if(!ROOM.host) return; const box=$("#rBoard");
+  if(ROOM.board){ ROOM.board=false; if(ROOM.boardTrack){ ROOM.boardTrack.stop(); if(ROOM.screenTrack===ROOM.boardTrack) ROOM.screenTrack=null; ROOM.boardTrack=null; } if(box){ box.hidden=true; box.innerHTML=""; } await roomHostVideo(); roomSetMe({screen:!!ROOM.screenTrack}); roomRenderBar(); roomRender(); return; }
+  if(ROOM.screenTrack){ ROOM.screenTrack.stop(); ROOM.screenTrack=null; }
+  box.hidden=false; box.innerHTML=`<div class="rbtools">${["#1b1b1b","#1ea7d8","#d6473f","#2e9e5b","#f5b800","#f26b9b"].map((c,i)=>`<button data-col="${c}" class="${i?"":"on"}" style="background:${c}"></button>`).join("")}<button data-w="3" class="w on">✏️</button><button data-w="10" class="w">🖌️</button><button data-er="1" class="w">🧽</button><button id="rbText" class="w">T</button><button id="rbClear" class="w">🗑️</button></div><canvas id="rbCanvas" width="1280" height="720"></canvas>`;
+  const cv=$("#rbCanvas"), g=cv.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,cv.width,cv.height); g.lineCap=g.lineJoin="round"; let col="#1b1b1b", w=3, er=false, down=false, lx=0, ly=0;
+  const pos=e=>{ const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]; };
+  cv.onpointerdown=e=>{ down=true; cv.setPointerCapture(e.pointerId); [lx,ly]=pos(e); }; cv.onpointerup=cv.onpointercancel=()=>down=false;
+  cv.onpointermove=e=>{ if(!down) return; const [x,y]=pos(e); g.strokeStyle=er?"#fff":col; g.lineWidth=er?30:w; g.beginPath(); g.moveTo(lx,ly); g.lineTo(x,y); g.stroke(); lx=x; ly=y; };
+  box.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{ col=b.dataset.col; er=false; box.querySelectorAll("[data-col]").forEach(x=>x.classList.toggle("on",x===b)); });
+  box.querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{ w=+b.dataset.w; er=false; box.querySelectorAll(".w").forEach(x=>x.classList.toggle("on",x===b)); });
+  box.querySelector("[data-er]").onclick=e=>{ er=true; box.querySelectorAll(".w").forEach(x=>x.classList.toggle("on",x===e.currentTarget)); };
+  $("#rbClear").onclick=()=>{ g.fillStyle="#fff"; g.fillRect(0,0,cv.width,cv.height); };
+  $("#rbText").onclick=()=>{ const t=prompt("اكتبي النص (مثل آية أو حكم):"); if(!t) return; g.fillStyle=col; g.font="bold 64px 'Amiri Quran','Amiri',serif"; g.textAlign="center"; g.direction="rtl"; g.fillText(t,cv.width/2,120+Math.random()*420); };
+  ROOM.boardTrack=cv.captureStream(8).getVideoTracks()[0]; ROOM.screenTrack=ROOM.boardTrack; ROOM.board=true;
+  const keep=setInterval(()=>{ if(!ROOM.board){ clearInterval(keep); return; } g.fillStyle="rgba(255,255,255,0.004)"; g.fillRect(0,0,1,1); },500); // يحافظ على تدفق الإطارات
+  await roomHostVideo(); roomSetMe({screen:true}); roomRenderBar(); roomRender(); }
+// ---------- الاستطلاع السريع ----------
+function roomPollForm(){ const p=$("#rPanel"); ROOM.panel="poll"; p.hidden=false; p.innerHTML=`<div class="row between"><b>📊 استطلاع سريع</b><button class="btn sec sm" id="rPX">✕</button></div>
+  <label class="f">السؤال<input id="pQ" placeholder="مثال: ما حكم النون في «مِنْ بَعْدِ»؟"></label>
+  <label class="f">الخيارات (كل خيار في سطر)<textarea id="pO" rows="4">إظهار
+إدغام
+إقلاب
+إخفاء</textarea></label>
+  <label class="f">الإجابة الصحيحة (اختياري)<input id="pC" placeholder="مثال: إقلاب"></label>
+  <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sec sm" id="pYN">نعم / لا</button><button class="btn sec sm" id="pUnd">فهمتُ / لم أفهم</button></div>
+  <button class="btn" id="pGo">إرسال للطالبات</button>`;
+  $("#rPX").onclick=()=>{ ROOM.panel=null; roomRenderBar(); roomRenderPanel(); };
+  $("#pYN").onclick=()=>{ $("#pO").value="نعم\nلا"; }; $("#pUnd").onclick=()=>{ $("#pQ").value=$("#pQ").value||"هل اتضح الدرس؟"; $("#pO").value="فهمتُ 👍\nأحتاج إعادة 🤔"; };
+  $("#pGo").onclick=async()=>{ const q=$("#pQ").value.trim(); const opts=$("#pO").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6); if(!q||opts.length<2){ toast("اكتبي السؤال وخيارين على الأقل"); return; } const c=$("#pC").value.trim(); const ci=c?opts.findIndex(o=>o===c):-1;
+    ROOM.panel=null; roomRenderPanel(); await hostSetState({poll:{id:"p"+Date.now(),q,opts,correct:ci,reveal:false}}); roomRenderBar(); }; }
+async function roomEndPoll(){ const P=ROOM.state.poll; if(!P) return; if(!P.reveal){ await hostSetState({poll:Object.assign({},P,{reveal:true})}); roomRenderBar(); return; } await hostSetState({poll:null}); roomRenderBar(); }
+function roomRenderPoll(){ const box=$("#rPoll"); if(!box) return; const P=ROOM.state&&ROOM.state.poll; if(!P){ box.hidden=true; box.innerHTML=""; return; }
+  const vs=Object.values(ROOM.votes||{}).filter(v=>v.poll===P.id); const counts=P.opts.map((_,i)=>vs.filter(v=>v.opt===i).length); const tot=vs.length; const mine=ROOM.votes&&ROOM.votes[ROOM.me]&&ROOM.votes[ROOM.me].poll===P.id?ROOM.votes[ROOM.me].opt:null; const show=ROOM.host||P.reveal||mine!==null;
+  box.hidden=false; box.className="rpoll"; box.innerHTML=`<div class="row between"><b>📊 ${esc(P.q)}</b><span class="small">${tot} إجابة</span></div><div class="stack" style="gap:6px;margin-top:8px">${P.opts.map((o,i)=>{ const pc=tot?Math.round(counts[i]/tot*100):0; const ok=P.reveal&&P.correct===i; return `<button class="rpopt ${mine===i?"me":""} ${ok?"ok":""}" data-vote="${i}" ${ROOM.host||P.reveal?"disabled":""}><i style="width:${show?pc:0}%"></i><span>${ok?"✅ ":""}${esc(o)}</span>${show?`<b>${pc}٪</b>`:""}</button>`; }).join("")}</div>${ROOM.host?`<p class="small" style="margin-top:6px;opacity:.8">${P.reveal?"اضغطي «إنهاء الاستطلاع» لإخفائه.":"اضغطي «إنهاء الاستطلاع» لإظهار النتيجة"+(P.correct>=0?" والإجابة الصحيحة":"")+" للجميع."}</p>`:""}`;
+  box.querySelectorAll("[data-vote]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,vote:P.id,opt:+b.dataset.vote,at:Date.now()}).catch(e=>toast(CLOUD.msg(e))); }); }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
