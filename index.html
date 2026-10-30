@@ -279,6 +279,24 @@ main{padding-bottom:170px}
 .rav{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.3rem}
 .rname{position:absolute;bottom:6px;right:6px;left:6px;background:rgba(0,0,0,.5);color:#fff;border-radius:8px;padding:2px 8px;font-size:.8rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rbar{position:sticky;bottom:8px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:var(--surface);padding:10px;border-radius:16px;box-shadow:var(--shadow);margin-top:10px}
+.rroom{background:#1f2430;color:#f3f4f8;border-radius:20px;padding:12px;min-height:70vh;display:flex;flex-direction:column;gap:10px;position:relative}
+.rroom .muted{color:#a3abbd}.rroom .card{background:#2a3040;border:0;color:#f3f4f8}
+.rtop{display:flex;justify-content:space-between;align-items:center}
+.rstage{flex:1;min-height:50vh}
+.rmain{position:relative;width:100%;aspect-ratio:16/9;max-height:62vh;background:#000;border-radius:16px;overflow:hidden;display:grid;place-items:center}
+.rmain video{width:100%;height:100%;object-fit:contain}
+.rstrip{display:flex;gap:8px;justify-content:center;margin-top:8px}.rstrip .rtile{width:150px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}.rgrid.dense{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.rroom .rtile{background:#2a3040;box-shadow:none}.rtile.spot{outline:3px solid var(--sky)}
+.rav.big{width:110px;height:110px;font-size:2.4rem}
+.rwait{display:grid;place-items:center;text-align:center;gap:6px;min-height:45vh}
+.rbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;background:#171a22;padding:10px;border-radius:18px;position:sticky;bottom:8px}
+.rbtn{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px;padding:8px 10px;border-radius:14px;border:0;background:#2f3647;color:#fff;font-size:1.2rem;cursor:pointer}
+.rbtn span{font-size:.68rem}.rbtn.off{background:#4a2330}.rbtn.on{background:var(--accent)}.rbtn.leave{background:#d6473f}
+.rpanel{position:absolute;top:56px;left:12px;width:min(340px,calc(100% - 24px));max-height:calc(100% - 140px);overflow:auto;background:#fff;color:#2a2f3a;border-radius:16px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:5}
+.rpanel .muted{color:#6c7484}.rperson{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #eee;font-size:.9rem}
+.rchat{max-height:45vh;overflow:auto;display:flex;flex-direction:column;gap:6px;margin:8px 0}.rmsg{background:#f1f3f8;border-radius:12px;padding:6px 10px;font-size:.88rem}.rmsg.me{background:#dbf3fb;align-self:flex-start}
+.rpanel .chatbar input{flex:1;border:1.5px solid #ddd;border-radius:10px;padding:8px}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -1862,7 +1880,7 @@ const GUIDE=[
  ["٤. الحفظ والمراجعة",`<p><b>الخطة:</b> الحفظ ← «الخطة» ← اختاري «بالقرآن نحيا» (نصف وجه يوميًا) أو «خطة خاصة» وحدّدي:</p><ul><li>من أي سورة تبدئين وأين تنتهين.</li><li>الوحدة: آيات أو نصف وجه أو وجه.</li><li>مقدار الحفظ اليومي ومقدار المراجعة اليومية.</li><li>أيام الحفظ في الأسبوع (وفي غيرها مراجعة فقط).</li></ul><p><b>جلسة اليوم:</b> استمعي مرتين ← اقرئي 15 مرة ← سمّعي من حفظك بالتسجيل ← «اعتماد وإنهاء المهمة».</p>`],
  ["٥. تصحيح التلاوة",`<ol><li>المزيد ← «تصحيح التلاوة»، واختاري السورة والآيات (10 على الأكثر).</li><li>استمعي للقارئ، ثم سجّلي تلاوتك كاملة وأوقفي.</li><li>تظهر النسبة والكلمات ملوّنة: أخضر صحيح، أصفر قريب، أحمر ساقط أو محرّف، مع ملاحظات المدود والغنن.</li></ol><p><b>لتصحيح أدق:</b> مكان هادئ، الجوال قريب من فمك، صوت واضح. أول مرة يُحمَّل المحرك القرآني (نحو 30 م.ب).</p>`],
  ["٦. المخارج والألعاب والمساعد",`<p><b>المخارج:</b> اختاري حرفًا لتقرئي مخرجه وصفاته، واضغطي ▶ لسماعه، ثم انطقيه ساكنًا بعد همزة (أَبْ) وسجّلي.</p><p><b>الألعاب:</b> ست ألعاب، كل واحدة دقيقة: النون الساكنة، الميم الساكنة، المدود، المخارج، الصفات، اللام والراء.</p><p><b>المساعد الذكي:</b> اسأليه عن أي حكم أو عن درسك أو خطأ تلاوتك (25 سؤالًا يوميًا).</p>`],
- ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (صوت، وكاميرا اختيارية، ورفع اليد)، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
+ ["٧. الحلقات",`<p>يمكنك استخدام الموقع وحدك لحفظك الخاص دون أي حلقة.</p><p><b>الانضمام:</b> المزيد ← «غرفة المعلمات» ← ابحثي ← «انضمام». تصلك واجبات المعلمة وتصحيحها.</p><p><b>حلقتي:</b> المعلمة وبيانات التواصل، وزميلاتك مرتّبات بالنقاط ونتائجهن.</p><p><b>لقاءات الحلقة 🎥:</b> المعلمة تحدّد المواعيد (أسبوعية أو مرة واحدة) من «لقاءات الحلقة»، فيظهر اللقاء للطالبات في الرئيسية، ويُفتح زر «انضمام» قبل الموعد بربع ساعة فيدخلن غرفة اللقاء داخل رياحين نفسه (تتسع لنحو 30 طالبة): المايك مكتوم حتى تأذن المعلمة بعد رفع اليد، ومع المعلمة مشاركة الشاشة وتثبيت فيديو طالبة وفتح النقاش للجميع، وللجميع محادثة نصية، ويُسجَّل الحضور تلقائيًا (+10 نقاط) وتراه المعلمة.</p><p><b>إنشاء حلقة مدارسة:</b> حلقتي ← «أنشئي حلقتك» ← الاسم والنبذة. تنضم إليها صديقاتك وتديرينها من «إدارة حلقتي».</p>`],
  ["٨. الحضور والنقاط والجوائز",`<p><b>الحضور:</b> الأسبوع يبدأ السبت. 4 أيام منجزة فأكثر: متميزة · 3: مثالية · يومان فأقل: غائبة.</p><p><b>النقاط:</b> درس 20 · اختبار كامل +10 · واجب 15 · مهمة حفظ 10 · يوم منجز 10 · 7 أيام متتالية 50 · تلاوة 5–10 · الألعاب.</p><p><b>الرتب:</b> مبتدئة ← مجتهدة (150) ← متقنة (400) ← ماهرة (800) ← متميزة (1500) ← نجمة رياحين (3000). والجوائز والشهادات التحفيزية في «نقاطي وجوائزي».</p>`],
  ["٩. للمعلمة",`<ul><li><b>البطاقة</b> (الإعدادات): الجوال، المدينة، الحلقة، النبذة، واسمك كما تكتبه الطالبات.</li><li><b>التوقيع والختم:</b> ارسمي التوقيع أو ارفعي صورته، وارفعي صورة ختمك إن شئتِ.</li><li><b>طالباتي:</b> ملخص الحضور والتسجيلات، وصفحة لكل طالبة: المستويات، الحضور، الاستماع للتسجيلات وتقييمها، الإجابات، الحفظ، منح الجوائز، حذفها من الحلقة.</li><li><b>الواجبات:</b> العنوان والسورة والآيات والموعد، فيصل لطالباتك.</li><li><b>أصوات الحروف:</b> المخارج ← «إدارة الأصوات»: سجّلي أو ارفعي نطق كل حرف.</li></ul>`],
  ["١٠. حل المشكلات",`<ul><li><b>عالقة على «جارٍ الاتصال»:</b> تأكدي من الإنترنت ← «إعادة المحاولة»، أو افتحي من Chrome/Safari.</li><li><b>التحديث لا يظهر:</b> حدّثي الصفحة (Ctrl+F5)، أو أغلقي التطبيق وافتحيه.</li><li><b>زر جوجل لا يعمل:</b> افتحي في Chrome/Safari مباشرة، أو ادخلي بالبريد.</li><li><b>المايك لا يعمل:</b> اسمحي للموقع بالميكروفون من إعدادات المتصفح.</li><li><b>لا تظهر طالبة في لوحة المعلمة:</b> تأكدي أنها انضمت من غرفة المعلمات أو كتبت اسم الحلقة.</li></ul><p>بياناتك محفوظة في حسابك على السحابة، فإن غيّرتِ الجهاز ادخلي بالحساب نفسه.</p>`]
@@ -1932,7 +1950,7 @@ function meetState(o){ const now=Date.now(); if(now>=o.start-15*60000&&now<=o.en
 async function myCircleDoc(){ const email=(isTeacher()||ST.ownCircle)?CLOUD.user.email:ST.teacherEmail; if(!email) return null; const d=await CLOUD.db.collection("teachers").doc(email).get(); return d.exists?Object.assign({email},d.data()):null; }
 async function nextMeetingsForMe(){ if(!cloudOn()) return []; try{ const T=await myCircleDoc(); if(!T) return []; return (T.meetings||[]).flatMap(m=>meetOccurrences(m,7)).sort((a,b)=>a.start-b.start).map(o=>Object.assign(o,{T})); }catch(e){ return []; } }
 async function markMeetAttendance(o){ ST.meetAtt=ST.meetAtt||{}; if(!ST.meetAtt[o.key]){ ST.meetAtt[o.key]=Date.now(); save(); if(typeof PTS!=="undefined") PTS.add(10,"حضور لقاء الحلقة","meet:"+o.key); try{ await CLOUD.push(true); }catch(e){} } }
-async function joinMeeting(o){ if(o.m.link){ await markMeetAttendance(o); window.open(o.m.link,"_blank","noopener"); return; } const T=o.T||await myCircleDoc(); go("room",{roomId:roomIdFor(T,o),title:o.m.title,o}); }
+async function joinMeeting(o){ if(o.m.link){ await markMeetAttendance(o); window.open(o.m.link,"_blank","noopener"); return; } const T=o.T||await myCircleDoc(); const host=!!(T&&CLOUD.user.email&&T.email.toLowerCase()===CLOUD.user.email.toLowerCase()); go("room",{roomId:roomIdFor(T,o),title:o.m.title,o,host}); }
 VIEWS.meetings=async function(){
   const manage=isTeacher()||ST.ownCircle;
   view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><div class="hero"><div><div class="eyebrow">مباشر</div><h1>لقاءات الحلقة</h1><p class="small muted">${manage?"حدّدي مواعيد لقاءات حلقتك المباشرة (صوت وصورة)، فتظهر لطالباتك مع زر الانضمام، ويُسجَّل حضورهن تلقائيًا.":"لقاءات حلقتك المباشرة مع معلمتك. يُفتح زر الانضمام قبل الموعد بربع ساعة، ويُسجَّل حضورك تلقائيًا (+10 نقاط)."}</p></div>${ART.ear}</div><div id="mtBox"><div class="card"><p class="muted">جارٍ التحميل…</p></div></div>`;
@@ -1942,12 +1960,12 @@ VIEWS.meetings=async function(){
   if(!T&&!manage){ $("#mtBox").innerHTML=`<div class="card"><p>لم تنضمّي إلى حلقة بعد.</p><button class="btn sm" data-go="teachers" style="margin-top:8px">🏫 غرفة المعلمات</button></div>`; view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)); return; }
   const meetings=(T&&T.meetings)||[]; const occ=meetings.flatMap(m=>meetOccurrences(m,14)).sort((a,b)=>a.start-b.start);
   const occHtml=occ.length?occ.slice(0,10).map(o=>{ const st=meetState(o); const done=ST.meetAtt&&ST.meetAtt[o.key]; return `<div class="row between" style="padding:10px 0;border-bottom:1px solid var(--line)"><div><b>${esc(o.m.title||"لقاء الحلقة")}</b><div class="small muted">${fmtMeet(o.start)} · ${o.m.dur||60} دقيقة${o.m.notes?" · "+esc(o.m.notes):""}</div></div><div class="row" style="gap:6px">${st==="open"?`<span class="pill good">● الآن</span>`:""}${done&&!manage?`<span class="pill good">✓ حضرتِ</span>`:""}<button class="btn ${st==="open"?"":"sec"} sm" data-join="${esc(o.key)}" ${st==="open"||manage?"":"disabled"}>${manage?"🎥 بدء اللقاء":st==="open"?"🎥 انضمام":"يُفتح قبل الموعد بربع ساعة"}</button></div></div>`; }).join(""):`<p class="muted small">لا لقاءات مجدولة خلال الأسبوعين القادمين.</p>`;
-  let html=`<div class="card"><h3>اللقاءات القادمة</h3><div style="margin-top:6px">${occHtml}</div><p class="small muted" style="margin-top:8px">اللقاء داخل رياحين نفسه. أول مرة يطلب المتصفح إذن المايك (والكاميرا إن شغّلتِها)؛ اسمحي له. يناسب الحلقة حتى نحو 10 مشاركات.</p></div>`;
+  let html=`<div class="card"><h3>اللقاءات القادمة</h3><div style="margin-top:6px">${occHtml}</div><p class="small muted" style="margin-top:8px">اللقاء داخل رياحين نفسه. أول مرة يطلب المتصفح إذن المايك (والكاميرا إن شغّلتِها)؛ اسمحي له. يتسع لنحو 30 طالبة: المعلمة تأذن بالتحدث، وتشارك شاشتها، وتثبّت فيديو طالبة، ومعها محادثة نصية.</p></div>`;
   if(manage){ const DN=[6,0,1,2,3,4,5];
     html+=`<div class="card stack"><h3>➕ لقاء جديد</h3><div class="row"><label class="f">العنوان<input id="mT" placeholder="مثال: لقاء التسميع اليومي" value="لقاء الحلقة"></label><label class="f">النوع<select id="mR"><option value="weekly">أسبوعي متكرر</option><option value="once">مرة واحدة</option></select></label></div>
       <div class="f" id="mDaysL"><span>الأيام</span><div class="row" style="gap:6px;margin-top:4px" id="mDays">${DN.map(d=>`<label class="pill" style="cursor:pointer"><input type="checkbox" value="${d}" style="margin:0 0 0 4px">${DAY_NAMES[d]}</label>`).join("")}</div></div>
       <div class="row"><label class="f" id="mDateL" hidden>التاريخ<input type="date" id="mDate"></label><label class="f">الوقت<input type="time" id="mTime" value="20:00"></label><label class="f">المدة (دقيقة)<input type="number" id="mDur" value="60" min="15" max="240"></label></div>
-      <label class="f">رابط خارجي (اختياري) <span class="small muted">(اتركيه فارغًا ليكون اللقاء داخل رياحين، أو الصقي رابط Google Meet أو Zoom للحلقات الكبيرة)</span><input id="mLink" dir="ltr" placeholder="https://meet.google.com/..."></label>
+      <label class="f">رابط خارجي (اختياري) <span class="small muted">(اتركيه فارغًا ليكون اللقاء داخل رياحين، أو الصقي رابط Google Meet أو Zoom لأكثر من 30 مشاركة)</span><input id="mLink" dir="ltr" placeholder="https://meet.google.com/..."></label>
       <label class="f">ملاحظة للطالبات<input id="mNotes" placeholder="مثال: جهّزي تسميع حفظ الأمس"></label><button class="btn" id="mAdd">حفظ اللقاء</button></div>`;
     if(meetings.length){ html+=`<div class="card"><h3>اللقاءات المجدولة</h3><div class="stack" style="margin-top:6px">${meetings.map(m=>`<div class="row between"><div><b>${esc(m.title||"لقاء")}</b><div class="small muted">${m.repeat==="weekly"?"كل "+(m.days||[]).map(d=>DAY_NAMES[d]).join("، "):"يوم "+esc(m.date)} · ${esc(m.time)} · ${m.dur||60} د · ${m.link?`<span dir="ltr">${esc(m.link.replace(/^https?:\/\//,""))}</span>`:"داخل رياحين"}</div></div><button class="btn danger sm" data-delm="${esc(m.id)}">حذف</button></div>`).join("")}</div></div>`;
       html+=`<div class="card"><h3>حضور اللقاءات</h3><div id="mAtt"><p class="muted small">جارٍ التحميل…</p></div></div>`; } }
@@ -1967,66 +1985,161 @@ VIEWS.meetings=async function(){
     $("#mAtt").innerHTML=past.length?`<div class="scroller"><table class="table"><tr><th>اللقاء</th><th>الحاضرات</th><th>الغائبات</th></tr>${past.map(o=>{ const pres=students.filter(s=>s.meetAtt&&s.meetAtt[o.key]); const abs=students.filter(s=>!(s.meetAtt&&s.meetAtt[o.key])); return `<tr><td class="small"><b>${esc(o.m.title)}</b><div class="muted">${fmtMeet(o.start)}</div></td><td class="small"><span class="pill good">${pres.length}</span> ${pres.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td><td class="small"><span class="pill bad">${abs.length}</span> ${abs.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td></tr>`; }).join("")}</table></div>`:`<p class="muted small">لم يُعقد لقاء بعد.</p>`; }catch(e){ $("#mAtt").innerHTML=`<p class="small muted">${esc(CLOUD.msg(e))}</p>`; } }
 };
 
-// ===== غرفة اللقاء داخل الموقع (WebRTC مباشر بين المشاركات، والإشارات عبر Firestore) =====
+// ===== غرفة اللقاء داخل الموقع — نموذج «المعلمة محور الاتصال» يتسع لنحو 30 مشاركة =====
+// كل طالبة تتصل بالمعلمة فقط. المعلمة تُرسل لكل طالبة: صوتها + صورتها/شاشتها + مزيجًا صوتيًا لمن أُذن لهن بالتحدث + الفيديو المثبّت.
+// الإشارات وحالة الغرفة والمحادثة عبر Firestore: rooms/{id} (الحالة) · peers · signals · chat
 const ICE_SERVERS=[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302","stun:stun.cloudflare.com:3478"]},{urls:["turn:openrelay.metered.ca:80","turn:openrelay.metered.ca:443","turn:openrelay.metered.ca:443?transport=tcp"],username:"openrelayproject",credential:"openrelayproject"}];
-const ROOM={ id:null, me:null, local:null, peers:{}, unsub:[], hb:null, cam:false, mic:true, hand:false, closing:false };
+const MAX_ROOM=31;
+const ROOM={ id:null };
 function roomIdFor(T,o){ return (T.email+"__"+o.key).replace(/[^\w@.-]/g,"_"); }
-async function roomJoin(roomId,title,{video=false}={}){
-  await roomLeave(); ROOM.closing=false; ROOM.id=roomId; ROOM.me=CLOUD.user.uid; ROOM.cam=video; ROOM.mic=true; ROOM.hand=false; ROOM.title=title;
-  ROOM.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:video?{width:{ideal:640},height:{ideal:480},facingMode:"user"}:false});
-  const rref=CLOUD.db.collection("rooms").doc(roomId); const meRef=rref.collection("peers").doc(ROOM.me);
-  await meRef.set({name:ST.fullName||ST.name||"",role:(isTeacher()||ST.ownCircle)?"teacher":"student",joinedAt:Date.now(),lastSeen:Date.now(),hand:false,muted:false,cam:video});
+function rref(){ return CLOUD.db.collection("rooms").doc(ROOM.id); }
+function roomSend(to,type,data){ return rref().collection("signals").add({from:ROOM.me,to,type,data:JSON.parse(JSON.stringify(data)),at:Date.now()}); }
+function newRoomState(){ return { id:null, me:null, host:false, hostId:null, local:null, camTrack:null, screenTrack:null, peers:{}, unsub:[], hb:null, mic:false, cam:false, hand:false, state:{speakers:[],open:false,spotlight:null}, chat:[], panel:null, closing:false, ctx:null, unread:0 }; }
+async function roomJoin(roomId,title,{host=false,video=false}={}){
+  await roomLeave(); Object.assign(ROOM,newRoomState(),{id:roomId,me:CLOUD.user.uid,host,title});
+  ROOM.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+  ROOM.mic=host; ROOM.local.getAudioTracks().forEach(t=>t.enabled=host);
+  if(video) await roomCamOn(true);
+  if(host){ ROOM.ctx=new (window.AudioContext||window.webkitAudioContext)(); await rref().set({host:ROOM.me,hostName:ST.fullName||ST.name||"",speakers:[],open:false,spotlight:null,startedAt:Date.now(),title:title||""}); }
+  const meRef=rref().collection("peers").doc(ROOM.me);
+  await meRef.set({name:ST.fullName||ST.name||"",host,joinedAt:Date.now(),lastSeen:Date.now(),hand:false,muted:!ROOM.mic,cam:ROOM.cam});
   ROOM.hb=setInterval(()=>{ meRef.set({lastSeen:Date.now()},{merge:true}).catch(()=>{}); },8000);
-  // أرسل عرضًا لكل من في الغرفة الآن
-  const now=Date.now(); const ps=await rref.collection("peers").get();
-  ps.forEach(d=>{ if(d.id!==ROOM.me&&now-(d.data().lastSeen||0)<30000) roomConnect(d.id,d.data(),true); });
-  // تابع المشاركات
-  ROOM.unsub.push(rref.collection("peers").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ const id=ch.doc.id; if(id===ROOM.me) return; const data=ch.doc.data(); if(ch.type==="removed"){ roomDrop(id); return; } const P=ROOM.peers[id]; if(P){ P.info=data; } else if(!P&&Date.now()-(data.lastSeen||0)<30000&&data.joinedAt>now-2000){ ROOM.peers[id]={info:data,pc:null,pending:[]}; } }); roomRender(); }));
-  // استقبل الإشارات الموجّهة لي
-  ROOM.unsub.push(rref.collection("signals").where("to","==",ROOM.me).onSnapshot(s=>{ s.docChanges().forEach(async ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); ch.doc.ref.delete().catch(()=>{}); if(m.at<now-60000) return; await roomSignal(m); }); }));
+  const t0=Date.now();
+  // حالة الغرفة (للطالبات: من يُسمح لها بالتحدث، والفيديو المثبّت)
+  ROOM.unsub.push(rref().onSnapshot(d=>{ const s=d.exists?d.data():null; if(!s) return; ROOM.state={speakers:s.speakers||[],open:!!s.open,spotlight:s.spotlight||null,hostName:s.hostName}; ROOM.hostId=s.host; if(!ROOM.host) roomApplyMicRights(); else roomRemix(); roomRender(); }));
+  // المشاركات
+  ROOM.unsub.push(rref().collection("peers").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ const id=ch.doc.id; if(id===ROOM.me) return; const data=ch.doc.data();
+      if(ch.type==="removed"||Date.now()-(data.lastSeen||0)>40000){ roomDrop(id); return; }
+      const P=ROOM.peers[id]||(ROOM.peers[id]={info:{},pc:null,streams:{}}); const wasHost=P.info.host, oldJoin=P.info.joinedAt; P.info=data;
+      // الطالبة تبادر بالاتصال بالمعلمة عند ظهورها (أو عودتها)
+      if(!ROOM.host&&data.host&&(!P.pc||oldJoin!==data.joinedAt)) roomCallHost(id);
+      if(ROOM.host&&!data.host) roomRemix(); });
+    roomRender(); }));
+  // الإشارات الموجّهة لي
+  ROOM.unsub.push(rref().collection("signals").where("to","==",ROOM.me).onSnapshot(s=>{ s.docChanges().forEach(async ch=>{ if(ch.type!=="added") return; const m=ch.doc.data(); ch.doc.ref.delete().catch(()=>{}); if(m.at<t0-60000) return; await roomSignal(m); }); }));
+  // المحادثة
+  ROOM.unsub.push(rref().collection("chat").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ if(ch.type==="added"){ ROOM.chat.push(ch.doc.data()); if(ROOM.panel!=="chat"&&ch.doc.data().from!==ROOM.me) ROOM.unread++; } }); ROOM.chat.sort((a,b)=>a.at-b.at); roomRenderPanel(); roomRenderBar(); }));
   window.addEventListener("pagehide",roomLeave);
   roomRender();
 }
-function roomSend(to,type,data){ return CLOUD.db.collection("rooms").doc(ROOM.id).collection("signals").add({from:ROOM.me,to,type,data:JSON.parse(JSON.stringify(data)),at:Date.now()}); }
-function roomPC(id){ let P=ROOM.peers[id]; if(!P) P=ROOM.peers[id]={info:{},pc:null,pending:[]}; if(P.pc) return P;
-  const pc=new RTCPeerConnection({iceServers:ICE_SERVERS}); P.pc=pc; P.stream=new MediaStream();
-  ROOM.local.getTracks().forEach(t=>pc.addTrack(t,ROOM.local)); if(!ROOM.local.getVideoTracks().length) pc.addTransceiver("video",{direction:"recvonly"});
-  pc.onicecandidate=e=>{ if(e.candidate) roomSend(id,"ice",e.candidate.toJSON()).catch(()=>{}); };
-  pc.ontrack=e=>{ e.streams[0].getTracks().forEach(t=>{ if(!P.stream.getTracks().includes(t)) P.stream.addTrack(t); }); roomRender(); };
-  pc.onconnectionstatechange=()=>{ P.state=pc.connectionState; if(pc.connectionState==="failed"){ try{ pc.restartIce(); }catch(e){} } roomRender(); };
-  return P; }
-async function roomConnect(id,info,initiator){ const P=roomPC(id); P.info=info||P.info; if(!initiator) return; const pc=P.pc; const offer=await pc.createOffer(); await pc.setLocalDescription(offer); await roomSend(id,"offer",{sdp:offer.sdp,type:offer.type}); }
-async function roomSignal(m){ const P=roomPC(m.from); const pc=P.pc;
-  try{ if(m.type==="offer"){ if(pc.signalingState==="have-local-offer"){ if(ROOM.me>m.from) return; await pc.setLocalDescription({type:"rollback"}); } await pc.setRemoteDescription(m.data); for(const c of P.pending.splice(0)) await pc.addIceCandidate(c).catch(()=>{}); const ans=await pc.createAnswer(); await pc.setLocalDescription(ans); await roomSend(m.from,"answer",{sdp:ans.sdp,type:ans.type}); }
-    else if(m.type==="answer"){ if(pc.signalingState==="have-local-offer") await pc.setRemoteDescription(m.data); for(const c of P.pending.splice(0)) await pc.addIceCandidate(c).catch(()=>{}); }
-    else if(m.type==="ice"){ if(pc.remoteDescription) await pc.addIceCandidate(m.data).catch(()=>{}); else P.pending.push(m.data); } }catch(e){ console.warn("signal",e); } }
-function roomDrop(id){ const P=ROOM.peers[id]; if(P&&P.pc) try{ P.pc.close(); }catch(e){} delete ROOM.peers[id]; roomRender(); }
-async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; ROOM.closing=true; ROOM.unsub.forEach(u=>{ try{u();}catch(e){} }); ROOM.unsub=[]; clearInterval(ROOM.hb);
-  Object.keys(ROOM.peers).forEach(id=>{ try{ ROOM.peers[id].pc&&ROOM.peers[id].pc.close(); }catch(e){} }); ROOM.peers={};
-  if(ROOM.local) ROOM.local.getTracks().forEach(t=>t.stop()); ROOM.local=null;
-  try{ await CLOUD.db.collection("rooms").doc(ROOM.id).collection("peers").doc(ROOM.me).delete(); }catch(e){} ROOM.id=null; }
-function roomSetMe(patch){ if(!ROOM.id) return; CLOUD.db.collection("rooms").doc(ROOM.id).collection("peers").doc(ROOM.me).set(patch,{merge:true}).catch(()=>{}); }
-async function roomToggleCam(){ if(!ROOM.local) return; let vt=ROOM.local.getVideoTracks()[0];
-  if(!vt){ try{ const s=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:"user"}}); vt=s.getVideoTracks()[0]; ROOM.local.addTrack(vt); for(const id in ROOM.peers){ const P=ROOM.peers[id]; if(!P.pc) continue; const tr=P.pc.getTransceivers().find(x=>x.receiver&&x.receiver.track&&x.receiver.track.kind==="video"&&!x.sender.track); if(tr){ await tr.sender.replaceTrack(vt); tr.direction="sendrecv"; tr.sender.setStreams&&tr.sender.setStreams(ROOM.local); } else P.pc.addTrack(vt,ROOM.local); const of=await P.pc.createOffer(); await P.pc.setLocalDescription(of); await roomSend(id,"offer",{sdp:of.sdp,type:of.type}); } ROOM.cam=true; }catch(e){ toast("تعذّر تشغيل الكاميرا"); return; } }
-  else { vt.enabled=!vt.enabled; ROOM.cam=vt.enabled; } roomSetMe({cam:ROOM.cam}); roomRender(); }
-function roomToggleMic(){ if(!ROOM.local) return; ROOM.mic=!ROOM.mic; ROOM.local.getAudioTracks().forEach(t=>t.enabled=ROOM.mic); roomSetMe({muted:!ROOM.mic}); roomRender(); }
-function roomToggleHand(){ ROOM.hand=!ROOM.hand; roomSetMe({hand:ROOM.hand}); roomRender(); }
-function roomRender(){ const g=$("#roomGrid"); if(!g) return;
-  const tile=(id,name,stream,{me,muted,cam,hand,state,role})=>`<div class="rtile ${hand?"hand":""}" data-tile="${id}">${cam?`<video autoplay playsinline ${me?"muted":""}></video>`:`<div class="rav">${esc(initials(name))}</div>`}${!me?`<audio autoplay></audio>`:""}<div class="rname">${hand?"✋ ":""}${role==="teacher"?"👩‍🏫 ":""}${esc(name)}${me?" (أنا)":""}${muted?" 🔇":""}${state&&state!=="connected"&&!me?` <span class="small">· ${state==="connecting"||state==="new"?"جارٍ الاتصال":"انقطع"}</span>`:""}</div></div>`;
-  const items=[["me",ST.fullName||ST.name,ROOM.local,{me:true,muted:!ROOM.mic,cam:ROOM.cam,hand:ROOM.hand,role:(isTeacher()||ST.ownCircle)?"teacher":"student"}]].concat(Object.entries(ROOM.peers).map(([id,P])=>[id,P.info.name||"…",P.stream,{muted:P.info.muted,cam:P.info.cam&&P.stream&&P.stream.getVideoTracks().length>0,hand:P.info.hand,state:P.state,role:P.info.role}]));
-  g.innerHTML=items.map(([id,n,s,o])=>tile(id,n,s,o)).join("");
-  items.forEach(([id,n,s,o])=>{ const t=g.querySelector(`[data-tile="${id}"]`); if(!t||!s) return; const v=t.querySelector("video"); if(v) v.srcObject=s; const a=t.querySelector("audio"); if(a) a.srcObject=s; });
-  const cnt=$("#roomCount"); if(cnt) cnt.textContent=items.length; const b=$("#rMic"); if(b){ b.textContent=ROOM.mic?"🎙️ كتم":"🔇 تشغيل المايك"; b.classList.toggle("danger",!ROOM.mic); } const c=$("#rCam"); if(c) c.textContent=ROOM.cam?"📷 إيقاف الكاميرا":"📷 تشغيل الكاميرا"; const h=$("#rHand"); if(h) h.textContent=ROOM.hand?"✋ إنزال اليد":"✋ رفع اليد"; }
+// ---------- الطالبة ----------
+async function roomCallHost(hostId){ const old=ROOM.peers[hostId]; if(old&&old.pc){ try{ old.pc.close(); }catch(e){} }
+  const P=ROOM.peers[hostId]; const pc=new RTCPeerConnection({iceServers:ICE_SERVERS}); P.pc=pc; P.streams={}; P.pending=[];
+  const at=ROOM.local.getAudioTracks()[0]; pc.addTransceiver(at,{direction:"sendrecv",streams:[ROOM.local]});            // 0: مايكي ← صوت المعلمة
+  pc.addTransceiver(ROOM.camTrack||"video",{direction:ROOM.camTrack?"sendrecv":"recvonly"});                                // 1: كاميرتي ← صورة المعلمة/شاشتها
+  pc.addTransceiver("audio",{direction:"recvonly"});                                                                        // 2: مزيج المتحدثات
+  pc.addTransceiver("video",{direction:"recvonly"});                                                                        // 3: الفيديو المثبّت
+  roomWirePC(pc,hostId);
+  pc.ontrack=e=>{ const i=pc.getTransceivers().indexOf(e.transceiver); const key=["hostA","hostV","mix","spot"][i]||"x"+i; P.streams[key]=new MediaStream([e.track]); e.track.onunmute=()=>roomRender(); roomRender(); };
+  const of=await pc.createOffer(); await pc.setLocalDescription(of); await roomSend(hostId,"offer",{sdp:of.sdp,type:of.type});
+  clearTimeout(P.retryT); P.retryT=setTimeout(()=>{ if(ROOM.id&&P.pc===pc&&pc.connectionState!=="connected"&&ROOM.peers[hostId]) roomCallHost(hostId); },(P.tries=(P.tries||0)+1)>3?30000:15000); }
+function roomApplyMicRights(){ const allowed=ROOM.state.open||ROOM.state.speakers.includes(ROOM.me); if(!allowed&&ROOM.mic){ ROOM.mic=false; ROOM.local&&ROOM.local.getAudioTracks().forEach(t=>t.enabled=false); roomSetMe({muted:true}); } ROOM.canSpeak=allowed; }
+// ---------- المعلمة ----------
+async function roomAnswer(m){ const id=m.from; const P=ROOM.peers[id]||(ROOM.peers[id]={info:{},streams:{}}); if(P.pc){ try{ P.pc.close(); }catch(e){} roomUnmix(id); }
+  if(Object.values(ROOM.peers).filter(x=>x.pc).length>=MAX_ROOM-1){ roomSend(id,"full",{}); return; }
+  const pc=new RTCPeerConnection({iceServers:ICE_SERVERS}); P.pc=pc; P.streams={}; P.pending=[]; roomWirePC(pc,id);
+  pc.ontrack=e=>{ const i=pc.getTransceivers().indexOf(e.transceiver); if(i===0){ P.streams.mic=new MediaStream([e.track]); P.micTrack=e.track; roomRemix(); } else if(i===1){ P.streams.cam=new MediaStream([e.track]); P.camTrack=e.track; roomRespot(); } roomRender(); };
+  await pc.setRemoteDescription(m.data); const tr=pc.getTransceivers();
+  if(tr[0]){ tr[0].direction="sendrecv"; await tr[0].sender.replaceTrack(ROOM.local.getAudioTracks()[0]); }
+  if(tr[1]){ tr[1].direction="sendrecv"; await tr[1].sender.replaceTrack(ROOM.screenTrack||ROOM.camTrack||null); }
+  P.mixDest=ROOM.ctx.createMediaStreamDestination(); P.mixIn={}; if(tr[2]){ tr[2].direction="sendonly"; await tr[2].sender.replaceTrack(P.mixDest.stream.getAudioTracks()[0]); }
+  if(tr[3]){ tr[3].direction="sendonly"; }
+  for(const c of P.pending.splice(0)) await pc.addIceCandidate(c).catch(()=>{});
+  const ans=await pc.createAnswer(); await pc.setLocalDescription(ans); await roomSend(id,"answer",{sdp:ans.sdp,type:ans.type});
+  roomTuneVideo(pc); roomRemix(); roomRespot(); }
+// مزيج صوتي لكل طالبة = كل المتحدثات المسموح لهن عدا هي نفسها
+function speakerIds(){ return Object.keys(ROOM.peers).filter(id=>{ const P=ROOM.peers[id]; return P.micTrack&&(ROOM.state.open||ROOM.state.speakers.includes(id)); }); }
+function roomSource(id){ const P=ROOM.peers[id]; if(!P.src&&P.micTrack){ const ms=new MediaStream([P.micTrack]); P.sinkEl=new Audio(); P.sinkEl.muted=true; P.sinkEl.srcObject=ms; P.sinkEl.play().catch(()=>{}); P.src=ROOM.ctx.createMediaStreamSource(ms); } return P.src; }
+function roomRemix(){ if(!ROOM.host||!ROOM.ctx) return; if(ROOM.ctx.state==="suspended") ROOM.ctx.resume().catch(()=>{}); const sp=new Set(speakerIds());
+  for(const [lid,L] of Object.entries(ROOM.peers)){ if(!L.mixDest) continue; L.mixIn=L.mixIn||{};
+    for(const sid of Object.keys(L.mixIn)) if(!sp.has(sid)||sid===lid){ try{ L.mixIn[sid].disconnect(); }catch(e){} delete L.mixIn[sid]; }
+    for(const sid of sp){ if(sid===lid||L.mixIn[sid]) continue; const src=roomSource(sid); if(!src) continue; const g=ROOM.ctx.createGain(); g.gain.value=1; src.connect(g); g.connect(L.mixDest); L.mixIn[sid]=g; } } }
+function roomUnmix(id){ for(const L of Object.values(ROOM.peers)){ if(L.mixIn&&L.mixIn[id]){ try{ L.mixIn[id].disconnect(); }catch(e){} delete L.mixIn[id]; } } const P=ROOM.peers[id]; if(P){ try{ P.src&&P.src.disconnect(); }catch(e){} P.src=null; P.micTrack=null; } }
+// الفيديو المثبّت: كاميرا طالبة يختارها المعلمة يُرسل للجميع
+async function roomRespot(){ if(!ROOM.host) return; const sid=ROOM.state.spotlight; const track=sid&&ROOM.peers[sid]?ROOM.peers[sid].camTrack:null;
+  for(const [id,P] of Object.entries(ROOM.peers)){ if(!P.pc) continue; const t=P.pc.getTransceivers()[3]; if(t) await t.sender.replaceTrack(id===sid?null:(track||null)).catch(()=>{}); } }
+async function roomHostVideo(){ for(const P of Object.values(ROOM.peers)){ if(!P.pc) continue; const t=P.pc.getTransceivers()[1]; if(t) await t.sender.replaceTrack(ROOM.screenTrack||ROOM.camTrack||null).catch(()=>{}); roomTuneVideo(P.pc); } }
+function roomTuneVideo(pc){ const n=Object.keys(ROOM.peers).length; pc.getSenders().forEach(s=>{ if(!s.track||s.track.kind!=="video") return; const p=s.getParameters(); p.encodings=p.encodings&&p.encodings.length?p.encodings:[{}]; const screen=s.track===ROOM.screenTrack; p.encodings[0].maxBitrate=screen?(n>15?250000:500000):(n>15?90000:n>8?150000:300000); if(!screen) p.encodings[0].scaleResolutionDownBy=n>15?2:1; s.setParameters(p).catch(()=>{}); }); }
+async function hostSetState(patch){ ROOM.state=Object.assign({},ROOM.state,patch); await rref().set(patch,{merge:true}); roomRemix(); roomRespot(); roomRender(); }
+// ---------- مشترك ----------
+function roomWirePC(pc,id){ const P=ROOM.peers[id]; pc.onicecandidate=e=>{ if(e.candidate) roomSend(id,"ice",e.candidate.toJSON()).catch(()=>{}); };
+  pc.onconnectionstatechange=()=>{ P.state=pc.connectionState; if(pc.connectionState==="failed"){ if(!ROOM.host&&P.info.host) setTimeout(()=>roomCallHost(id),1500); } roomRender(); }; }
+async function roomSignal(m){ try{
+  if(m.type==="offer"&&ROOM.host){ await roomAnswer(m); return; }
+  if(m.type==="full"){ toast("الغرفة ممتلئة (الحد 30 طالبة)"); return; }
+  const P=ROOM.peers[m.from]; if(!P||!P.pc){ if(m.type==="ice"){ (ROOM.peers[m.from]=ROOM.peers[m.from]||{info:{},streams:{},pending:[]}).pending=(P&&P.pending)||[]; ROOM.peers[m.from].pending.push(m.data); } return; }
+  const pc=P.pc; if(m.type==="answer"){ if(pc.signalingState==="have-local-offer"){ await pc.setRemoteDescription(m.data); for(const c of (P.pending||[]).splice(0)) await pc.addIceCandidate(c).catch(()=>{}); } }
+  else if(m.type==="ice"){ if(pc.remoteDescription) await pc.addIceCandidate(m.data).catch(()=>{}); else (P.pending=P.pending||[]).push(m.data); }
+}catch(e){ console.warn("signal",e); } }
+function roomDrop(id){ const P=ROOM.peers[id]; if(!P) return; if(ROOM.host) roomUnmix(id); try{ P.pc&&P.pc.close(); }catch(e){} delete ROOM.peers[id];
+  if(ROOM.host&&(ROOM.state.speakers.includes(id)||ROOM.state.spotlight===id)) hostSetState({speakers:ROOM.state.speakers.filter(x=>x!==id),spotlight:ROOM.state.spotlight===id?null:ROOM.state.spotlight}); roomRender(); }
+async function roomLeave(){ if(!ROOM.id||ROOM.closing) return; ROOM.closing=true; const id=ROOM.id, me=ROOM.me, host=ROOM.host;
+  (ROOM.unsub||[]).forEach(u=>{ try{u();}catch(e){} }); clearInterval(ROOM.hb);
+  Object.values(ROOM.peers||{}).forEach(P=>{ try{ P.pc&&P.pc.close(); }catch(e){} try{ P.sinkEl&&(P.sinkEl.srcObject=null); }catch(e){} });
+  [ROOM.local,ROOM.camTrack&&new MediaStream([ROOM.camTrack]),ROOM.screenTrack&&new MediaStream([ROOM.screenTrack])].forEach(s=>s&&s.getTracks().forEach(t=>t.stop()));
+  try{ ROOM.ctx&&ROOM.ctx.close(); }catch(e){}
+  try{ await CLOUD.db.collection("rooms").doc(id).collection("peers").doc(me).delete(); if(host) await CLOUD.db.collection("rooms").doc(id).set({endedAt:Date.now(),speakers:[],open:false,spotlight:null},{merge:true}); }catch(e){}
+  Object.assign(ROOM,newRoomState()); }
+function roomSetMe(patch){ if(!ROOM.id) return; rref().collection("peers").doc(ROOM.me).set(patch,{merge:true}).catch(()=>{}); }
+// ---------- أزرار التحكم ----------
+function roomToggleMic(){ if(!ROOM.local) return; if(!ROOM.host&&!ROOM.mic&&!ROOM.canSpeak){ toast("ارفعي يدك لتأذن لكِ المعلمة بالتحدث"); return; } ROOM.mic=!ROOM.mic; ROOM.local.getAudioTracks().forEach(t=>t.enabled=ROOM.mic); roomSetMe({muted:!ROOM.mic}); if(ROOM.mic&&ROOM.hand) roomToggleHand(); roomRenderBar(); roomRender(); }
+async function roomCamOn(silent){ try{ const s=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:360},facingMode:"user"}}); ROOM.camTrack=s.getVideoTracks()[0]; ROOM.cam=true; return true; }catch(e){ if(!silent) toast("تعذّر تشغيل الكاميرا"); return false; } }
+async function roomToggleCam(){ if(ROOM.cam){ ROOM.camTrack&&ROOM.camTrack.stop(); ROOM.camTrack=null; ROOM.cam=false; } else if(!(await roomCamOn())) return;
+  if(ROOM.host) await roomHostVideo(); else { const P=ROOM.hostId&&ROOM.peers[ROOM.hostId]; const t=P&&P.pc&&P.pc.getTransceivers()[1]; if(t){ if(ROOM.camTrack&&t.direction!=="sendrecv"){ roomCallHost(ROOM.hostId); } else await t.sender.replaceTrack(ROOM.camTrack||null).catch(()=>{}); } }
+  roomSetMe({cam:ROOM.cam}); roomRenderBar(); roomRender(); }
+async function roomToggleScreen(){ if(!ROOM.host) return; if(ROOM.screenTrack){ ROOM.screenTrack.stop(); ROOM.screenTrack=null; } else { try{ const s=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:8},audio:false}); ROOM.screenTrack=s.getVideoTracks()[0]; ROOM.screenTrack.onended=()=>{ ROOM.screenTrack=null; roomHostVideo(); roomSetMe({screen:false}); roomRender(); roomRenderBar(); }; }catch(e){ return; } }
+  await roomHostVideo(); roomSetMe({screen:!!ROOM.screenTrack}); roomRenderBar(); roomRender(); }
+function roomToggleHand(){ ROOM.hand=!ROOM.hand; roomSetMe({hand:ROOM.hand,handAt:ROOM.hand?Date.now():null}); roomRenderBar(); roomRender(); }
+function roomSendChat(text){ text=String(text||"").trim().slice(0,500); if(!text) return; rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",host:ROOM.host,text,at:Date.now()}).catch(e=>toast(CLOUD.msg(e))); }
+// ---------- العرض ----------
+function roomTileHtml(id,name,{me,muted,cam,hand,host,state,speaking,spot}){ return `<div class="rtile ${hand?"hand":""} ${spot?"spot":""}" data-tile="${id}">${cam?`<video autoplay playsinline muted></video>`:`<div class="rav">${esc(initials(name))}</div>`}<div class="rname">${hand?"✋ ":""}${host?"👩‍🏫 ":""}${esc(name)}${me?" (أنا)":""} ${muted?"🔇":"🎙️"}${state&&state!=="connected"&&!me?` <span class="small">· ${state==="failed"||state==="disconnected"?"انقطع":"يتصل…"}</span>`:""}</div></div>`; }
+function roomRender(){ const stage=$("#rStage"); if(!stage||!ROOM.id) return; const n=Object.keys(ROOM.peers).filter(id=>ROOM.peers[id].info&&ROOM.peers[id].info.name).length+1; const cnt=$("#roomCount"); if(cnt) cnt.textContent=n;
+  if(ROOM.host){ // المعلمة: شبكة كل الطالبات
+    const items=[["me",ST.fullName||ST.name,{me:true,muted:!ROOM.mic,cam:!!(ROOM.screenTrack||ROOM.camTrack),host:true}]].concat(Object.entries(ROOM.peers).filter(([id,P])=>P.info&&P.info.name).sort((a,b)=>(b[1].info.hand?1:0)-(a[1].info.hand?1:0)).map(([id,P])=>[id,P.info.name,{muted:P.info.muted,cam:!!(P.camTrack&&P.info.cam),hand:P.info.hand,state:P.state,spot:ROOM.state.spotlight===id}]));
+    stage.innerHTML=`<div class="rgrid ${items.length>9?"dense":""}">${items.map(([id,n,o])=>roomTileHtml(id,n,o)).join("")}</div>`;
+    items.forEach(([id])=>{ const t=stage.querySelector(`[data-tile="${id}"] video`); if(!t) return; t.srcObject=id==="me"?new MediaStream([ROOM.screenTrack||ROOM.camTrack]):ROOM.peers[id].streams.cam; });
+    // تشغيل أصوات المتحدثات للمعلمة
+    const au=$("#rAudio"); const sp=speakerIds(); au.innerHTML=sp.map(id=>`<audio autoplay data-au="${id}"></audio>`).join(""); sp.forEach(id=>{ const a=au.querySelector(`[data-au="${id}"]`); if(a) a.srcObject=ROOM.peers[id].streams.mic; });
+  } else { // الطالبة: المعلمة في المسرح + المثبّتة + صورتي
+    const H=ROOM.hostId&&ROOM.peers[ROOM.hostId]; const hs=H&&H.streams||{}; const spotOn=ROOM.state.spotlight&&ROOM.state.spotlight!==ROOM.me&&hs.spot&&hs.spot.getVideoTracks()[0]&&!hs.spot.getVideoTracks()[0].muted; const hostCam=H&&H.info&&(H.info.cam||H.info.screen);
+    stage.innerHTML=!H||!H.info||!H.info.name?`<div class="rwait"><div class="rav big">👩‍🏫</div><p><b>بانتظار دخول المعلمة…</b></p><p class="small muted">ستتصلين تلقائيًا عند دخولها.</p></div>`:
+      `<div class="rmain">${hostCam?`<video id="rHostV" autoplay playsinline muted></video>`:`<div class="rav big">${esc(initials(H.info.name))}</div>`}<div class="rname">👩‍🏫 ${esc(H.info.name)}${H.info.screen?" · تشارك الشاشة":""} ${H.info.muted?"🔇":"🎙️"}${H.state&&H.state!=="connected"?` · ${H.state==="failed"?"انقطع الاتصال، جارٍ إعادة المحاولة":"يتصل…"}`:""}</div></div>
+       <div class="rstrip">${spotOn?`<div class="rtile spot"><video id="rSpotV" autoplay playsinline muted></video><div class="rname">📌 ${esc((ROOM.peers[ROOM.state.spotlight]||{info:{}}).info.name||"مثبّتة")}</div></div>`:""}${ROOM.cam?`<div class="rtile"><video id="rMeV" autoplay playsinline muted></video><div class="rname">أنا</div></div>`:""}</div>
+       ${(ROOM.state.speakers||[]).length||ROOM.state.open?`<div class="small muted" style="text-align:center;margin-top:6px">🎙️ ${ROOM.state.open?"النقاش مفتوح للجميع":"يتحدث الآن: "+ROOM.state.speakers.map(id=>id===ROOM.me?"أنتِ":esc(((ROOM.peers[id]||{}).info||{}).name||"طالبة")).join("، ")}</div>`:""}`;
+    const v=$("#rHostV"); if(v) v.srcObject=hs.hostV; const sv=$("#rSpotV"); if(sv) sv.srcObject=hs.spot; const mv=$("#rMeV"); if(mv) mv.srcObject=new MediaStream([ROOM.camTrack]);
+    const au=$("#rAudio"); if(au&&!au.dataset.ready&&(hs.hostA||hs.mix)){ au.innerHTML=`<audio autoplay id="aHost"></audio><audio autoplay id="aMix"></audio>`; au.dataset.ready=1; } const a1=$("#aHost"), a2=$("#aMix"); if(a1&&hs.hostA&&a1.srcObject!==hs.hostA) a1.srcObject=hs.hostA; if(a2&&hs.mix&&a2.srcObject!==hs.mix) a2.srcObject=hs.mix;
+  }
+  roomRenderPanel(); }
+function roomRenderBar(){ const bar=$("#roomBar"); if(!bar||!ROOM.id) return; const hands=Object.values(ROOM.peers).filter(P=>P.info&&P.info.hand).length;
+  bar.innerHTML=`<button class="rbtn ${ROOM.mic?"":"off"}" id="rMic" title="المايك">${ROOM.mic?"🎙️":"🔇"}<span>${ROOM.mic?"كتم":(ROOM.host||ROOM.canSpeak?"تحدّث":"المايك")}</span></button>
+    <button class="rbtn ${ROOM.cam?"":"off"}" id="rCam">📷<span>${ROOM.cam?"إيقاف":"الكاميرا"}</span></button>
+    ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button>`}
+    <button class="rbtn ${ROOM.panel==="people"?"on":""}" id="rPeople">👥<span>المشاركات${ROOM.host&&hands?` (${hands}✋)`:""}</span></button>
+    <button class="rbtn ${ROOM.panel==="chat"?"on":""}" id="rChat">💬<span>المحادثة${ROOM.unread?` (${ROOM.unread})`:""}</span></button>
+    <button class="rbtn leave" id="rLeave">📞<span>${ROOM.host?"إنهاء":"مغادرة"}</span></button>`;
+  $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
+  $("#rPeople").onclick=()=>{ ROOM.panel=ROOM.panel==="people"?null:"people"; roomRenderBar(); roomRenderPanel(); }; $("#rChat").onclick=()=>{ ROOM.panel=ROOM.panel==="chat"?null:"chat"; ROOM.unread=0; roomRenderBar(); roomRenderPanel(); };
+  $("#rLeave").onclick=async()=>{ if(ROOM.host&&!confirm("إنهاء اللقاء لجميع المشاركات؟")) return; await roomLeave(); go("meetings"); }; }
+function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.panel; if(!ROOM.panel) return;
+  if(ROOM.panel==="chat"){ const keep=$("#rChatIn")?$("#rChatIn").value:""; p.innerHTML=`<div class="row between"><b>💬 المحادثة</b><button class="btn sec sm" id="rPX">✕</button></div><div class="rchat" id="rChatList">${ROOM.chat.map(m=>`<div class="rmsg ${m.from===ROOM.me?"me":""}"><b>${m.host?"👩‍🏫 ":""}${esc(m.name)}</b><div>${esc(m.text)}</div></div>`).join("")||`<p class="small muted">لا رسائل بعد.</p>`}</div><form class="chatbar" id="rChatF"><input id="rChatIn" placeholder="اكتبي رسالة…" autocomplete="off" value="${esc(keep)}"><button class="btn sm">إرسال</button></form>`;
+    const L=$("#rChatList"); L.scrollTop=L.scrollHeight; $("#rChatF").onsubmit=e=>{ e.preventDefault(); roomSendChat($("#rChatIn").value); $("#rChatIn").value=""; }; }
+  else { const ppl=Object.entries(ROOM.peers).filter(([id,P])=>P.info&&P.info.name).sort((a,b)=>(b[1].info.hand?1:0)-(a[1].info.hand?1:0)||(a[1].info.handAt||0)-(b[1].info.handAt||0));
+    p.innerHTML=`<div class="row between"><b>👥 المشاركات (${ppl.length+1})</b><button class="btn sec sm" id="rPX">✕</button></div>
+      ${ROOM.host?`<div class="row" style="gap:6px;margin:8px 0"><button class="btn sm ${ROOM.state.open?"":"sec"}" id="hOpen">${ROOM.state.open?"🔒 إغلاق النقاش":"🔓 السماح للجميع بالتحدث"}</button><button class="btn sec sm" id="hMuteAll">🔇 كتم الجميع</button><button class="btn sec sm" id="hHands">✋ إنزال الأيدي</button></div>`:""}
+      <div class="stack" style="gap:6px">${ppl.map(([id,P])=>{ const sp=ROOM.state.speakers.includes(id); return `<div class="rperson"><span>${P.info.hand?"✋ ":""}${P.info.host?"👩‍🏫 ":""}${esc(P.info.name)} ${P.info.muted?"🔇":"🎙️"}</span>${ROOM.host&&!P.info.host?`<span class="row" style="gap:4px"><button class="btn sm ${sp?"":"sec"}" data-sp="${id}">${sp?"⏹ إيقاف":"🎙️ تحدّثي"}</button><button class="btn sm ${ROOM.state.spotlight===id?"":"sec"}" data-pin="${id}">📌</button></span>`:""}</div>`; }).join("")||`<p class="small muted">لم تدخل أحد بعد.</p>`}</div>`;
+    if(ROOM.host){ $("#hOpen").onclick=()=>hostSetState({open:!ROOM.state.open}); $("#hMuteAll").onclick=()=>hostSetState({open:false,speakers:[]}); $("#hHands").onclick=()=>{ ppl.forEach(([id,P])=>{ if(P.info.hand) rref().collection("peers").doc(id).set({hand:false},{merge:true}).catch(()=>{}); }); toast("أُنزلت الأيدي"); };
+      p.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>{ const id=b.dataset.sp; const s=ROOM.state.speakers.includes(id)?ROOM.state.speakers.filter(x=>x!==id):[...ROOM.state.speakers,id]; hostSetState({speakers:s}); if(!ROOM.state.speakers.includes(id)) rref().collection("peers").doc(id).set({hand:false},{merge:true}).catch(()=>{}); });
+      p.querySelectorAll("[data-pin]").forEach(b=>b.onclick=()=>hostSetState({spotlight:ROOM.state.spotlight===b.dataset.pin?null:b.dataset.pin})); } }
+  $("#rPX").onclick=()=>{ ROOM.panel=null; roomRenderBar(); roomRenderPanel(); }; }
 VIEWS.room=async function(arg){
-  const {roomId,title,o}=arg||{}; if(!roomId){ go("meetings"); return; }
-  view.innerHTML=`<div class="row between"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="pill acc">👥 <span id="roomCount">1</span></span></div>
-    <div id="roomPre" class="card stack" style="text-align:center"><p>جاهزة للدخول؟ سيطلب المتصفح إذن المايك${""}.</p><div class="row" style="justify-content:center"><button class="btn lg" id="rJoinA">🎙️ دخول بالصوت</button><button class="btn sec lg" id="rJoinV">📷 دخول بالصوت والصورة</button></div><p class="small muted">اللقاء داخل رياحين مباشرة بين المشاركات، ويناسب الحلقات حتى نحو 10 مشاركات. استخدمي سماعة لتجنّب الصدى.</p></div>
-    <div id="roomGrid" class="rgrid" hidden></div>
-    <div class="rbar" id="roomBar" hidden><button class="btn sec" id="rMic">🎙️ كتم</button><button class="btn sec" id="rCam">📷 تشغيل الكاميرا</button><button class="btn sec" id="rHand">✋ رفع اليد</button><button class="btn danger" id="rLeave">⏏ مغادرة</button></div>`;
-  const start=async(video)=>{ try{ $("#roomPre").innerHTML=`<p class="muted">جارٍ الدخول…</p>`; await roomJoin(roomId,title,{video}); if(o&&!(isTeacher()||ST.ownCircle)) markMeetAttendance(o); $("#roomPre").hidden=true; $("#roomGrid").hidden=false; $("#roomBar").hidden=false; roomRender(); }
-    catch(e){ console.warn(e); $("#roomPre").innerHTML=`<div class="note bad">${e&&e.name==="NotAllowedError"?"لم يُسمح بالمايك. اسمحي للموقع بالمايك من إعدادات المتصفح ثم أعيدي المحاولة.":e&&e.code==="permission-denied"?"غرفة اللقاءات تحتاج تفعيلًا في Firebase (قاعدة rooms).":"تعذّر الدخول: "+esc(e.message||e)}</div><button class="btn sm" onclick="go('meetings')" style="margin-top:8px">رجوع</button>`; } };
+  const {roomId,title,o,host}=arg||{}; if(!roomId){ go("meetings"); return; }
+  view.innerHTML=`<div class="rroom"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="pill acc">👥 <span id="roomCount">1</span></span></div>
+    <div id="roomPre" class="card stack" style="text-align:center"><p>${host?"أنتِ مديرة اللقاء: يتحدث الجميع حين تأذنين، وتستطيعين مشاركة الشاشة وتثبيت فيديو طالبة.":"تدخلين والمايك مكتوم. ارفعي يدك لتأذن لكِ المعلمة بالتحدث."}</p><div class="row" style="justify-content:center"><button class="btn lg" id="rJoinA">🎙️ دخول</button><button class="btn sec lg" id="rJoinV">📷 دخول مع الكاميرا</button></div><p class="small muted">يتسع اللقاء لنحو 30 طالبة. استخدمي سماعة لتجنّب الصدى.${host?" يُفضَّل للمعلمة اتصال إنترنت قوي (ألياف أو 5G) لأنها توزّع الصوت على الجميع.":""}</p></div>
+    <div id="rStage" class="rstage" hidden></div><div id="rPanel" class="rpanel" hidden></div><div id="rAudio" hidden></div>
+    <div class="rbar" id="roomBar" hidden></div></div>`;
+  const start=async(video)=>{ try{ $("#roomPre").innerHTML=`<p class="muted">جارٍ الدخول…</p>`; await roomJoin(roomId,title,{host:!!host,video}); if(o&&!host) markMeetAttendance(o); $("#roomPre").hidden=true; $("#rStage").hidden=false; $("#roomBar").hidden=false; roomRenderBar(); roomRender(); }
+    catch(e){ console.warn(e); $("#roomPre").innerHTML=`<div class="note bad">${e&&e.name==="NotAllowedError"?"لم يُسمح بالمايك. اسمحي للموقع بالمايك من إعدادات المتصفح ثم أعيدي المحاولة.":e&&e.code==="permission-denied"?"غرفة اللقاءات تحتاج تفعيلًا في Firebase.":"تعذّر الدخول: "+esc(e.message||e)}</div><button class="btn sm" onclick="go('meetings')" style="margin-top:8px">رجوع</button>`; } };
   $("#rJoinA").onclick=()=>start(false); $("#rJoinV").onclick=()=>start(true);
-  $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; $("#rHand").onclick=roomToggleHand; $("#rLeave").onclick=async()=>{ await roomLeave(); go("meetings"); };
 };
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
