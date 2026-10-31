@@ -343,6 +343,7 @@ body.inroom .tabs{display:none}
 :root[data-pal]:not([data-pal="sky"]) .cont{border-inline-start-color:var(--gold)}
 :root[data-pal]:not([data-pal="sky"]) .tabs{box-shadow:0 -1px 0 var(--line)}
 .palpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.palpick button{border:2px solid var(--line);border-radius:14px;background:var(--surface);padding:10px;cursor:pointer;font:inherit;font-weight:700;display:flex;flex-direction:column;gap:6px;align-items:center}.palpick button.on{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.palpick .sw{display:flex;gap:3px}.palpick .sw i{width:20px;height:20px;border-radius:50%}
+.founder{display:flex;gap:14px;align-items:flex-start;background:var(--hero,var(--surface));border-inline-start:5px solid var(--gold)}.founder p{margin:6px 0 0;line-height:1.9}.fav{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:1.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--gold))}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -839,7 +840,7 @@ function accountView(){
       <div class="row"><button class="btn sec" id="syncNow">مزامنة الآن</button>${isTeacher()?`<button class="btn" data-go="cloudteacher">لوحة المعلمة</button>`:`<button class="btn sec" data-go="teachers">غرفة المعلمات</button><button class="btn sec" id="beTeacher">أنا معلمة: فعّلي حساب معلمة</button>`}<button class="btn danger" id="signOut">تسجيل الخروج</button></div>`;
       const bt=$("#beTeacher"); if(bt) bt.onclick=async()=>{ if(!confirm("سيتحول حسابك إلى حساب معلمة وتظهر بطاقتك في غرفة المعلمات. متابعة؟")) return; try{ await CLOUD.registerTeacher(); toast("أصبح حسابك حساب معلمة"); render(); }catch(e){ toast(CLOUD.msg(e)); } };
       $("#syncNow").onclick=async()=>{ await CLOUD.push(true); await CLOUD.pullShared(); toast(CLOUD.error||"تمت المزامنة"); render(); }; $("#signOut").onclick=async()=>{ await CLOUD.signOut(); render(); }; box.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)); return; }
-    box.innerHTML=`<div class="hero" style="margin-bottom:6px"><div><div class="eyebrow">حلقة رياحين</div><h1>تسجيل الدخول</h1><p class="small muted">سجّلي الدخول لتُحفظ بياناتك وتصلك واجبات الأستاذة وتصحيحها.</p></div>${ART.mushaf}</div>
+    box.innerHTML=`<div class="hero" style="margin-bottom:6px"><div><div class="eyebrow">رياحين · بإشراف د. مريم الشنيني</div><h1>تسجيل الدخول</h1><p class="small muted">سجّلي الدخول لتُحفظ بياناتك وتصلك واجبات الأستاذة وتصحيحها.</p></div>${ART.mushaf}</div>
       <button class="btn" id="gBtn" style="background:#fff;color:#222;border:1px solid var(--line)"><svg viewBox="0 0 48 48" width="20" height="20" style="stroke:none"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.7 24c0-1.6.3-3.1.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg> الدخول بحساب Google</button>
       <div id="gisBtn" style="min-height:44px;display:flex;justify-content:center"></div>
       ${location.protocol==="file:"?`<p class="small muted">الدخول بجوجل يعمل في نسخة التطبيق المرفوعة على الإنترنت؛ من الملف المحلي استخدمي البريد وكلمة المرور.</p>`:""}
@@ -1357,7 +1358,8 @@ VIEWS.settings=function(){
   $("#reset").onclick=()=>{ const b=$("#reset"); if(b.dataset.c){ try{localStorage.removeItem("ry_state")}catch(e){} indexedDB.deleteDatabase("rayaheen"); ST=DEFAULT_STATE(); DB._db=null; go("home"); } else { b.dataset.c=1; b.textContent="اضغطي مرة أخرى للتأكيد"; } };
 };
 VIEWS.about=function(){
-  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><div class="card lesson-body stack"><h1>عن رياحين</h1>
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ المزيد</button></div><div class="card founder noGtx"><div class="fav">م</div><div><div class="eyebrow">مؤسِّسة رياحين والمشرفة عليها</div><h2>د. مريم الشنيني</h2><p>حاصلة على درجة الدكتوراه في القرآن الكريم وعلومه، ومُجازة بقراءة الإمام عاصم بالسند المتصل، تعمل في تعليم القرآن الكريم منذ عام ١٤٢٦هـ إلى اليوم، فلها في ميدان التعليم القرآني ما يزيد على عشرين عامًا.</p></div></div>
+  <div class="card lesson-body stack"><h1>عن رياحين</h1>
   <p><b>المصدر العلمي:</b> مادة الدروس مرتّبة على أبواب كتاب «هدي المجيد في أحكام التجويد» للمهندسة هدى بنت سمير العمروسي (مكتبة الرشد، الطبعة السادسة 1431هـ)، وتُحال الطالبة إلى صفحات الكتاب في كل درس.</p>
   <p><b>المستويات:</b> المبتدئ (الأبواب 1–6: الآداب واللحن، الحركات، المخارج والصفات، التفخيم والترقيق)، الثاني (الأبواب 7–10 و12: النون والميم، المدود، اللامات، التقاء الساكنين، علاقات الحروف)، المتوسط (الأبواب 10–11 و13–16: النبر، الهمزات، الوقف والابتداء، المقطوع والموصول، التاءات، ما يراعى لحفص)، ثم مستوى الإتقان باختبار شامل.</p>
   <p><b>كيف يصحّح التطبيق صوتيًا؟</b> يعتمد ثلاث طرق: (1) التعرّف على الكلام في المتصفح لمطابقة الكلمات المسموعة بنص الآية، فيكشف الكلمات الساقطة أو المحرّفة (لحن جلي). (2) مقارنة صوتية بين تسجيل الطالبة والقراءة المرجعية بعد محاذاتهما زمنيًا، فيكشف تقصير المدود والغنن أو تطويلها والوقفات الزائدة والسرعة. (3) في المخارج: مقارنة بصمة نطق الحرف بنطق الأستاذة وبالحروف المشابهة، مع فحص صفات كالهمس والصفير.</p>
@@ -1944,7 +1946,7 @@ const lk=l=>({"هـ":"ه","أ":"ء"})[l]||l;
 const HUSARY_LETTERS={"ا":[2,1,"الم"],"ل":[2,1,"الم"],"م":[2,1,"الم"],"ص":[38,1,"ص"],"ك":[19,1,"كهيعص"],"ه":[20,1,"طه"],"ي":[36,1,"يس"],"ع":[42,2,"عسق"],"ط":[20,1,"طه"],"س":[36,1,"يس"],"ح":[40,1,"حم"],"ق":[50,1,"ق"],"ن":[68,1,"ن"],"ر":[10,1,"الر"]};
 function husaryLetter(letter){ const h=HUSARY_LETTERS[lk(letter)]; if(!h) return null; const p=n=>String(n).padStart(3,"0"); return {url:`https://everyayah.com/data/Husary_Muallim_128kbps/${p(h[0])}${p(h[1])}.mp3`,label:`«${h[2]}» من فاتحة سورة ${SURAH_NAMES[h[0]-1]}`}; }
 // شرح ونطق الحروف بصوت الأستاذة مريم الشنيني (مدمج في الموقع: letters/01..28.m4a بالترتيب الهجائي)
-const BUILTIN_VOICE="الأستاذة مريم الشنيني";
+const BUILTIN_VOICE="د. مريم الشنيني";
 function builtinLetter(letter){ const i=LETTER_ORDER.indexOf(lk(letter)); if(i<0||i>27||!/^https?:/.test(location.protocol)) return null; return new URL(`letters/${String(i+1).padStart(2,"0")}.m4a`,location.href).href; }
 const LAUD={ cache:null,
   async info(){ if(this.cache) return this.cache; let src=null;
