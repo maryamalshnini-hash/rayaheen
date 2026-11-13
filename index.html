@@ -2188,7 +2188,7 @@ VIEWS.admin=async function(){
   $("#back").onclick=()=>history.length>1?history.back():go("home");
   if(!isAdmin()){ $("#adBox").innerHTML=`<div class="note warn">هذه الصفحة لمشرفة الموقع فقط.</div>`; return; }
   try{ const [uq,tq,sq]=await Promise.all([CLOUD.db.collection("users").get(),CLOUD.db.collection("teachers").get(),CLOUD.db.collection("submissions").get()]);
-    const users=uq.docs.map(d=>Object.assign({uid:d.id},d.data())); const teachers=tq.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name); const subs=sq.docs.map(d=>d.data());
+    const users=uq.docs.map(d=>Object.assign({uid:d.id},d.data())); const teachers=tq.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name&&!t.closed); const subs=sq.docs.map(d=>d.data());
     const students=users.filter(u=>u.role!=="teacher"&&!teachers.find(t=>t.email.toLowerCase()===(u.email||"").toLowerCase()&&t.kind!=="study"));
     const N=CLOUD.normName.bind(CLOUD);
     const circleOf=s=>{ if(s.teacherEmail){ const t=teachers.find(x=>x.email.toLowerCase()===s.teacherEmail.toLowerCase()); if(t) return {key:t.email,name:t.halaqa||("حلقة "+t.name),teacher:t.name,kind:t.kind}; }
@@ -2707,7 +2707,7 @@ CLOUD.requestTeacher=async function(info={}){ if(!this.user) throw new Error("س
 CLOUD.grantRole=async function(uid,role){ if(!isAdmin()) throw new Error("للمشرفة فقط"); await this.db.collection("users").doc(uid).set({roleGrant:{role,at:Date.now(),by:this.user.email},teacherRequest:{status:role==="teacher"?"approved":"rejected",decidedAt:Date.now()}},{merge:true}); };
 
 // قائمة الحلقات: المعلمة التي لها أكثر من حلقة تظهر بكل حلقة على حدة
-(function(){ const tl=CLOUD.teachersList; CLOUD.teachersList=async function(){ const list=await tl.apply(this,arguments); const out=[]; list.forEach(t=>{ const H=Array.isArray(t.halaqat)&&t.halaqat.length?t.halaqat:null; if(H) H.forEach(h=>out.push(Object.assign({},t,{halaqa:h,key:t.email+"||"+h}))); else out.push(Object.assign({},t,{key:t.email})); }); return out; }; })();
+(function(){ const tl=CLOUD.teachersList; CLOUD.teachersList=async function(){ const list=(await tl.apply(this,arguments)).filter(t=>!t.closed); const out=[]; list.forEach(t=>{ const H=Array.isArray(t.halaqat)&&t.halaqat.length?t.halaqat:null; if(H) H.forEach(h=>out.push(Object.assign({},t,{halaqa:h,key:t.email+"||"+h}))); else out.push(Object.assign({},t,{key:t.email})); }); return out; }; })();
 function tKey(x){ return x.key||x.email; }
 function isMyCircle(t){ return ST.teacherEmail&&ST.teacherEmail.toLowerCase()===t.email.toLowerCase()&&(!t.key||!t.key.includes("||")||CLOUD.normName(ST.halaqa)===CLOUD.normName(t.halaqa)); }
 
@@ -2715,7 +2715,7 @@ function isMyCircle(t){ return ST.teacherEmail&&ST.teacherEmail.toLowerCase()===
 (function(){ const pull=CLOUD.pullShared; CLOUD.pullShared=async function(){ await pull.apply(this,arguments); if(!this.user) return; try{
   const me=await this.db.collection("users").doc(this.user.uid).get(); const d=me.exists?me.data():{}; const g=d.roleGrant;
   if(g&&g.at>(ST.roleGrantAt||0)){ ST.roleGrantAt=g.at; if(g.role==="teacher"){ ST.roleGranted=true; save(); try{ await this.registerTeacher(); toast("✅ وافقت المشرفة: أصبح حسابك حساب معلمة"); }catch(e){} } else { ST.roleGranted=false; if(!isAdmin()) ST.role="student"; save(); toast(g.role==="student"?"صلاحيتك الآن: طالبة":"لم تُقبل صلاحية المعلمة"); } }
-  if(ST.role==="teacher"&&!isAdmin()){ const t=await this.db.collection("teachers").doc(this.user.email).get(); if(!t.exists){ ST.role="student"; ST.ownCircle=false; ST.roleGranted=false; save(); toast("أُغلقت حلقتك من المشرفة؛ حسابك الآن حساب طالبة."); } }
+  if(ST.role==="teacher"&&!isAdmin()){ const t=await this.db.collection("teachers").doc(this.user.email).get(); if(!t.exists||t.data().closed){ ST.role="student"; ST.ownCircle=false; ST.roleGranted=false; save(); toast("أُغلقت حلقتك من المشرفة؛ حسابك الآن حساب طالبة."); } }
   if(isAdmin()){ ST.roleGranted=true; } save(); }catch(e){ console.warn("roles pull",e); } }; })();
 
 // ---------- واجهة: طلب صلاحية معلمة ----------
@@ -2738,7 +2738,7 @@ function wireAdminRoles(users,teachers){ const me=CLOUD.user.email; const ref=CL
   view.querySelectorAll("[data-hqdel]").forEach(b=>b.onclick=()=>b.parentElement.remove());
   const hs=$("#hqSave"); if(hs) hs.onclick=async()=>{ const H=[...new Set(names())]; if(!H.length){ toast("أبقي حلقة واحدة على الأقل"); return; } hs.disabled=true; try{ await ref.set({halaqat:H,halaqa:H[0],name:ST.fullName||ST.name||"",email:me,uid:CLOUD.user.uid,gender:ST.gender||"f",updated:Date.now()},{merge:true}); ST.role="teacher"; ST.halaqa=ST.halaqa&&H.includes(ST.halaqa)?ST.halaqa:H[0]; save(); toast("حُفظت الحلقات"); go("admin"); }catch(e){ toast(CLOUD.msg(e)); hs.disabled=false; } };
   const cp=$("#cleanPrev"); if(cp) cp.onclick=()=>{ const memsa=teachers.find(t=>CLOUD.normName(t.halaqa).replace(/\s/g,"")==="memsa"||CLOUD.normName(t.name).replace(/\s/g,"")==="memsa");
-    const del=teachers.filter(t=>t.email.toLowerCase()!==me.toLowerCase());
+    const del=teachers.filter(t=>t.email.toLowerCase()!==me.toLowerCase()&&!t.closed);
     const move=users.filter(u=>u.role!=="teacher"&&memsa&&((u.teacherEmail||"").toLowerCase()===memsa.email.toLowerCase()||CLOUD.normName(u.halaqa)===CLOUD.normName(memsa.halaqa)));
     const detach=users.filter(u=>!move.includes(u)&&u.teacherEmail&&del.some(t=>t.email.toLowerCase()===u.teacherEmail.toLowerCase()));
     $("#cleanBox").innerHTML=`<div class="stack small" style="margin-top:8px">${memsa?`<div class="note info">حلقة «${esc(memsa.halaqa||memsa.name)}» (${esc(memsa.email)}): تُنقل طالباتها (${move.length}) إلى «${MAIN_HALAQAT[0]}» في حسابك.</div>`:`<div class="note warn">لم أجد حلقة باسم «mem sa». سيُحذف ما عدا حلقاتك فقط.</div>`}
@@ -2751,7 +2751,7 @@ function wireAdminRoles(users,teachers){ const me=CLOUD.user.email; const ref=CL
         await ref.set(patch,{merge:true}); ST.role="teacher"; ST.halaqa=MAIN_HALAQAT[0]; save();
         for(const u of move){ try{ await CLOUD.db.collection("users").doc(u.uid).set({adminSet:{teacherEmail:me,teacherName:ST.fullName||ST.name||"",halaqa:MAIN_HALAQAT[0],at:now}},{merge:true}); ok++; }catch(e){ fail++; } }
         for(const u of detach){ try{ await CLOUD.db.collection("users").doc(u.uid).set({adminSet:{teacherEmail:"",teacherName:"",halaqa:"",at:now}},{merge:true}); }catch(e){ fail++; } }
-        for(const t of del){ try{ await CLOUD.db.collection("teachers").doc(t.email).delete(); ok++; if(t.uid) await CLOUD.db.collection("users").doc(t.uid).set({roleGrant:{role:"student",at:now,by:me},role:"student"},{merge:true}).catch(()=>{}); }catch(e){ fail++; console.warn("del",t.email,e); } }
+        for(const t of del){ try{ const tr=CLOUD.db.collection("teachers").doc(t.email); try{ await tr.delete(); }catch(e){ await tr.set({closed:true,hidden:true,halaqat:[],halaqa:"",closedAt:now,closedBy:me},{merge:true}); } ok++; if(t.uid) await CLOUD.db.collection("users").doc(t.uid).set({roleGrant:{role:"student",at:now,by:me},role:"student"},{merge:true}).catch(()=>{}); }catch(e){ fail++; console.warn("del",t.email,e); } }
         toast(fail?`تم مع ${fail} عملية متعذرة (قد تمنعها قواعد Firebase)`:"تم التنظيف"); go("admin");
       }catch(e){ toast(CLOUD.msg(e)); b.disabled=false; b.textContent="تأكيد الحذف والنقل"; } }; }; }
 
