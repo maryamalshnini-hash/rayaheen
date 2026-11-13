@@ -346,6 +346,25 @@ body.inroom .tabs{display:none}
 .founder{display:flex;gap:14px;align-items:flex-start;background:var(--hero,var(--surface));border-inline-start:5px solid var(--gold)}.founder p{margin:6px 0 0;line-height:1.9}.fav{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:1.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),var(--gold))}
 .emeet{background:#14161c;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px;height:calc(100dvh - 120px)}.emeet .rtop{color:#fff}.embox{flex:1;min-height:0;border-radius:14px;overflow:hidden}.embox iframe{width:100%;height:100%;border:0}
 body.inroom main{padding-bottom:16px}
+/* ===== التسميع ===== */
+.tbox{background:var(--surface2);border-radius:16px;padding:12px 10px;max-height:52vh;overflow:auto;margin-top:8px}
+.tq{font-size:1.55rem;line-height:2.4}.tw{display:inline-block;border-radius:8px;padding:0 3px;transition:background .25s,color .25s;cursor:default}
+.tbox.hide .tw:not(.rv) b{color:transparent;background:repeating-linear-gradient(90deg,var(--line) 0 70%,transparent 70% 100%);border-radius:6px;cursor:pointer;user-select:none}
+.tbox.hide .tw:not(.rv){cursor:pointer}
+.tw.ok b{color:var(--good)}.tw.warn{background:var(--gold-soft,#fbf0db)}.tw.warn b{color:#a86b00}.tw.miss{background:#fde3e3}.tw.miss b{color:#c0392b}.tw.peek{outline:2px dashed var(--gold);outline-offset:1px}
+.tw.cur{box-shadow:inset 0 -3px 0 var(--accent)}.tw.flash{animation:twf 1.2s}@keyframes twf{0%,60%{background:var(--accent-soft)}}
+.tres{text-align:center}.tgrade{display:inline-flex;align-items:baseline;gap:6px;margin:4px auto 8px;padding:10px 26px;border-radius:20px;background:var(--surface)}.tgrade b{font-size:3rem;font-weight:900;line-height:1}.tgrade span{font-size:1.3rem;color:var(--muted)}
+.tgrade.good b{color:var(--good)}.tgrade.warn b{color:#c98a00}.tgrade.bad b{color:#c0392b}
+.tcounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}.tcounts div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center}.tcounts div.has{border-color:#e7a5a5;background:#fff6f6}.tcounts span{font-size:1.1rem}.tcounts b{font-size:1.4rem}.tcounts small{color:var(--muted)}
+.terrs{display:grid;gap:6px;margin-top:8px;text-align:right}.terr{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"tt w" "n n";gap:2px 10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid #c0392b;border-radius:12px;padding:8px 10px;font:inherit;cursor:pointer;text-align:right}
+.terr .tt{grid-area:tt;font-size:.75rem;font-weight:800;color:var(--muted)}.terr b{grid-area:w;font-family:var(--quran,'Amiri Quran','Amiri',serif);font-size:1.25rem}.terr small{grid-area:n;color:var(--muted)}.terr.t-r{border-inline-start-color:#d39b00}.terr.t-k{border-inline-start-color:#7b5cc4}
+.switch{display:inline-flex;align-items:center;gap:6px;font-weight:700;cursor:pointer}
+.tbox .quran{border:0;background:none;padding:4px 0;margin:0}.tinfo{display:inline}.tinfo summary{display:inline;color:var(--accent);cursor:pointer;font-weight:700}
+/* أزرار عائمة أصغر وتشفّ أثناء التمرير حتى لا تغطي المحتوى */
+.fab{width:44px;height:44px;transition:opacity .25s,transform .25s}.fab svg{width:22px;height:22px}
+.fab2{bottom:calc(124px + env(safe-area-inset-bottom))}
+body.scrolling .fab{opacity:.25;transform:scale(.85)}
+@media (max-width:420px){.tiles{grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px}.tile b{font-size:1.35rem}}
 </style>
 </head><body><div class="app">
   <header class="top">
@@ -972,10 +991,10 @@ function gate(){
 }
 function render(){
   try{ if(ST.fullName||ST.name){ ATT.enter(); ATT.recheck(); } }catch(e){}
-  try{ const hideF=route==="room"||route==="embedmeet"||route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
-  try{ const f=$("#fab"); if(f) f.hidden=route==="room"||route==="embedmeet"||route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
-  if(gate()) { $("#tabs").hidden=true; return; } $("#tabs").hidden=route==="room"||route==="embedmeet"||!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); document.body.classList.toggle("inroom",route==="room"||route==="embedmeet");
-  const tabOf={embedmeet:"more",room:"more",meetings:"more",admin:"more",guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
+  try{ const hideF=route==="tasmee"||route==="room"||route==="embedmeet"||route==="guide"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); const fg=$("#fabGuide"); if(fg) fg.hidden=hideF; }catch(e){}
+  try{ const f=$("#fab"); if(f) f.hidden=route==="tasmee"||route==="room"||route==="embedmeet"||route==="assistant"||route==="account"||!(ST.fullName||ST.name)||(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); }catch(e){}
+  if(gate()) { $("#tabs").hidden=true; return; } try{ if(!isTeacher()&&(!CLOUD.config()||CLOUD.user||CLOUD.offline)) setTimeout(()=>PTS.add(PTS.rules.login,"دخول الموقع اليوم","login:"+new Date().toDateString()),1500); }catch(e){} $("#tabs").hidden=route==="room"||route==="embedmeet"||!!(CLOUD.config()&&!CLOUD.user&&!CLOUD.offline); document.body.classList.toggle("inroom",route==="room"||route==="embedmeet");
+  const tabOf={tasmee:"hifz",embedmeet:"more",room:"more",meetings:"more",admin:"more",guide:"more",assistant:"more",letteraudio:"levels",halaqa:"more",rewards:"more",mcert:"more",certificate:"more",teachers:"more",games:"more",game:"more",student:"more",lesson:"levels",leveltest:"levels",makharij:"levels",practice:"levels",homework:"more",settings:"more",teacher:"more",progress:"more",about:"more",account:"more",cloudteacher:"more"};
   document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.go===route||tabOf[route]===b.dataset.go));
   $("#whoPill").textContent=ST.name?(isTeacher()?"الأستاذة: ":"الطالبة: ")+ST.name+(ST.halaqa?" · "+ST.halaqa:""):"بلا اسم";
   const v=VIEWS[route]||VIEWS.home; view.innerHTML=""; let r; try{ r=v(routeArg); }catch(e){ console.warn(e); if(route!=="home"){ route="home"; routeArg=null; try{ location.hash="home"; }catch(_){} return render(); } view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; return; } if(r&&r.then) r.catch(e=>{ view.innerHTML=`<div class="note bad">حدث خطأ: ${esc(e.message||e)}</div>`; });
@@ -1031,7 +1050,7 @@ VIEWS.home=function(){
     <button data-go="levels" style="--lc:var(--accent)"><span class="art">${ART.book}</span>دروس التجويد<span class="cnt">${cl<=4?`${doneN}/${ls.length} · المستوى ${cl}`:"مكتمل"}</span></button>
     <button data-go="practice" style="--lc:var(--pink)"><span class="art">${ART.mic}</span>تصحيح التلاوة<span class="cnt">بالتسجيل</span></button>
     <button data-go="hifz" style="--lc:var(--good)"><span class="art">${ART.hifz}</span>الحفظ<span class="cnt">${T?(T.progressText.split("·")[0].trim()):"الخطة"}</span></button>
-    <button data-go="listen" style="--lc:var(--sky)"><span class="art">${ART.ear}</span>الاستماع<span class="cnt">الشيخ الأخضر</span></button>
+    <button data-go="tasmee" style="--lc:var(--sky)"><span class="art emo">🎙️</span>التسميع<span class="cnt">${(ST.tasmeeLog||[]).length?"آخر درجة "+fmtGrade(ST.tasmeeLog[ST.tasmeeLog.length-1].grade):"مثل ترتيل"}</span></button>
     <button data-go="meetings" style="--lc:var(--sky)"><span class="art emo">🎥</span>لقاءات الحلقة<span class="cnt">مباشر وتسجيلات</span></button>
     <button data-go="rewards" style="--lc:var(--gold)"><span class="art emo">🏅</span>نقاطي<span class="cnt">${PTS.total()} نقطة</span></button>
   </div>
@@ -1384,6 +1403,9 @@ if(CLOUD.config()) CLOUD.load().then(()=>render());
 // ===== بدء =====
 applyTheme(); (function(){ const h=location.hash.replace("#",""); if(h&&VIEWS[h]) route=h; render(); })();
 
+// تشفيف الأزرار العائمة أثناء التمرير
+(function(){ let t=null; addEventListener("scroll",()=>{ document.body.classList.add("scrolling"); clearTimeout(t); t=setTimeout(()=>document.body.classList.remove("scrolling"),700); },{passive:true}); })();
+
 // ===== للرجال والنساء: تحويل صيغة الخطاب إلى المذكّر للمستخدمين الذكور =====
 // الحلقات منفصلة: الطالب يرى حلقات المعلمين، والطالبة ترى حلقات المعلمات؛ فكل الأطراف من جنس المستخدم.
 function isMale(){ return ST.gender==="m"; }
@@ -1552,29 +1574,19 @@ VIEWS.hifz=async function(arg){
     sb.innerHTML=`<div class="card"><div class="row between"><h3>${t.title}: ${chunkLabel(c)}</h3><button class="btn sec sm" id="toggleTxt">${hidden?"إظهار النص":"إخفاء النص"}</button></div>
       <div id="txt" ${hidden?"hidden":""}>${ayahHtml(ay)}</div>${hidden?`<div id="txtHidden" class="quran" style="color:var(--muted);font-size:1.2rem">النص مخفي — سمّعي من حفظك</div>`:""}
       ${playerHtml(ref)}</div>${counters}
-      <div class="card"><h3>${type==="fix"?"تلاوة التثبيت":"التسميع"}</h3><p class="small muted">سجّلي المقطع${hidden?" من حفظك والنص مخفي":""}. يُقارن التطبيق كلماتك بنص الآيات كلمةً كلمة ومدودك وغننك بالقارئ، ويُقبل عند ${H.plan.passPct}٪ فأكثر.</p>${recorderHtml("hz0","سجّلي ثم أوقفي.")}<div id="hzLive" class="small muted"></div><div id="hzRes"></div></div>`;
+      <div class="card" id="hzTas"></div>`;
     wirePlayer(ref,{id:"pl"});
     sb.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ const k=b.dataset.c; cnt[k]=Math.max(0,(cnt[k]||0)+(+b.dataset.v)); H.counters[ck]=cnt; save(); $("#c_"+k).textContent=cnt[k]; });
     $("#toggleTxt").onclick=()=>{ const x=$("#txt"); x.hidden=!x.hidden; const h=$("#txtHidden"); if(h)h.hidden=!x.hidden; $("#toggleTxt").textContent=x.hidden?"إظهار النص":"إخفاء النص"; };
-    wireRecorder("hz0",{recognize:true,onText:x=>{ $("#hzLive").textContent=x?"سمعت: "+x:""; },onDone:async(blob,text)=>{
-      $("#hz0Out").innerHTML=audioTag(blob); const res=$("#hzRes"); res.innerHTML=`<div class="note info" id="hzStatus">جارٍ التصحيح…</div>`; const notes=[]; let wordPct=null;
-      const bt=await bestTranscript(blob,text,m=>{ const el=$("#hzStatus"); if(el) el.textContent=m; },words); text=bt.text; notes.push(...aiNotesOf(bt));
-      const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normAr);
-      if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>similar(x,refW[i])>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } });
-        wordPct=matchPct(st); $("#txt").hidden=false; const h=$("#txtHidden"); if(h)h.hidden=true; $("#toggleTxt").textContent="إخفاء النص";
-        document.querySelectorAll("#session .quran .w").forEach((el,i)=>{ el.className="w "+(st[i]==="ok"?"ok":st[i]==="warn"?"warn":"miss"); });
-        if(missed.length) notes.push({k:missed.length>2?"bad":"warn",t:`كلمات سقطت أو حُرّفت (${missed.length}): ${missed.slice(0,8).map(m=>`«${words[m.i]}»${m.near?" سُمعت: "+m.near:""}`).join("، ")}${missed.length>8?" …":""}. المواضع ملوّنة بالأحمر في النص.`}); else notes.push({k:"good",t:"الحفظ متقن: جميع الكلمات مطابقة للنص."});
-        if(extra.length) notes.push({k:"warn",t:`كلمات زائدة سُمعت: ${extra.slice(0,6).join("، ")}.`});
-      } else notes.push({k:"info",t:"لم يعمل التعرّف على الكلام (يحتاج Chrome واتصالًا بالإنترنت)؛ قارني بالسماع."});
-      let ac=null; try{ let rs=await decodeReference(await getReference(c.s,c.a1,c.a2,"teacher")); if(!rs) rs=await decodeReference(ref); const r=analyzeRecitation(await Audio_.decode(blob),rs,words); ac=r.acoustic; notes.push(...r.notes.filter(n=>n.k!=="info"||!rs)); }catch(e){}
-      const score=wordPct!=null?Math.round(wordPct*0.75+(ac!=null?ac*0.25:wordPct*0.25)):ac; const pass=score!=null&&score>=H.plan.passPct;
-      res.innerHTML=`<div class="card soft"><div class="score"><div class="big ${score==null?"":pass?"good":score>=60?"warn":"bad"}">${score==null?"—":score+"٪"}</div><div><b>${score==null?"لم يُقدَّر آليًا":pass?"تسميع مقبول":"يحتاج إعادة"}</b><div class="small muted">${wordPct!=null?`الكلمات ${wordPct}٪`:""}${ac!=null?` · التجويد ${ac}٪`:""}</div></div></div>
-        <div class="stack" style="margin-top:10px">${notes.map(n=>`<div class="note ${n.k}">${esc(n.t)}</div>`).join("")}</div>
-        <div class="row" style="margin-top:10px"><button class="btn ${pass?"gold":"sec"}" id="hzMark">${pass?"اعتماد وإنهاء المهمة":"اعتماد المهمة رغم ذلك"}</button><button class="btn sec" id="hzRetry">إعادة التسميع</button>${cloudOn()?`<button class="btn sec" id="hzCloud">إرسال للأستاذة</button>`:`<button class="btn sec" id="hzExport">تصدير للأستاذة</button>`}</div></div>`;
+    tasmeeWidget($("#hzTas"),{ay,words,hidden:type!=="new"&&type!=="fix",title:`${t.title}: ${chunkLabel(c)}`,onGraded:async(R,blob,acts)=>{ if(R.grade==null||!acts) return;
+      const score=R.pct, pass=R.grade>=TASMEE.passGrade&&R.complete; const label=`${t.title} ${chunkLabel(c)}`;
+      acts.innerHTML=`<button class="btn ${pass?"gold":"sec"}" id="hzMark">${pass?"اعتماد وإنهاء المهمة":"اعتماد المهمة رغم ذلك"}</button><button class="btn sec" id="hzRetry">🔁 إعادة التسميع</button>`;
       $("#hzRetry").onclick=()=>openSession(t);
-      $("#hzMark").onclick=async()=>{ H.log.push({date:Date.now(),type,key:t.key,k:c.k,s:c.s,a1:c.a1,a2:c.a2,score,wordPct,acoustic:ac,day:H.plan.mode==="nahya"?H.day:null}); if(H.plan.mode==="nahya"){ H.dayDone[H.day]=H.dayDone[H.day]||{}; H.dayDone[H.day][t.key]={score,date:Date.now()}; } else if(type==="new"&&!H.memorized.includes(c.k)) H.memorized.push(c.k); await DB.put("hz:"+Date.now(),blob); save(); CLOUD.logHifz(H.log[H.log.length-1]); if(cloudOn()){ CLOUD.submit({kind:"hifz",hwTitle:`${t.title} ${chunkLabel(c)}`,att:{id:Date.now(),score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),s:c.s,a1:c.a1,a2:c.a2},blob}).catch(()=>{}); } toast("اعتُمدت المهمة وأُرسلت للأستاذة"); PTS.add(PTS.rules.hifz,"مهمة "+t.title,"hz:"+t.key+":"+ATT.key()); go("hifz",{tab:"today"}); };
-      const hc=$("#hzCloud"); if(hc) hc.onclick=async()=>{ hc.disabled=true; try{ await CLOUD.submit({kind:"hifz",hwTitle:`${t.title} ${chunkLabel(c)}`,att:{id:Date.now(),score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),s:c.s,a1:c.a1,a2:c.a2},blob}); toast("أُرسل التسميع للأستاذة"); }catch(e){ toast(CLOUD.msg(e)); hc.disabled=false; } };
-      const hx=$("#hzExport"); if(hx) hx.onclick=async()=>{ const b64=await blobToB64(blob); const att={id:Date.now(),label:`${t.title} ${chunkLabel(c)}`,score,wordPct,acoustic:ac,notes:notes.map(n=>n.t),date:Date.now(),s:c.s,a1:c.a1,a2:c.a2}; downloadsSave(`تسميع-${ST.name}-${c.s}-${c.a1}.json`,new Blob([JSON.stringify({type:"rayaheen-submission",student:ST.fullName||ST.name,halaqa:ST.halaqa,teacher:ST.teacherName,attempt:att,audio:b64})],{type:"application/json"})); };
+      $("#hzMark").onclick=async()=>{ $("#hzMark").disabled=true; const att=tasmeeSave(R,blob,{label,s:c.s,a1:c.a1,a2:c.a2,kind:"hifz"});
+        H.log.push({date:Date.now(),type,key:t.key,k:c.k,s:c.s,a1:c.a1,a2:c.a2,score,wordPct:score,grade:R.grade,full:R.full,counts:R.counts,day:H.plan.mode==="nahya"?H.day:null});
+        if(H.plan.mode==="nahya"){ H.dayDone[H.day]=H.dayDone[H.day]||{}; H.dayDone[H.day][t.key]={score,grade:R.grade,date:Date.now()}; } else if(type==="new"&&!H.memorized.includes(c.k)) H.memorized.push(c.k);
+        save(); try{ CLOUD.logHifz(H.log[H.log.length-1]); }catch(e){} PTS.add(PTS.rules.hifz,"مهمة حفظ","hz:"+new Date().toDateString()+":"+t.key);
+        if(cloudOn()) CLOUD.submit({kind:"hifz",hwTitle:att.label,att,blob}).catch(()=>{}); toast(cloudOn()?"اعتُمدت المهمة وأُرسلت للمعلمة":"اعتُمدت المهمة"); go("hifz",{tab:"today"}); };
     }});
   }
   function renderLog(box){
@@ -1590,6 +1602,106 @@ VIEWS.hifz=async function(arg){
       `<div class="card"><h3>خريطة الحفظ</h3><div class="row" style="gap:4px;margin-top:8px">${T.chunks.map(c=>`<span class="pill ${H.memorized.includes(c.k)?"good":""}" style="font-size:.7rem">${chunkLabel(c)}</span>`).join("")}</div></div>`}`;
     $("#hzExpLog").onclick=()=>downloadsSave(`سجل-حفظ-${ST.name}.json`,new Blob([JSON.stringify({type:"rayaheen-hifz",student:ST.fullName||ST.name,halaqa:ST.halaqa,teacher:ST.teacherName,plan:H.plan,day:H.day,log:H.log,memorized:H.memorized})],{type:"application/json"}));
   }
+};
+
+// ===== التسميع على طريقة «ترتيل»: النص مخفي ويظهر كلمةً كلمة مع التلاوة، والأخطاء تُحسب تلقائيًا =====
+const TASMEE={ full:10, step:0.5, passGrade:7,
+  types:{ "حفظ":{ic:"🧠",t:"الحفظ"}, "حرف":{ic:"🔤",t:"الحروف"}, "حركة":{ic:"ـَ",t:"الحركات"} } };
+function tasmeeFull(){ return +(ST.tasmeeFull||TASMEE.full); }
+function tasmeeStep(){ return +(ST.tasmeeStep||TASMEE.step); }
+function fmtGrade(g){ return String(Math.round(g*2)/2); }
+
+// يعرض النص كلمات مرقّمة (فهرس عام) مع أرقام الآيات
+function tasmeeTextHtml(ay){ let k=0; return `<div class="quran tq">`+ay.map(o=>o.text?o.text.split(/\s+/).filter(Boolean).map(w=>`<span class="tw" data-i="${k++}"><b>${esc(w)}</b></span>`).join(" ")+` <span class="ayah-num">﴿${o.a}﴾</span>`:"").join(" ")+`</div>`; }
+
+// يحدد آخر كلمة وصلت إليها القارئة، وحالة كل كلمة قبلها
+function tasmeeTrack(refW,hyp){ if(!hyp.length) return {st:refW.map(()=>null),last:-1}; const {st}=alignWords(refW,hyp); let last=-1; st.forEach((v,i)=>{ if(v==="ok"||v==="warn") last=i; }); return {st:st.map((v,i)=>i<=last?v:null),last}; }
+
+function tasmeeWidget(host,{ay,words,hidden=true,title="",onGraded}){
+  const refW=words.map(normAr); const id="tsm"+Date.now().toString(36); const peeks=new Set(); let hide=hidden, live=null;
+  host.innerHTML=`<div class="row between"><h3>🎙️ التسميع ${title?"· "+esc(title):""}</h3><label class="switch small"><input type="checkbox" id="${id}H" ${hide?"checked":""}> إخفاء النص</label></div>
+    <p class="small muted">اقرئي من حفظك فتظهر الكلمات مع تلاوتك. الدرجة من ${tasmeeFull()}، و−${fmtGrade(tasmeeStep())} لكل خطأ. <details class="tinfo"><summary>كيف تُحسب؟</summary>تُحسب أخطاء الحفظ (كلمة سقطت أو أُبدلت أو كُشفت بلمسها)، وتغيير الحروف، والحركات (بالمصحّح الذكي). ملاحظات التجويد تظهر ولا تُخصم.</details></p>
+    <div id="${id}Txt" class="tbox ${hide?"hide":""}">${tasmeeTextHtml(ay)}</div>
+    <div class="row between small" style="margin:6px 2px"><span id="${id}Pos" class="muted">لم تبدئي بعد</span><span id="${id}Live" class="pill">الأخطاء: 0</span></div>
+    ${recorderHtml(id,"اضغطي للبدء، واضغطي مرة أخرى عند الانتهاء.")}<div id="${id}Res"></div>`;
+  const box=$("#"+id+"Txt"), spans=[...box.querySelectorAll(".tw")];
+  $("#"+id+"H").onchange=e=>{ hide=e.target.checked; box.classList.toggle("hide",hide); };
+  spans.forEach(sp=>sp.onclick=()=>{ if(!hide||sp.classList.contains("rv")) return; const i=+sp.dataset.i; peeks.add(i); sp.classList.add("rv","peek"); updLive(); });
+  const paint=(st,last)=>{ spans.forEach((sp,i)=>{ const v=st[i]; sp.classList.toggle("rv",v!=null||peeks.has(i)); sp.classList.toggle("ok",v==="ok"); sp.classList.toggle("warn",v==="warn"); sp.classList.toggle("miss",v==="miss"); sp.classList.toggle("cur",i===last+1); });
+    const cur=spans[last+1]; if(cur&&live) cur.scrollIntoView({block:"nearest",behavior:"smooth"}); };
+  const liveErrs=st=>st.filter(v=>v==="miss"||v==="warn").length+[...peeks].filter(i=>st[i]!=="miss").length;
+  function updLive(){ const st=live?live.st:refW.map(()=>null); const n=liveErrs(st); $("#"+id+"Live").textContent=`الأخطاء: ${n}`; $("#"+id+"Live").className="pill "+(n?"warn":"good"); }
+  wireRecorder(id,{recognize:true,
+    onText:txt=>{ const hyp=normAr(txt||"").split(" ").filter(Boolean); live=tasmeeTrack(refW,hyp); paint(live.st,live.last); updLive(); $("#"+id+"Pos").textContent=live.last>=0?`وصلتِ إلى «${words[live.last]}» (${live.last+1} من ${words.length})`:"أستمع…"; },
+    onDone:async(blob,srText)=>{ const res=$("#"+id+"Res"); $("#"+id+"Out").innerHTML=audioTag(blob); res.innerHTML=`<div class="note info" id="${id}St">جارٍ احتساب الأخطاء…</div>`;
+      const bt=await bestTranscript(blob,srText,m=>{ const el=$("#"+id+"St"); if(el) el.textContent=m; },words);
+      const R=tasmeeGrade({words,refW,text:bt.text,ai:bt.ai,peeks}); R.engine=bt.engine;
+      paint(R.st,R.last); spans.forEach((sp,i)=>{ sp.classList.add("rv"); sp.classList.remove("cur"); if(R.byWord[i]) sp.classList.add(R.byWord[i].some(e=>e.type==="حفظ")?"miss":"warn"); });
+      box.classList.remove("hide"); $("#"+id+"H").checked=false; hide=false;
+      res.innerHTML=tasmeeResultHtml(R); res.querySelectorAll("[data-wi]").forEach(b=>b.onclick=()=>{ const sp=spans[+b.dataset.wi]; if(sp){ sp.scrollIntoView({block:"center",behavior:"smooth"}); sp.classList.add("flash"); setTimeout(()=>sp.classList.remove("flash"),1200); } });
+      if(onGraded) await onGraded(R,blob,res.querySelector(".tacts")); }});
+}
+
+// احتساب الأخطاء: الحفظ (سقط/إبدال/تلقين) والحروف من المطابقة، والحركات والحروف الدقيقة من المصحّح الذكي
+function tasmeeGrade({words,refW,text,ai,peeks}){
+  const hyp=normAr(text||"").split(" ").filter(Boolean); const heard=hyp.length>0;
+  let st=refW.map(()=>null), last=-1, extra=[];
+  if(heard){ const a=alignWords(refW,hyp); st=a.st; extra=a.extra||[]; st.forEach((v,i)=>{ if(v==="ok"||v==="warn") last=i; }); }
+  const errs=[]; const has=(i,type)=>errs.some(e=>e.i===i&&e.type===type);
+  // ما بعد آخر كلمة مقروءة: يُعدّ توقّفًا (حفظ) إن قرأت أقل من النص كاملًا
+  // الكلمات بعد آخر موضع مقروء لا تُخصم (قد يكون التسميع لم يكتمل أو انقطع التعرّف)، وتظهر تنبيهًا
+  const trailing=heard?st.length-1-last:0;
+  st.forEach((v,i)=>{ if(i>last) return; if(v==="miss") errs.push({i,type:"حفظ",t:"سقطت أو نُسيت"}); else if(v==="warn") errs.push({i,type:"حرف",t:"نُطقت بتغيير في حروفها"}); });
+  (peeks||new Set()).forEach(i=>{ if(!has(i,"حفظ")) errs.push({i,type:"حفظ",t:"كُشفت (تلقين)"}); });
+  const tajweed=[];
+  if(ai&&Array.isArray(ai.mistakes)){ const used=new Set(); ai.mistakes.forEach(m=>{ const w=normAr(m.word||""); let i=-1; for(let k=0;k<refW.length;k++){ if(!used.has(k)&&(refW[k]===w||(w.length>2&&similar(refW[k],w)>=0.8))){ i=k; break; } } if(i>=0) used.add(i);
+      const type=m.type==="حركة"||m.type==="حرف"||m.type==="حفظ"?m.type:(m.type==="تجويد"?"تجويد":(m.kind==="جلي"?"حركة":"تجويد"));
+      if(type==="تجويد"){ tajweed.push({i,t:m.note||"",w:m.word}); return; }
+      if(i<0){ errs.push({i:-1,type,t:m.note||"",w:m.word,ai:true}); return; }
+      if(i>last&&heard) return; if(type==="حفظ"&&has(i,"حفظ")) return; if(type==="حرف"&&(has(i,"حرف")||has(i,"حفظ"))) return; if(type==="حركة"&&(has(i,"حركة")||has(i,"حفظ"))) return;
+      errs.push({i,type,t:m.note||"",ai:true}); }); }
+  errs.sort((a,b)=>(a.i<0?1e9:a.i)-(b.i<0?1e9:b.i));
+  const full=tasmeeFull(), step=tasmeeStep(); const grade=heard?Math.max(0,full-step*errs.length):null;
+  const byWord={}; errs.forEach(e=>{ if(e.i>=0)(byWord[e.i]=byWord[e.i]||[]).push(e); });
+  const count=t=>errs.filter(e=>e.type===t).length;
+  return {heard,st,last,trailing,complete:trailing<=Math.max(1,Math.round(refW.length*0.03)),errs,byWord,tajweed,extra,grade,full,step,pct:grade==null?null:Math.round(grade/full*100),counts:{"حفظ":count("حفظ"),"حرف":count("حرف"),"حركة":count("حركة")},praise:ai&&ai.praise||"",words,aiUsed:!!ai};
+}
+function tasmeeResultHtml(R){
+  if(!R.heard) return `<div class="note bad">لم يُتعرَّف على التلاوة، فلم تُحتسب الدرجة. تأكدي من السماح للميكروفون، واقرئي بصوت واضح قريبًا من الجوال، ثم أعيدي المحاولة.</div>`;
+  const cls=R.grade>=9?"good":R.grade>=TASMEE.passGrade?"warn":"bad";
+  return `<div class="card soft tres"><div class="tgrade ${cls}"><b>${fmtGrade(R.grade)}</b><span>/ ${R.full}</span></div>
+    <div class="tcounts">${Object.entries(TASMEE.types).map(([k,v])=>`<div class="${R.counts[k]?"has":""}"><span>${v.ic}</span><b>${R.counts[k]}</b><small>${v.t}</small></div>`).join("")}</div>
+    ${R.complete?"":`<div class="note warn">لم يكتمل التسميع: توقّف عند «${esc(R.words[R.last]||"")}»، وبقيت ${R.trailing} كلمة لم تُسمع (لا تُخصم). أكملي التسميع أو أعيديه كاملًا.</div>`}
+    <p class="small muted" style="text-align:center">${R.errs.length?`${R.errs.length} خطأ × ${fmtGrade(R.step)} = خصم ${fmtGrade(R.errs.length*R.step)}`:"لا أخطاء — ما شاء الله تبارك الله!"}${R.aiUsed?"":" · (الحركات تُكتشف بالمصحّح الذكي عند تسجيل الدخول)"}</p>
+    ${R.errs.length?`<div class="terrs">${R.errs.map(e=>`<button class="terr t-${e.type==="حفظ"?"h":e.type==="حرف"?"r":"k"}" ${e.i>=0?`data-wi="${e.i}"`:""}><span class="tt">${TASMEE.types[e.type].ic} ${TASMEE.types[e.type].t}</span><b class="quran-inline">${esc(e.i>=0?R.words[e.i]:(e.w||""))}</b><small>${esc(e.t)}</small></button>`).join("")}</div>`:""}
+    ${R.tajweed.length?`<details class="small" style="margin-top:8px"><summary>ملاحظات تجويد (لا تُخصم) · ${R.tajweed.length}</summary><div class="stack" style="margin-top:6px">${R.tajweed.map(x=>`<div class="note info">«${esc(x.i>=0?R.words[x.i]:x.w||"")}»: ${esc(x.t)}</div>`).join("")}</div></details>`:""}
+    ${R.praise?`<div class="note good" style="margin-top:8px">🤖 ${esc(R.praise)}</div>`:""}
+    <div class="tacts row" style="margin-top:10px;justify-content:center"></div></div>`;
+}
+function tasmeeSave(R,blob,{label,s,a1,a2,kind="tasmee"}){ const att={id:Date.now(),label:`تسميع ${label}: ${fmtGrade(R.grade)}/${R.full}`,score:R.pct,wordPct:R.pct,grade:R.grade,full:R.full,counts:R.counts,notes:R.errs.slice(0,20).map(e=>`${TASMEE.types[e.type].t}: «${e.i>=0?R.words[e.i]:e.w||""}» ${e.t}`),date:Date.now(),s,a1,a2};
+  ST.attempts.push(att); ST.tasmeeLog=ST.tasmeeLog||[]; ST.tasmeeLog.push({date:att.date,label,s,a1,a2,grade:R.grade,full:R.full,counts:R.counts}); if(ST.tasmeeLog.length>200) ST.tasmeeLog.splice(0,ST.tasmeeLog.length-200); save();
+  DB.put("att:"+att.id,blob).catch(()=>{}); return att; }
+
+VIEWS.tasmee=async function(arg){ const pre=Object.assign({s:ST.tasmeeLast&&ST.tasmeeLast.s||1,a1:ST.tasmeeLast&&ST.tasmeeLast.a1||1,a2:ST.tasmeeLast&&ST.tasmeeLast.a2||7},arg||{});
+  const log=(ST.tasmeeLog||[]).slice(-5).reverse();
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><h1>التسميع</h1>
+  <div class="card"><div class="row"><label class="f" style="flex:2">السورة<select id="tsS">${SURAH_NAMES.map((n,i)=>`<option value="${i+1}" ${i+1===pre.s?"selected":""}>${i+1}. ${n}</option>`).join("")}</select></label>
+  <label class="f">من آية<input type="number" id="tsA1" min="1" value="${pre.a1}"></label><label class="f">إلى آية<input type="number" id="tsA2" min="1" value="${pre.a2}"></label></div>
+  <button class="btn" id="tsGo" style="margin-top:8px">ابدئي التسميع</button></div>
+  <div class="card" id="tsBox" hidden></div>
+  ${log.length?`<div class="card"><h3>آخر تسميعاتك</h3><div class="stack small" style="margin-top:6px">${log.map(l=>`<div class="row between"><span>${esc(l.label)}</span><span class="pill ${l.grade>=9?"good":l.grade>=TASMEE.passGrade?"warn":"bad"}">${fmtGrade(l.grade)} / ${l.full}</span></div>`).join("")}</div></div>`:""}`;
+  $("#back").onclick=()=>history.length>1?history.back():go("home");
+  const sS=$("#tsS"), A1=$("#tsA1"), A2=$("#tsA2"); const clamp=()=>{ const s=+sS.value, mx=AYAH_COUNTS[s-1]; A1.max=A2.max=mx; A1.value=Math.min(Math.max(1,+A1.value||1),mx); A2.value=Math.min(Math.max(+A1.value,+A2.value||+A1.value),mx); };
+  sS.onchange=()=>{ A1.value=1; A2.value=Math.min(AYAH_COUNTS[+sS.value-1],10); clamp(); }; A1.onchange=A2.onchange=clamp;
+  const start=async()=>{ clamp(); const s=+sS.value,a1=+A1.value,a2=+A2.value; ST.tasmeeLast={s,a1,a2}; save(); const box=$("#tsBox"); box.hidden=false; box.innerHTML=`<p class="muted">جارٍ تحميل الآيات…</p>`;
+    let ay; try{ ay=await getAyahs(s,a1,a2); }catch(e){ box.innerHTML=`<div class="note bad">تعذّر تحميل الآيات؛ تأكدي من الاتصال.</div>`; return; } const words=ay.filter(o=>o.text).flatMap(o=>o.text.split(/\s+/).filter(Boolean)); if(!words.length){ box.innerHTML=`<div class="note bad">الآيات غير متاحة الآن بلا إنترنت.</div>`; return; }
+    const label=`${SURAH_NAMES[s-1]} ${a1===a2?a1:a1+"–"+a2}`;
+    tasmeeWidget(box,{ay,words,hidden:true,title:label,onGraded:async(R,blob,acts)=>{ if(R.grade==null) return; const att=tasmeeSave(R,blob,{label,s,a1,a2}); PTS.add(PTS.rules.tasmee,"تسميع","tsm:"+new Date().toDateString()+":"+s+":"+a1+":"+a2); if(R.grade===R.full) PTS.add(5,"تسميع بلا خطأ","tsm0:"+new Date().toDateString()+":"+s+":"+a1);
+      if(acts){ const nxt=a2<AYAH_COUNTS[s-1]; acts.innerHTML=`<button class="btn sec" data-act="again">🔁 إعادة</button>${nxt?`<button class="btn" data-act="next">التالي ←</button>`:""}${cloudOn()?`<button class="btn sec" data-act="send">📤 إرسال للمعلمة</button>`:""}`;
+        acts.querySelector('[data-act="again"]').onclick=start; const nb=acts.querySelector('[data-act="next"]'); if(nb) nb.onclick=()=>{ const n=a2-a1+1; A1.value=a2+1; A2.value=Math.min(AYAH_COUNTS[s-1],a2+n); start(); };
+        const sb=acts.querySelector('[data-act="send"]'); if(sb) sb.onclick=async()=>{ sb.disabled=true; try{ await CLOUD.submit({kind:"tasmee",hwTitle:att.label,att,blob}); toast("أُرسل التسميع للمعلمة"); sb.textContent="✓ أُرسل"; }catch(e){ toast(CLOUD.msg(e)); sb.disabled=false; } }; }
+    }}); box.scrollIntoView({behavior:"smooth",block:"start"}); };
+  $("#tsGo").onclick=start; if(arg&&arg.s) start();
 };
 
 // ===== المساعد الذكي (يتصل بوسيط Cloudflare Worker يحمل مفتاح Claude) =====
@@ -1629,12 +1741,12 @@ const AI={
       this.reciteModel=getGenerativeModel(ai,{model:AI_MODEL,systemInstruction:`أنت مُصحِّح تلاوة قرآنية متقن لرواية حفص عن عاصم، تستمع إلى تسجيل طالب يقرأ نصًّا قرآنيًا معلومًا.
 مهمتك أن تكتب ما قاله القارئ فعلًا حرفيًا كما سمعته، لا كما ينبغي أن يكون: إن أسقط كلمة فلا تكتبها، وإن أبدلها فاكتب ما نطق به، وإن كرّر فاكتب التكرار، وإن كان التسجيل صامتًا أو غير مفهوم فاجعل heard فارغًا.
 ثم قارن بالنص المرجعي، واذكر الأخطاء الجليّة (سقط كلمة، إبدال حرف، تغيير حركة تغيّر المعنى) والخفيّة الواضحة فقط (مدّ قصير بوضوح، غنّة مفقودة، إظهار في موضع إخفاء أو إدغام، تفخيم وترقيق، قلقلة). لا تخترع أخطاء لم تسمعها بوضوح، ولا تذكر شيئًا لم يُقرأ أصلًا على أنه خطأ تجويد.
-أجب بـ JSON فقط بالشكل: {"heard":"نص ما سُمع بلا تشكيل","mistakes":[{"word":"الكلمة من النص","kind":"جلي|خفي","note":"وصف قصير للخطأ وكيف يُصحَّح"}],"praise":"جملة تشجيع قصيرة","score":رقم من 0 إلى 100}. اكتب الملاحظات بالعربية الفصحى المبسطة، ولا تزد على 6 أخطاء.`,generationConfig:{responseMimeType:"application/json",maxOutputTokens:1200,temperature:0.1,thinkingConfig:{thinkingBudget:0}}}); }
+أجب بـ JSON فقط بالشكل: {"heard":"نص ما سُمع بلا تشكيل","mistakes":[{"word":"الكلمة كما في النص المرجعي","type":"حفظ|حرف|حركة|تجويد","kind":"جلي|خفي","note":"وصف قصير للخطأ وكيف يُصحَّح"}],"praise":"جملة تشجيع قصيرة","score":رقم من 0 إلى 100}. النوع: «حفظ» لكلمة سقطت أو أُبدلت بكلمة أخرى أو تردّد فيها، «حرف» لإبدال حرف بحرف أو إسقاطه، «حركة» لتغيير حركة (فتحة/ضمة/كسرة/سكون/شدة)، «تجويد» للأحكام. اكتب الملاحظات بالعربية الفصحى المبسطة، ولا تزد على 12 خطأ.`,generationConfig:{responseMimeType:"application/json",maxOutputTokens:1200,temperature:0.1,thinkingConfig:{thinkingBudget:0}}}); }
     const pcm=await QASR.toPCM16k(blob); const max=16000*90; const wav=pcmToWav(pcm.length>max?pcm.subarray(0,max):pcm,16000); const b64=await blobToB64(wav);
     const call=this.reciteModel.generateContent([{inlineData:{mimeType:"audio/wav",data:b64.replace(/^data:[^,]*,/,"")}},{text:`النص المرجعي الذي يُفترض أن يقرأه:\n${refText}\n${isMale()?"المستخدم ذكر؛ خاطبه بالمذكّر.":"المستخدمة أنثى؛ خاطبها بالمؤنث."}`}]);
     const r=await Promise.race([call,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),45000))]);
     const k=new Date().toISOString().slice(0,10); const u=ST.aiRecite||{}; ST.aiRecite=u.day===k?{day:k,n:(u.n||0)+1}:{day:k,n:1}; save();
-    let t=r.response.text().trim().replace(/^```(json)?/,"").replace(/```$/,""); const j=JSON.parse(t); j.mistakes=Array.isArray(j.mistakes)?j.mistakes.slice(0,6):[]; return j;
+    let t=r.response.text().trim().replace(/^```(json)?/,"").replace(/```$/,""); const j=JSON.parse(t); j.mistakes=Array.isArray(j.mistakes)?j.mistakes.slice(0,12):[]; return j;
   },
   usedToday(){ const k=new Date().toISOString().slice(0,10); const u=ST.aiUse||{}; return u.day===k?u.n||0:0; },
   bump(){ const k=new Date().toISOString().slice(0,10); const u=ST.aiUse||{}; ST.aiUse=u.day===k?{day:k,n:(u.n||0)+1}:{day:k,n:1}; save(); },
@@ -1927,7 +2039,7 @@ const RANKS=[{t:"مبتدئة",min:0,ic:"🌱"},{t:"مجتهدة",min:150,ic:"�
 const REWARDS=[{pts:100,t:"نجمة البداية",ic:"⭐",d:"أول 100 نقطة"},{pts:250,t:"وسام الاجتهاد",ic:"🎖️",d:"250 نقطة"},{pts:500,t:"الوسام الفضي",ic:"🥈",d:"500 نقطة"},{pts:1000,t:"الوسام الذهبي",ic:"🥇",d:"1000 نقطة"},{pts:2000,t:"كأس رياحين",ic:"🏆",d:"2000 نقطة"},{pts:3500,t:"تاج الإتقان",ic:"👑",d:"3500 نقطة"}];
 const AWARD_TYPES=[["week","طالبة الأسبوع","لتميزها في الحضور وإنجاز مهامها هذا الأسبوع"],["hifz","شهادة شكر وتقدير في الحفظ","لتميزها في حفظ كتاب الله ومراجعته"],["tajweed","شهادة تفوق في التجويد","لإتقانها أحكام التجويد وحسن تلاوتها"],["effort","شهادة اجتهاد ومثابرة","لمثابرتها وحرصها على التعلّم"],["thanks","شهادة شكر","تقديرًا لجهدها وتعاونها"]];
 const PTS={
-  rules:{lesson:20,quizPerfect:10,recite:5,reciteGood:10,homework:15,lessonHw:15,hifz:10,game:1,day:10,streak7:50},
+  rules:{login:5,tasmee:10,lesson:20,quizPerfect:10,recite:5,reciteGood:10,homework:15,lessonHw:15,hifz:10,game:1,day:10,streak7:50},
   total(){ return ST.points||0; },
   add(n,reason,key){ if(!n) return; if(key){ ST.ptsKeys=ST.ptsKeys||{}; if(ST.ptsKeys[key]) return; ST.ptsKeys[key]=1; } ST.points=(ST.points||0)+n; ST.pointsLog=ST.pointsLog||[]; ST.pointsLog.push({n,reason,date:Date.now()}); if(ST.pointsLog.length>300) ST.pointsLog.splice(0,ST.pointsLog.length-300); save(); toast(`+${n} نقطة · ${reason}`); const before=this.total()-n; REWARDS.forEach(r=>{ if(before<r.pts&&this.total()>=r.pts) setTimeout(()=>toast(`${r.ic} جائزة جديدة: ${r.t}!`),1200); }); },
   rank(p){ p=p??this.total(); let r=RANKS[0]; for(const x of RANKS) if(p>=x.min) r=x; return r; },
@@ -1943,7 +2055,7 @@ VIEWS.rewards=async function(){
   ${awards.length?`<div class="card"><h3>شهاداتي التحفيزية من المعلمة</h3><div class="stack" style="margin-top:8px">${awards.map(a=>`<div class="row between" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>${esc(a.title)}</b><div class="small muted">${esc(a.msg||"")} · ${fmtDate(a.date)}${a.pts?" · +"+a.pts+" نقطة":""}</div></div><button class="btn gold sm" data-mcert="${esc(a.id)}">🎓 عرض الشهادة</button></div>`).join("")}</div></div>`:""}
   <div class="card"><h3>الجوائز</h3><div class="badges" style="margin-top:8px">${REWARDS.map(x=>`<div class="badge ${p>=x.pts?"":"off"}" title="${x.d}"><span class="ic">${x.ic}</span><span>${x.t}<br><small class="muted">${x.pts} نقطة</small></span></div>`).join("")}</div></div>
   <div class="card"><h3>الرتب</h3><div class="row" style="margin-top:8px;gap:8px">${RANKS.map(x=>`<span class="pill ${x.t===r.t?"gold":p>=x.min?"good":""}">${x.ic} ${x.t} · ${x.min}</span>`).join("")}</div></div>
-  <div class="card"><h3>كيف أكسب النقاط؟</h3><ul class="clean small" style="margin-top:6px;line-height:2">${[["إنهاء درس واختباره","20"],["اختبار كامل الدرجة","+10"],["تلاوة مسجّلة (ناجحة +10)","5"],["واجب درس / واجب المعلمة","15"],["مهمة حفظ أو مراجعة","10"],["يوم منجز (كل مهامه)","10"],["7 أيام متتالية","50"],["الألعاب","نقطة لكل 10 نقاط لعب"],["جوائز المعلمة","حسب تقديرها"]].map(([a,b])=>`<li class="row between"><span>${a}</span><b>${b}</b></li>`).join("")}</ul></div>
+  <div class="card"><h3>كيف أكسب النقاط؟</h3><ul class="clean small" style="margin-top:6px;line-height:2">${[["دخول الموقع (مرة يوميًا)","5"],["تسميع (+5 إن كان بلا خطأ)","10"],["حضور لقاء مباشر","10"],["إنهاء درس واختباره","20"],["اختبار كامل الدرجة","+10"],["تلاوة مسجّلة (ناجحة +10)","5"],["واجب درس / واجب المعلمة","15"],["مهمة حفظ أو مراجعة","10"],["يوم منجز (كل مهامه)","10"],["7 أيام متتالية","50"],["الألعاب","نقطة لكل 10 نقاط لعب"],["جوائز المعلمة","حسب تقديرها"]].map(([a,b])=>`<li class="row between"><span>${a}</span><b>${b}</b></li>`).join("")}</ul></div>
   <div class="card" id="lbCard"><h3>لوحة الشرف في حلقتي</h3><p class="muted small" id="lb">${cloudOn()?"جارٍ التحميل…":"سجّلي الدخول لعرض الترتيب."}</p></div>
   ${log.length?`<div class="card"><h3>آخر النقاط</h3><div class="stack small" style="margin-top:6px">${log.map(l=>`<div class="row between"><span>${esc(l.reason)}</span><span class="muted">+${l.n} · ${fmtDate(l.date)}</span></div>`).join("")}</div></div>`:""}`;
   $("#back").onclick=()=>history.length>1?history.back():go("home"); view.querySelectorAll("[data-mcert]").forEach(b=>b.onclick=()=>go("mcert",b.dataset.mcert));
@@ -2012,6 +2124,7 @@ VIEWS.letteraudio=async function(){
 const GUIDE=[
  ["١. البداية",`<ol><li>افتحي الموقع من <b>Chrome</b> أو <b>Safari</b>، لا من متصفح واتساب أو تيليجرام.</li><li>اضغطي «تسجيل الدخول باستخدام Google»، أو اكتبي بريدك وكلمة مرور ثم «إنشاء حساب جديد».</li><li>أكملي بياناتك: طالبة أو معلمة، الاسم الرباعي، الجوال، المدينة، اسم الحلقة والأستاذة، والمسار.</li><li>اضغطي «حفظ والبدء».</li></ol><p><b>تثبيته على الجوال:</b> آيفون: Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية». أندرويد: المزيد ← «تحميل تطبيق أندرويد»، أو قائمة Chrome ← «تثبيت التطبيق».</p>`],
  ["٢. التنقل في الموقع",`<ul><li><b>الرئيسية:</b> تقدّمك ونقاطك و<b>مهامك اليوم</b> واختصارات الأقسام.</li><li><b>الحفظ:</b> مهام الحفظ والمراجعة والخطة والسجل.</li><li><b>الاستماع:</b> القرآن بصوت الشيخ إبراهيم الأخضر مع التكرار والتسريع.</li><li><b>التجويد:</b> المستويات والدروس والاختبارات ومخارج الحروف.</li><li><b>المزيد:</b> تصحيح التلاوة، الألعاب، الواجبات، حلقتي، غرفة المعلمات، النقاط، الإعدادات.</li></ul><p>أنجزي كل «مهام اليوم» ليُحسب يومك منجزًا. والزر الوردي يفتح المساعد الذكي، والزر السماوي فوقه يفتح هذا الدليل.</p>`],
+ ["🎙️ التسميع (مثل ترتيل)",`<ol><li>من الرئيسية اضغطي «التسميع»، أو افتحي مهمة حفظ أو مراجعة من «الحفظ».</li><li>اختاري السورة والآيات، والنص يكون <b>مخفيًا</b>.</li><li>اضغطي الميكروفون واقرئي من حفظك؛ تظهر كل كلمة عند نطقها: <b>الأخضر</b> صحيح، <b>الأصفر</b> تغيّر في الحروف، <b>الأحمر</b> كلمة سقطت أو نُسيت.</li><li>إن نسيتِ، المسي الكلمة المخفية لكشفها، وتُحسب «تلقينًا».</li><li>عند الإيقاف تظهر <b>الدرجة من 10</b>، ويُخصم <b>نصف درجة لكل خطأ</b> في الحفظ أو الحروف أو الحركات، مع قائمة الأخطاء؛ المسي أي خطأ ليظهر موضعه في النص.</li><li>ملاحظات التجويد تظهر ولا تُخصم. والكلمات التي لم تصلي إليها لا تُخصم، ويظهر تنبيه بأن التسميع لم يكتمل.</li><li>لكل تسميع 10 نقاط (+5 إن كان بلا خطأ)، ويمكن إرساله للمعلمة.</li></ol>`],
  ["٣. دروس التجويد",`<ol><li>افتحي «التجويد» واختاري أول درس غير منجز.</li><li>اقرئي الشرح والأمثلة، واستمعي وسجّلي في التدريب.</li><li>حلّي اختبار الدرس؛ عند النجاح يُحسب منجزًا ويظهر <b>واجب الدرس</b>.</li><li>سجّلي قراءة عبارات الواجب؛ يُصحَّح ويصل لمعلمتك.</li><li>بعد دروس المستوى اضغطي «اختبار اجتياز المستوى»؛ عند النجاح تُفتح <b>شهادة الإتمام</b> والمستوى التالي.</li></ol><p><b>متقنة للمستوى؟</b> اختبري الاجتياز مباشرة دون الدروس.</p>`],
  ["٤. الحفظ والمراجعة",`<p><b>الخطة:</b> الحفظ ← «الخطة» ← اختاري «بالقرآن نحيا» (نصف وجه يوميًا) أو «خطة خاصة» وحدّدي:</p><ul><li>من أي سورة تبدئين وأين تنتهين.</li><li>الوحدة: آيات أو نصف وجه أو وجه.</li><li>مقدار الحفظ اليومي ومقدار المراجعة اليومية.</li><li>أيام الحفظ في الأسبوع (وفي غيرها مراجعة فقط).</li></ul><p><b>جلسة اليوم:</b> استمعي مرتين ← اقرئي 15 مرة ← سمّعي من حفظك بالتسجيل ← «اعتماد وإنهاء المهمة».</p>`],
  ["٥. تصحيح التلاوة",`<ol><li>المزيد ← «تصحيح التلاوة»، واختاري السورة والآيات (10 على الأكثر).</li><li>استمعي للقارئ، ثم سجّلي تلاوتك كاملة وأوقفي.</li><li>تظهر النسبة والكلمات ملوّنة: أخضر صحيح، أصفر قريب، أحمر ساقط أو محرّف، مع ملاحظات المدود والغنن.</li></ol><p><b>لتصحيح أدق:</b> مكان هادئ، الجوال قريب من فمك، صوت واضح. أول مرة يُحمَّل المحرك القرآني (نحو 30 م.ب).</p>`],
@@ -2123,7 +2236,7 @@ VIEWS.meetings=async function(){
   $("#mtBox").querySelectorAll("[data-delm]").forEach(b=>b.onclick=async()=>{ if(!confirm("حذف هذا اللقاء؟")) return; try{ await ref.set({meetings:meetings.filter(m=>m.id!==b.dataset.delm)},{merge:true}); go("meetings"); }catch(e){ toast(CLOUD.msg(e)); } });
   // الحضور: آخر اللقاءات ومن حضرها
   if($("#mAtt")){ try{ const students=await CLOUD.students(); const past=meetings.flatMap(m=>meetPast(m,30)).concat(meetings.flatMap(m=>meetOccurrences(m,0)).filter(o=>o.start<=Date.now())).sort((a,b)=>b.start-a.start).slice(0,10);
-    $("#mAtt").innerHTML=past.length?`<div class="scroller"><table class="table"><tr><th>اللقاء</th><th>الحاضرات</th><th>الغائبات</th></tr>${past.map(o=>{ const pres=students.filter(s=>s.meetAtt&&s.meetAtt[o.key]); const abs=students.filter(s=>!(s.meetAtt&&s.meetAtt[o.key])); return `<tr><td class="small"><b>${esc(o.m.title)}</b><div class="muted">${fmtMeet(o.start)}</div></td><td class="small"><span class="pill good">${pres.length}</span> ${pres.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td><td class="small"><span class="pill bad">${abs.length}</span> ${abs.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td></tr>`; }).join("")}</table></div>`:`<p class="muted small">لم يُعقد لقاء بعد.</p>`; }catch(e){ $("#mAtt").innerHTML=`<p class="small muted">${esc(CLOUD.msg(e))}</p>`; } }
+    $("#mAtt").innerHTML=past.length?`<div class="scroller"><table class="table"><tr><th>اللقاء</th><th>الحاضرات</th><th>الغائبات</th></tr>${past.map(o=>{ const ra=(T&&T.roomAtt&&T.roomAtt[o.key])||{}; const was=s=>(s.meetAtt&&s.meetAtt[o.key])||ra[s.uid]; const pres=students.filter(was); const abs=students.filter(s=>!was(s)); return `<tr><td class="small"><b>${esc(o.m.title)}</b><div class="muted">${fmtMeet(o.start)}</div></td><td class="small"><span class="pill good">${pres.length}</span> ${pres.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td><td class="small"><span class="pill bad">${abs.length}</span> ${abs.map(s=>esc((s.fullName||s.name||"").split(" ")[0])).join("، ")}</td></tr>`; }).join("")}</table></div>`:`<p class="muted small">لم يُعقد لقاء بعد.</p>`; }catch(e){ $("#mAtt").innerHTML=`<p class="small muted">${esc(CLOUD.msg(e))}</p>`; } }
 };
 
 // ===== لقاء مضمَّن داخل الموقع عبر Daily أو JaaS (حساب المعلمة) =====
@@ -2165,7 +2278,7 @@ async function roomJoin(roomId,title,{host=false,video=false}={}){ ROOM.title=ti
   // المشاركات
   ROOM.unsub.push(rref().collection("peers").onSnapshot(s=>{ s.docChanges().forEach(ch=>{ const id=ch.doc.id; if(id===ROOM.me) return; const data=ch.doc.data();
       if(ch.type==="removed"||Date.now()-(data.lastSeen||0)>40000){ roomDrop(id); return; }
-      const P=ROOM.peers[id]||(ROOM.peers[id]={info:{},pc:null,streams:{}}); const wasHost=P.info.host, oldJoin=P.info.joinedAt; P.info=data;
+      const P=ROOM.peers[id]||(ROOM.peers[id]={info:{},pc:null,streams:{}}); const wasHost=P.info.host, oldJoin=P.info.joinedAt; P.info=data; if(ROOM.host&&!data.host&&data.name) roomAttNote(id,data.name);
       // الطالبة تبادر بالاتصال بالمعلمة عند ظهورها (أو عودتها)
       if(!ROOM.host&&data.host&&(!P.pc||oldJoin!==data.joinedAt)) roomCallHost(id);
       if(ROOM.host&&!data.host) roomRemix(); });
@@ -2293,7 +2406,7 @@ function roomRenderPanel(){ const p=$("#rPanel"); if(!p) return; p.hidden=!ROOM.
       p.querySelectorAll("[data-pin]").forEach(b=>b.onclick=()=>hostSetState({spotlight:ROOM.state.spotlight===b.dataset.pin?null:b.dataset.pin})); } }
   $("#rPX").onclick=()=>{ ROOM.panel=null; roomRenderBar(); roomRenderPanel(); }; }
 VIEWS.room=async function(arg){
-  const {roomId,title,o,host}=arg||{}; if(!roomId){ go("meetings"); return; }
+  const {roomId,title,o,host}=arg||{}; if(!roomId){ go("meetings"); return; } ROOM.okey=o&&o.key||null; ROOM.att={};
   view.innerHTML=`<div class="rroom"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="row" style="gap:6px"><span class="pill bad" id="rRecBadge" hidden>🔴 يُسجَّل</span><span class="pill acc">👥 <span id="roomCount">1</span></span></span></div>
     <div id="roomPre" class="card stack" style="text-align:center"><p>${host?"أنتِ مديرة اللقاء: يتحدث الجميع حين تأذنين، وتستطيعين مشاركة الشاشة وتثبيت فيديو طالبة.":"تدخلين والمايك مكتوم. ارفعي يدك لتأذن لكِ المعلمة بالتحدث."}</p><div class="row" style="justify-content:center"><button class="btn lg" id="rJoinA">🎙️ دخول</button><button class="btn sec lg" id="rJoinV">📷 دخول مع الكاميرا</button></div><p class="small muted">يتسع اللقاء لنحو 30 طالبة. استخدمي سماعة لتجنّب الصدى.${host?" يُفضَّل للمعلمة اتصال إنترنت قوي (ألياف أو 5G) لأنها توزّع الصوت على الجميع.":""}</p></div>
     <div id="rPoll" hidden></div><div id="rBoard" class="rboard" hidden></div><div id="rStage" class="rstage" hidden></div><div id="rPanel" class="rpanel" hidden></div><div id="rAudio" hidden></div>
@@ -2363,5 +2476,9 @@ function roomRenderPoll(){ const box=$("#rPoll"); if(!box) return; const P=ROOM.
   const vs=Object.values(ROOM.votes||{}).filter(v=>v.poll===P.id); const counts=P.opts.map((_,i)=>vs.filter(v=>v.opt===i).length); const tot=vs.length; const mine=ROOM.votes&&ROOM.votes[ROOM.me]&&ROOM.votes[ROOM.me].poll===P.id?ROOM.votes[ROOM.me].opt:null; const show=ROOM.host||P.reveal||mine!==null;
   box.hidden=false; box.className="rpoll"; box.innerHTML=`<div class="row between"><b>📊 ${esc(P.q)}</b><span class="small">${tot} إجابة</span></div><div class="stack" style="gap:6px;margin-top:8px">${P.opts.map((o,i)=>{ const pc=tot?Math.round(counts[i]/tot*100):0; const ok=P.reveal&&P.correct===i; return `<button class="rpopt ${mine===i?"me":""} ${ok?"ok":""}" data-vote="${i}" ${ROOM.host||P.reveal?"disabled":""}><i style="width:${show?pc:0}%"></i><span>${ok?"✅ ":""}${esc(o)}</span>${show?`<b>${pc}٪</b>`:""}</button>`; }).join("")}</div>${ROOM.host?`<p class="small" style="margin-top:6px;opacity:.8">${P.reveal?"لإخفائه: 🧰 أدوات ← إخفاء الاستطلاع.":"لإظهار النتيجة"+(P.correct>=0?" والإجابة الصحيحة":"")+" للجميع: 🧰 أدوات ← إظهار النتيجة."}</p>`:""}`;
   box.querySelectorAll("[data-vote]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,vote:P.id,opt:+b.dataset.vote,at:Date.now()}).catch(e=>toast(CLOUD.msg(e))); }); }
+
+// ---------- سجل الحضور (تحفظه المعلمة تلقائيًا في بطاقتها: roomAtt) ----------
+function roomAttNote(id,name){ if(!ROOM.okey||!CLOUD.user) return; ROOM.att=ROOM.att||{}; if(ROOM.att[id]) return; ROOM.att[id]={name,at:Date.now()};
+  clearTimeout(ROOM.attT); ROOM.attT=setTimeout(()=>{ const patch={}; patch[ROOM.okey]=ROOM.att; CLOUD.db.collection("teachers").doc(CLOUD.user.email).set({roomAtt:patch},{merge:true}).catch(e=>console.warn("roomAtt",e)); },2500); }
 
 </script><script>if("serviceWorker" in navigator&&/^https?:/.test(location.protocol)){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script></body></html>
