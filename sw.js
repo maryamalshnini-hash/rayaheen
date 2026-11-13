@@ -1,5 +1,5 @@
-const CACHE="rayaheen-v39";
-const SHELL=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./data.js?v=1"];
+const CACHE="rayaheen-v40";
+const SHELL=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./data.js?v=2"];
 self.addEventListener("install",e=>{ self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL).catch(()=>{}))); });
 self.addEventListener("activate",e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=="rayaheen-model-v2"&&k!=="rayaheen-media").map(k=>caches.delete(k))))); self.clients.claim(); });
 self.addEventListener("fetch",e=>{ const u=new URL(e.request.url);
