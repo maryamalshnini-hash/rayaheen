@@ -5,11 +5,13 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isAdmin() { return signedIn() && request.auth.token.email == 'maryamalshnini@gmail.com'; }
     function isTeacher() { return signedIn() && exists(/databases/$(db)/documents/teachers/$(request.auth.token.email)); }
-    match /teachers/{email} { allow read: if signedIn(); allow create, update: if signedIn() && (request.auth.token.email == email || isAdmin()); allow delete: if false; }
+    match /teachers/{email} { allow read: if signedIn(); allow create: if isAdmin() || (signedIn() && request.auth.token.email == email && get(/databases/$(db)/documents/users/$(request.auth.uid)).data.get('roleGrant', {}).get('role', '') == 'teacher'); allow update: if signedIn() && (request.auth.token.email == email || isAdmin()); allow delete: if isAdmin(); }
     match /users/{uid} {
-      allow read: if signedIn();
-      allow write: if (request.auth.uid == uid && (request.resource.data.role != 'teacher' || isTeacher())) || isAdmin();
+      allow read: if signedIn() && (request.auth.uid == uid || isTeacher() || isAdmin());
+      allow write: if isAdmin() || (request.auth.uid == uid && (request.resource.data.role != 'teacher' || isTeacher()) && request.resource.data.get('roleGrant', null) == (resource == null ? null : resource.data.get('roleGrant', null)));
     }
+    match /pub/{uid} { allow read: if signedIn(); allow write: if (signedIn() && request.auth.uid == uid) || isAdmin(); }
+    match /tasmeeNotes/{id} { allow read: if signedIn() && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid || isTeacher() || isAdmin()); allow create: if isAdmin() || signedIn() && request.resource.data.from == request.auth.uid; allow update, delete: if isAdmin() || (signedIn() && resource.data.from == request.auth.uid); }
     match /homework/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
     match /submissions/{id} {
       allow read: if signedIn();
@@ -18,8 +20,26 @@ service cloud.firestore {
       allow delete: if isTeacher() || resource.data.studentUid == request.auth.uid;
     }
     match /approvals/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
-    match /config/{id} { allow read: if signedIn(); allow write: if isTeacher(); }
     match /hifzLogs/{id} { allow read: if signedIn(); allow create: if signedIn() && request.resource.data.studentUid == request.auth.uid; }
+    match /recordings/{id} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.resource.data.owner == request.auth.uid;
+      allow delete: if isTeacher() || resource.data.owner == request.auth.uid;
+      match /parts/{n} {
+        allow read: if signedIn();
+        allow create, update: if signedIn() && request.resource.data.owner == request.auth.uid;
+        allow delete: if isTeacher() || resource.data.owner == request.auth.uid;
+      }
+    }
+    match /rooms/{room} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.host == request.auth.uid;
+      allow update: if signedIn() && resource.data.host == request.auth.uid;
+      match /peers/{uid} { allow read: if signedIn(); allow write: if signedIn() && (request.auth.uid == uid || get(/databases/$(db)/documents/rooms/$(room)).data.host == request.auth.uid); }
+      match /signals/{id} { allow create: if signedIn() && request.resource.data.from == request.auth.uid; allow read, delete: if signedIn() && resource.data.to == request.auth.uid; }
+      match /chat/{id} { allow read: if signedIn(); allow create: if signedIn() && request.resource.data.from == request.auth.uid; }
+    }
+    match /config/{id} { allow read: if signedIn(); allow write: if isTeacher(); }
   }
 }
 
