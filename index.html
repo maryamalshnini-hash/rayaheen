@@ -802,7 +802,9 @@ const CLOUD={
     await this.pullShared();
   },
   schedulePush(){ if(!this.user||!this.db) return; clearTimeout(this.pushT); this.pushT=setTimeout(()=>this.push(),2500); },
-  async push(force){ if(!this.user||!this.db) return; try{ const p=this.profile(); if(ST.role==="teacher"){ const t=await this.db.collection("teachers").doc(this.user.email||"-").get().catch(()=>null); if(!t||!t.exists) p.role="student"; } await this.db.collection("users").doc(this.user.uid).set(Object.assign(p,{state:JSON.parse(JSON.stringify(this.stateSlim()))}),{merge:true}); this.error=""; }catch(e){ this.error=this.msg(e); } },
+  async push(force){ if(!this.user||!this.db) return; try{ const p=this.profile(); if(ST.role==="teacher"){ const t=await this.db.collection("teachers").doc(this.user.email||"-").get().catch(()=>null); if(!t||!t.exists) p.role="student"; } await this.db.collection("users").doc(this.user.uid).set(Object.assign(p,{state:JSON.parse(JSON.stringify(this.stateSlim()))}),{merge:true}); this.error=""; try{ await this.db.collection("pub").doc(this.user.uid).set(this.pubOf(p)); }catch(e){ console.warn("pub",e); } }catch(e){ this.error=this.msg(e); } },
+  // بيانات عامة غير حساسة (بلا جوال ولا بريد ولا مدينة) للترتيب والمسابقة
+  pubOf(p){ const o={}; ["uid","fullName","name","gender","halaqa","teacherEmail","teacherName","role","points","weekDone","doneCount","rank","badges","ptsMonth","ptsPrev","updated"].forEach(k=>{ if(p[k]!==undefined) o[k]=p[k]; }); return o; },
   // سحب الواجبات والتصحيحات والاعتمادات الخاصة بي
   async setConfig(obj){ if(!this.db||ST.role!=="teacher") return; await this.db.collection("config").doc("app").set(obj,{merge:true}); },
   async pullShared(){ if(!this.user) return; const me=this.user.uid; try{
@@ -840,7 +842,7 @@ const CLOUD={
   async teachersList(){ const q=await this.db.collection("teachers").get(); return q.docs.map(d=>Object.assign({email:d.id},d.data())).filter(t=>t.name&&!t.hidden&&(isAdmin()||(t.gender||"f")===(ST.gender||"f"))).sort((a,b)=>(b.updated||0)-(a.updated||0)); },
   async joinTeacher(t){ ST.teacherEmail=t.email; ST.teacherName=t.name; if(t.halaqa) ST.halaqa=t.halaqa; save(); await this.push(true); await this.pullShared(); },
   async giveAward(a){ const d=await this.db.collection("teachers").doc(this.user.email).get(); const list=(d.exists&&d.data().awards)||[]; list.push(Object.assign({id:"aw"+Date.now(),date:Date.now(),by:ST.fullName||ST.name},a)); if(list.length>400) list.splice(0,list.length-400); await this.db.collection("teachers").doc(this.user.email).set({awards:list},{merge:true}); },
-  async leaderboard(){ const q=await this.db.collection("users").get(); const all=q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>u.role!=="teacher"); const mine=all.filter(u=>(ST.teacherEmail&&u.teacherEmail===ST.teacherEmail)||(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa))||u.uid===(this.user&&this.user.uid)); return mine.sort((a,b)=>(b.points||0)-(a.points||0)); },
+  async leaderboard(){ const q=await this.db.collection("pub").get(); const all=q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>u.role!=="teacher"); const mine=all.filter(u=>(ST.teacherEmail&&u.teacherEmail===ST.teacherEmail)||(ST.halaqa&&this.normName(u.halaqa)===this.normName(ST.halaqa))||u.uid===(this.user&&this.user.uid)); return mine.sort((a,b)=>(b.points||0)-(a.points||0)); },
   // المشرفة: تعديل بيانات حلقة، ونقل طالبة
   async adminEditCircle(email,patch){ await this.db.collection("teachers").doc(email).set(Object.assign({},patch,{editedBy:this.user.email,editedAt:Date.now()}),{merge:true}); },
   async adminMoveStudent(uid,t){ const v={teacherEmail:t?t.email:"",teacherName:t?t.name:"",halaqa:t?(t.halaqa||""):"",at:Date.now(),by:this.user.email}; await this.db.collection("users").doc(uid).set({adminSet:v,teacherEmail:v.teacherEmail,teacherName:v.teacherName,halaqa:v.halaqa},{merge:true}); },
@@ -2608,9 +2610,10 @@ function liveMarkWidget(host,{ay,words,title,onSave}){ const marks={}; const id=
   $("#"+id+"S").onclick=async()=>{ const b=$("#"+id+"S"); b.disabled=true; const {errs,grade}=upd(); const counts={"حفظ":0,"حرف":0,"حركة":0}; errs.forEach(e=>counts[e.type]++); try{ await onSave({errs,grade,full:tasmeeFull(),counts,note:$("#"+id+"N").value.trim(),words:errs.map(e=>words[e.i])}); b.textContent="✓ أُرسلت"; }catch(e){ toast(CLOUD.msg?CLOUD.msg(e):String(e)); b.disabled=false; } };
   upd(); }
 CLOUD.giveTasmee=async function(entry){ if(!this.user) throw new Error("سجّلي الدخول أولًا"); const ref=this.db.collection("users").doc(this.user.uid); const d=await ref.get(); const list=((d.exists&&d.data().tasmeeGiven)||[]).filter(x=>Date.now()-x.date<60*86400000); list.push(entry); const to=[...new Set(list.map(x=>x.to))];
-  await ref.set({tasmeeGiven:list.slice(-150),tasmeeTo:to},{merge:true}); };
-async function pullGivenTasmee(){ if(!cloudOn()) return; const me=CLOUD.user.uid; try{ const q=await CLOUD.db.collection("users").where("tasmeeTo","array-contains",me).get(); ST.tasmeeGot=ST.tasmeeGot||[]; let n=0;
-  q.forEach(d=>{ (d.data().tasmeeGiven||[]).filter(x=>x.to===me&&!ST.tasmeeGot.includes(x.id)).forEach(x=>{ ST.tasmeeGot.push(x.id); n++;
+  await ref.set({tasmeeGiven:list.slice(-150),tasmeeTo:to},{merge:true});
+  try{ await this.db.collection("tasmeeNotes").doc(String(entry.id)).set(Object.assign({},entry,{from:this.user.uid})); }catch(e){ console.warn("tasmeeNotes",e); } };
+async function pullGivenTasmee(){ if(!cloudOn()) return; const me=CLOUD.user.uid; try{ const q=await CLOUD.db.collection("tasmeeNotes").where("to","==",me).get(); ST.tasmeeGot=ST.tasmeeGot||[]; let n=0;
+  q.forEach(d=>{ [d.data()].filter(x=>x.to===me&&!ST.tasmeeGot.includes(x.id)).forEach(x=>{ ST.tasmeeGot.push(x.id); n++;
     ST.tasmeeLog=ST.tasmeeLog||[]; ST.tasmeeLog.push({date:x.date,label:x.label,s:x.s,a1:x.a1,a2:x.a2,mid:x.mid||null,grade:x.grade,full:x.full,counts:x.counts,complete:true,by:x.byName,byRole:x.byRole,note:x.note||""});
     ST.weak=ST.weak||{}; (x.keys||[]).forEach(k=>{ const W=ST.weak[k]; ST.weak[k]={k,label:weakLabel(k),errs:(W?W.errs:0)+1,clean:0,last:Date.now()}; });
     if(x.byRole==="teacher"&&x.mid&&x.grade>=TASMEE.passGrade){ ST.mutoon=ST.mutoon||{}; const PP=ST.mutoon[x.mid]=ST.mutoon[x.mid]||{}; for(let v=x.a1;v<=x.a2;v++) PP[v]=Math.max(PP[v]||0,x.grade); }
@@ -2681,7 +2684,7 @@ VIEWS.errboard=async function(){ view.innerHTML=`<div class="row between"><butto
 // ---------- مسابقة رياحين الشهرية ----------
 VIEWS.contest=async function(){ const mk=monthKey(); view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><div class="hero"><div><div class="eyebrow">مسابقة رياحين الشهرية</div><h1>🏆 ${monthName(mk)}</h1><p class="small muted">الترتيب بنقاط هذا الشهر على مستوى رياحين كلها (${isMale()?"للطلاب":"للطالبات"}). تُمنح الثلاث الأوائل شهادة تلقائيًا بعد انتهاء الشهر.</p></div></div><div id="ctBox"><p class="muted">جارٍ التحميل…</p></div>`;
   $("#back").onclick=()=>history.length>1?history.back():go("home"); if(!cloudOn()){ $("#ctBox").innerHTML=`<div class="note warn">سجّلي الدخول للمشاركة.</div>`; return; }
-  try{ const q=await CLOUD.db.collection("users").get(); const g=ST.gender||"f"; const all=q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>u.role!=="teacher"&&(u.gender||"f")===g);
+  try{ const q=await CLOUD.db.collection("pub").get(); const g=ST.gender||"f"; const all=q.docs.map(d=>Object.assign({uid:d.id},d.data())).filter(u=>u.role!=="teacher"&&(u.gender||"f")===g);
     const cur=u=>u.ptsMonth&&u.ptsMonth.m===mk?u.ptsMonth.n||0:0; const prevK=monthKey(new Date(new Date().getFullYear(),new Date().getMonth()-1,1)); const prev=u=>u.ptsMonth&&u.ptsMonth.m===prevK?u.ptsMonth.n||0:(u.ptsPrev&&u.ptsPrev.m===prevK?u.ptsPrev.n||0:0);
     const top=all.filter(u=>cur(u)>0).sort((a,b)=>cur(b)-cur(a)); const me=CLOUD.user.uid; const pos=top.findIndex(u=>u.uid===me)+1;
     const hq={}; all.forEach(u=>{ const k=u.halaqa||""; if(!k) return; const h=hq[k]||(hq[k]={name:k,n:0,sum:0}); h.n++; h.sum+=cur(u); }); const halaqas=Object.values(hq).filter(h=>h.n>=2).map(h=>Object.assign(h,{avg:Math.round(h.sum/h.n)})).sort((a,b)=>b.avg-a.avg).slice(0,8);
