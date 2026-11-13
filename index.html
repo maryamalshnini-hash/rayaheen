@@ -998,7 +998,7 @@ function audioTag(blob){ const u=URL.createObjectURL(blob); return `<audio contr
 
 // ===== التنقل =====
 let route="home", routeArg=null;
-function go(r,arg){ if(r!=="room"&&typeof ROOM!=="undefined"&&ROOM.id) roomLeave(); if(r!=="embedmeet"&&window._dailyFrame){ try{ window._dailyFrame.destroy(); }catch(e){} window._dailyFrame=null; } route=r; routeArg=arg; try{ if(r!==route||true) location.hash=r.replace(/[^a-z-]/gi,""); }catch(e){} render(); document.querySelector("main").scrollTop=0; }
+function go(r,arg){ if(r!=="room"&&r!=="embedmeet"&&typeof MYREC!=="undefined"&&MYREC.rec) MYREC.end(); if(r!=="room"&&typeof ROOM!=="undefined"&&ROOM.id) roomLeave(); if(r!=="embedmeet"&&window._dailyFrame){ try{ window._dailyFrame.destroy(); }catch(e){} window._dailyFrame=null; } route=r; routeArg=arg; try{ if(r!==route||true) location.hash=r.replace(/[^a-z-]/gi,""); }catch(e){} render(); document.querySelector("main").scrollTop=0; }
 document.addEventListener("DOMContentLoaded",()=>{ const f=$("#fab"); if(f) f.onclick=()=>go("assistant"); const g=$("#fabGuide"); if(g) g.onclick=()=>go("guide"); });
 window.addEventListener("hashchange",()=>{ const h=location.hash.replace("#",""); if(h&&h!==route&&VIEWS[h]){ route=h; routeArg=null; render(); } });
 $("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(b.dataset.go); });
@@ -1347,7 +1347,7 @@ VIEWS.more=function(){
   ${typeof isAdmin==="function"&&isAdmin()?sec("الإشراف",[item("admin","🛡️","لوحة المشرفة","كل الحلقات والطالبات: الدرجات والتقدم والحضور","border-color:var(--gold)")]):""}
   ${T?sec("المتابعة",[item("meetings","🎥","لقاءات الحلقة","جدولة لقاءات مباشرة بالصوت والصورة وحضورها"),item("cloudteacher","👩‍🏫","طالباتي","تقدّم كل طالبة ومستواها وحضورها والاستماع لتسجيلاتها","border-color:var(--accent)"),item("homework","📝","الواجبات","إنشاء واجبات ونشرها وتصحيحها"),item("teachers","🏫","غرفة المعلمات","بطاقتك كما تراها الطالبات"),item("teacher","🎙️","قراءتي المرجعية","تسجيل الآيات والحروف لتقارن بها الطالبات")]):""}
   ${sec("الحفظ والمنافسة",(T?[item("errboard","📊","أخطاء الحلقة","أكثر الأخطاء والمواضع المشتركة ومن تحتاج متابعة","border-color:var(--accent)")]:[item("mutoon","📜","حفظ المتون","تحفة الأطفال والجزرية والشاطبية بالتسميع"),item("weak","🎯","المراجعة الذكية","المواضع التي أخطأتِ فيها حتى تتقنيها"),item("report","📄","تقريري الشهري","ملخص شهرك للمشاركة مع المعلمة أو الأهل")]).concat([item("contest","🏆","مسابقة رياحين","لوحة شرف شهرية على مستوى رياحين كلها","border-color:var(--gold)")]))}
-  ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("meetings","🎥","لقاءات الحلقة","مواعيد اللقاءات المباشرة وزر الانضمام"),item("halaqa","👭","حلقتي",ST.ownCircle?"حلقتك التي أنشأتِها وعضواتها":"معلمتي وزميلاتي ونتائجهن، أو أنشئي حلقتك")].concat(ST.ownCircle?[item("cloudteacher","🧭","إدارة حلقتي","تقدّم العضوات وتسجيلاتهن ونقاطهن")]:[],[item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")])))}
+  ${sec("التعلّم",[item("practice","🎤","تصحيح التلاوة","سجّلي أي آيات وقارنيها بالقارئ"),item("makharij","👄","مخارج الحروف","تدريب الحروف الـ29 مع المقارنة"),item("games","🎮","ألعاب التجويد","ست ألعاب سريعة بالأمثلة القرآنية"),item("assistant","💬","المساعد الذكي","اسألي عن أي حكم أو عن درسك"),item("myrecs","🎧","تسجيلاتي","تسجيلاتك الخاصة من اللقاءات، لا يسمعها غيرك")].concat(T?[]:[item("homework","📝","الواجبات","واجباتك اليومية وواجبات الدروس"),item("meetings","🎥","لقاءات الحلقة","مواعيد اللقاءات المباشرة وزر الانضمام"),item("halaqa","👭","حلقتي",ST.ownCircle?"حلقتك التي أنشأتِها وعضواتها":"معلمتي وزميلاتي ونتائجهن، أو أنشئي حلقتك")].concat(ST.ownCircle?[item("cloudteacher","🧭","إدارة حلقتي","تقدّم العضوات وتسجيلاتهن ونقاطهن")]:[],[item("teachers","🏫","غرفة المعلمات",ST.teacherEmail?"معلمتك: "+esc(ST.teacherName):"اختاري معلمتك وانضمّي إليها"),item("rewards","🏆","نقاطي وجوائزي","النقاط والرتب والجوائز والشهادات التحفيزية"),item("progress","📈","تقدّمي والشهادات","الشارات والحضور وشهادات المستويات")])))}
   ${sec("الحساب",[item("account","👤","الحساب",cloudOn()?"متصل: "+esc(CLOUD.user.email||ST.fullName):"تسجيل الدخول والمزامنة"),item("settings","⚙️","الإعدادات",T?"بطاقتك وتوقيعك والقارئ المرجعي":"بياناتك والقارئ المرجعي والنسخ الاحتياطي"),item("guide","📘","دليل الاستخدام","شرح مبسّط لكل أقسام الموقع خطوة بخطوة"),item("about","ℹ️","عن التطبيق","المصدر العلمي وحدود التصحيح الآلي")])}
   <a class="card stack" style="text-align:right;cursor:pointer;text-decoration:none;color:inherit;margin-top:12px;display:block" href="https://github.com/maryamalshnini-hash/rayaheen/releases/download/latest/rayaheen.apk" target="_blank" rel="noopener"><h3>📱 تحميل تطبيق أندرويد (APK)</h3><p class="small muted">لآيفون: افتحي الموقع في Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</p></a>`;
   view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
@@ -2162,6 +2162,7 @@ const GUIDE=[
  ["١. البداية",`<ol><li>افتحي الموقع من <b>Chrome</b> أو <b>Safari</b>، لا من متصفح واتساب أو تيليجرام.</li><li>اضغطي «تسجيل الدخول باستخدام Google»، أو اكتبي بريدك وكلمة مرور ثم «إنشاء حساب جديد».</li><li>أكملي بياناتك: طالبة أو معلمة، الاسم الرباعي، الجوال، المدينة، اسم الحلقة والأستاذة، والمسار.</li><li>اضغطي «حفظ والبدء».</li></ol><p><b>تثبيته على الجوال:</b> آيفون: Safari ← مشاركة ← «إضافة إلى الشاشة الرئيسية». أندرويد: المزيد ← «تحميل تطبيق أندرويد»، أو قائمة Chrome ← «تثبيت التطبيق».</p>`],
  ["٢. التنقل في الموقع",`<ul><li><b>الرئيسية:</b> تقدّمك ونقاطك و<b>مهامك اليوم</b> واختصارات الأقسام.</li><li><b>الحفظ:</b> مهام الحفظ والمراجعة والخطة والسجل.</li><li><b>الاستماع:</b> القرآن بصوت الشيخ إبراهيم الأخضر مع التكرار والتسريع.</li><li><b>التجويد:</b> المستويات والدروس والاختبارات ومخارج الحروف.</li><li><b>المزيد:</b> تصحيح التلاوة، الألعاب، الواجبات، حلقتي، غرفة المعلمات، النقاط، الإعدادات.</li></ul><p>أنجزي كل «مهام اليوم» ليُحسب يومك منجزًا. والزر الوردي يفتح المساعد الذكي، والزر السماوي فوقه يفتح هذا الدليل.</p>`],
  ["🎙️ التسميع (مثل ترتيل)",`<ol><li>من الرئيسية اضغطي «التسميع»، أو افتحي مهمة حفظ أو مراجعة من «الحفظ».</li><li>اختاري السورة والآيات، والنص يكون <b>مخفيًا</b>.</li><li>اضغطي الميكروفون واقرئي من حفظك؛ تظهر كل كلمة عند نطقها: <b>الأخضر</b> صحيح، <b>الأصفر</b> تغيّر في الحروف، <b>الأحمر</b> كلمة سقطت أو نُسيت.</li><li>إن نسيتِ، المسي الكلمة المخفية لكشفها، وتُحسب «تلقينًا».</li><li>عند الإيقاف تظهر <b>الدرجة من 10</b>، ويُخصم <b>نصف درجة لكل خطأ</b> في الحفظ أو الحروف أو الحركات، مع قائمة الأخطاء؛ المسي أي خطأ ليظهر موضعه في النص.</li><li>ملاحظات التجويد تظهر ولا تُخصم. والكلمات التي لم تصلي إليها لا تُخصم، ويظهر تنبيه بأن التسميع لم يكتمل.</li><li>لكل تسميع 10 نقاط (+5 إن كان بلا خطأ)، ويمكن إرساله للمعلمة.</li></ol>`],
+ ["🎧 تسجيلي الخاص في اللقاء",`<ol><li>داخل لقاء الحلقة اضغطي زر «🎙️ تسجيلي» فيبدأ تسجيل صوتك من المايك، حتى لو كان مايكك مكتومًا في اللقاء.</li><li>اضغطيه مرة ثانية للإيقاف، أو اخرجي من اللقاء فيتوقف ويُحفظ تلقائيًا (الحد ٩٠ دقيقة).</li><li>تجدين تسجيلاتك في «المزيد ← تسجيلاتي»: استماع وتنزيل وحذف.</li><li>التسجيل خاص بك: لا تسمعه المعلمة ولا المشرفة ولا أي أحد غيرك.</li></ol>`],
  ["📜 حفظ المتون",`<ol><li>من الرئيسية اضغطي «حفظ المتون»، واختاري: تحفة الأطفال، أو المقدمة الجزرية، أو الشاطبية كاملة.</li><li>اختاري الأبيات (أو اضغطي على باب)، ثم «📖 قراءة وحفظ» لتكرار الأبيات حتى تحفظيها.</li><li>اضغطي «🎙️ تسميع»: البيت مخفي ويظهر مع قراءتك، والدرجة من 10 بخصم نصف درجة لكل خطأ.</li><li>كل بيت تسمّعينه بدرجة 7 فأكثر يُحسب محفوظًا، ويظهر تقدّمك في كل متن.</li></ol>`],
  ["🎯 المراجعة الذكية وخريطة الختمة",`<ul><li>كل آية أو بيت أخطأتِ فيه في التسميع يُضاف تلقائيًا إلى «مواضع تحتاج مراجعة» في الرئيسية وصفحة الحفظ، ويختفي بعد تسميعه مرتين بلا خطأ.</li><li>في «تقدّمي» خريطة للأجزاء الثلاثين تتلوّن بما حفظتِ. ولمن حفظت أجزاء قبل استخدام الموقع: «محفوظ سابق؟ أضيفيه».</li></ul>`],
  ["👩‍🏫 التسميع المباشر وتسميع الزميلات",`<ul><li><b>المعلمة:</b> من «طالباتي» افتحي الطالبة ← «🎙️ تسميع مباشر»، اختاري الآيات أو الأبيات، واستمعي لها (في اللقاء أو حضوريًا) والمسي الكلمة عند الخطأ: لمسة = حفظ، لمستان = حرف، ثلاث = حركة. ثم «حفظ الدرجة» فتصل الطالبة فورًا وتدخل المواضع في مراجعتها.</li><li><b>الزميلات:</b> من «حلقتي» ← «🤝 تسميع الزميلات» اختاري زميلة وسمّعي لها بالطريقة نفسها، ولكِ 5 نقاط.</li></ul>`],
@@ -2284,8 +2285,8 @@ VIEWS.meetings=async function(){
 
 // ===== لقاء مضمَّن داخل الموقع عبر Daily أو JaaS (حساب المعلمة) =====
 VIEWS.embedmeet=async function(arg){ const {url,title}=arg||{}; if(!url){ go("meetings"); return; } const kind=embedKind(url); const name=ST.fullName||ST.name||"";
-  view.innerHTML=`<div class="emeet"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><button class="btn sec sm" id="emBack">خروج من اللقاء</button></div><div id="emBox" class="embox"><p class="muted" style="color:#ccc;text-align:center;padding:40px">جارٍ فتح اللقاء…</p></div></div>`;
-  $("#emBack").onclick=()=>{ try{ window._dailyFrame&&window._dailyFrame.destroy(); }catch(e){} window._dailyFrame=null; go("meetings"); };
+  view.innerHTML=`<div class="emeet"><div class="rtop"><b>🎥 ${esc(title||"لقاء الحلقة")}</b><span class="row" style="gap:6px"><button class="rbtn" data-myrec title="تسجيل خاص بك لا يسمعه غيرك" style="min-width:auto;padding:6px 10px;font-size:1rem"></button><button class="btn sec sm" id="emBack">خروج من اللقاء</button></span></div><div id="emBox" class="embox"><p class="muted" style="color:#ccc;text-align:center;padding:40px">جارٍ فتح اللقاء…</p></div></div>`;
+  MYREC.wire(title||"لقاء الحلقة"); $("#emBack").onclick=()=>{ try{ window._dailyFrame&&window._dailyFrame.destroy(); }catch(e){} window._dailyFrame=null; go("meetings"); };
   const box=$("#emBox");
   if(kind==="jaas"){ const u=url.split("#")[0]+`#userInfo.displayName=${encodeURIComponent(JSON.stringify(name))}&config.prejoinConfig.enabled=false&config.defaultLanguage="ar"`; box.innerHTML=`<iframe src="${esc(u)}" allow="camera; microphone; fullscreen; display-capture; autoplay; clipboard-write" allowfullscreen></iframe>`; return; }
   try{ if(!window.Daily) await new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="https://unpkg.com/@daily-co/daily-js@0.93.0/dist/daily-iframe.js"; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); });
@@ -2294,6 +2295,58 @@ VIEWS.embedmeet=async function(arg){ const {url,title}=arg||{}; if(!url){ go("me
     f.on("left-meeting",()=>{ try{ f.destroy(); }catch(e){} window._dailyFrame=null; if(route==="embedmeet") go("meetings"); });
     await f.join({url,userName:name});
   }catch(e){ box.innerHTML=`<iframe src="${esc(url)}" allow="camera; microphone; fullscreen; display-capture; autoplay" allowfullscreen></iframe>`; }
+};
+
+// ===== تسجيلي الخاص أثناء اللقاء: صوت الطالبة من مايكها، يُحفظ في «تسجيلاتي» ولا يسمعه إلا هي =====
+// يُحفظ في Firestore: privRecs/{id} (البيانات) و privRecs/{id}/parts/{n} (الصوت على أجزاء)، والقواعد تقصر القراءة على صاحبته.
+const MYREC={rec:null,chunks:[],start:0,stream:null,title:"",tick:null,MAX:90*60*1000,
+  async begin(title){ if(this.rec) return; if(!cloudOn()){ toast("سجّلي الدخول أولًا ليُحفظ التسجيل في صفحتك"); return; }
+    if(!window.MediaRecorder){ toast("المتصفح لا يدعم التسجيل؛ جرّبي Chrome أو Safari الحديث"); return; }
+    const lt=typeof ROOM!=="undefined"&&ROOM.id&&ROOM.local&&ROOM.local.getAudioTracks()[0];
+    if(lt&&lt.readyState==="live"){ const c=lt.clone(); c.enabled=true; this.stream=new MediaStream([c]); } // نسخة من مايك الغرفة: تسجّل حتى مع الكتم ولا تطلب المايك مرة ثانية (مهم في آيفون)
+    else{ try{ this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(e){ toast("لم يُسمح بالمايك. اسمحي للموقع بالمايك من إعدادات المتصفح."); return; } }
+    const mime=["audio/webm;codecs=opus","audio/webm","audio/mp4"].find(m=>MediaRecorder.isTypeSupported(m))||"";
+    this.rec=new MediaRecorder(this.stream,Object.assign({audioBitsPerSecond:24000},mime?{mimeType:mime}:{})); this.chunks=[]; this.rec.ondataavailable=e=>{ if(e.data&&e.data.size) this.chunks.push(e.data); }; this.rec.start(5000);
+    this.start=Date.now(); this.title=title||"لقاء الحلقة";
+    this.tick=setInterval(()=>{ this.paint(); if(Date.now()-this.start>this.MAX){ toast("بلغ تسجيلك ٩٠ دقيقة فحُفظ تلقائيًا"); this.end(); } },1000); this.paint(); toast("بدأ تسجيلك الخاص. لا يسمعه غيرك"); },
+  time(){ const t=Math.floor((Date.now()-this.start)/1000); return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0"); },
+  paint(){ document.querySelectorAll("[data-myrec]").forEach(b=>{ b.classList.toggle("rec",!!this.rec); b.innerHTML=this.rec?`⏺<span>${this.time()} إيقاف</span>`:`🎙️<span>تسجيلي</span>`; }); },
+  async end(){ if(!this.rec) return; const r=this.rec; this.rec=null; clearInterval(this.tick);
+    await new Promise(res=>{ if(r.state==="inactive") return res(); r.onstop=res; r.stop(); }); try{ this.stream.getTracks().forEach(t=>t.stop()); }catch(e){} this.paint();
+    const dur=Math.round((Date.now()-this.start)/1000); const blob=new Blob(this.chunks,{type:r.mimeType||"audio/webm"}); this.chunks=[]; if(dur<2||!blob.size) return;
+    toast("جارٍ حفظ تسجيلك في صفحتك…");
+    try{ await this.save(blob,{title:this.title,dur}); toast("✓ حُفظ تسجيلك في «تسجيلاتي»"); if(route==="myrecs") render(); }
+    catch(e){ console.warn("myrec",e); toast("تعذّر الحفظ في الموقع؛ نُزّل التسجيل على جهازك حتى لا يضيع"); try{ downloadsSave(`تسجيلي-${new Date(this.start).toISOString().slice(0,10)}.${String(blob.type).includes("mp4")?"m4a":"webm"}`,blob); }catch(_){} } },
+  async save(blob,{title,dur}){ const db=CLOUD.db, uid=CLOUD.user.uid; const b64=await blobToB64(blob); const CH=700000; const n=Math.ceil(b64.length/CH); const ref=db.collection("privRecs").doc();
+    for(let i=0;i<n;i++) await ref.collection("parts").doc(String(i)).set({owner:uid,data:b64.slice(i*CH,(i+1)*CH)});
+    await ref.set({owner:uid,title,dur,size:blob.size,type:blob.type||"audio/webm",parts:n,date:this.start||Date.now()}); return ref.id; },
+  async list(){ const q=await CLOUD.db.collection("privRecs").where("owner","==",CLOUD.user.uid).get(); return q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>b.date-a.date); },
+  async blob(r){ const ref=CLOUD.db.collection("privRecs").doc(r.id); const ps=await Promise.all(Array.from({length:r.parts},(_,i)=>ref.collection("parts").doc(String(i)).get())); return b64ToBlob(ps.map(x=>x.exists?x.data().data:"").join("")); },
+  async remove(r){ const ref=CLOUD.db.collection("privRecs").doc(r.id); await ref.delete(); for(let i=0;i<r.parts;i++) await ref.collection("parts").doc(String(i)).delete().catch(()=>{}); },
+  wire(title){ document.querySelectorAll("[data-myrec]").forEach(b=>b.onclick=()=>this.rec?this.end():this.begin(title)); this.paint(); }
+};
+window.addEventListener("beforeunload",e=>{ if(MYREC.rec){ e.preventDefault(); e.returnValue=""; } });
+
+VIEWS.myrecs=async function(){
+  view.innerHTML=`<div class="row between"><button class="btn sec sm" id="back">→ رجوع</button></div><h1>🎧 تسجيلاتي</h1>
+    <div class="note info small">تسجيلاتك الخاصة من اللقاءات. لا يسمعها أحد غيرك، ولا المعلمة ولا المشرفة. ابدئي تسجيلًا من زر «🎙️ تسجيلي» داخل اللقاء.</div><div id="mrBox" class="stack" style="margin-top:10px"><p class="muted">جارٍ التحميل…</p></div>`;
+  $("#back").onclick=()=>history.length>1?history.back():go("more");
+  if(!cloudOn()){ $("#mrBox").innerHTML=`<div class="note warn">سجّلي الدخول لعرض تسجيلاتك.</div>`; return; }
+  let L=[]; try{ L=await MYREC.list(); }catch(e){ if(!$("#mrBox")) return; $("#mrBox").innerHTML=`<div class="note bad">${esc(CLOUD.msg(e))}</div>`; return; }
+  if(!$("#mrBox")) return;
+  const mm=t=>`${Math.floor(t/60)}:${String(t%60).padStart(2,"0")}`; const mb=b=>(b/1048576).toFixed(1)+" م.ب";
+  $("#mrBox").innerHTML=L.length?L.map(r=>`<div class="card stack" data-id="${esc(r.id)}"><div class="row between"><b>${esc(r.title||"تسجيل")}</b><span class="pill">${mm(r.dur||0)}</span></div>
+      <div class="small muted">${new Date(r.date).toLocaleString("ar-SA",{weekday:"long",day:"numeric",month:"long",hour:"numeric",minute:"2-digit"})} · ${mb(r.size||0)}</div>
+      <div class="mrPlay"><button class="btn sm" data-play>▶ استماع</button></div>
+      <div class="row" style="gap:6px"><button class="btn sec sm" data-dl>⬇ تنزيل</button><button class="btn sec sm" data-del>🗑 حذف</button></div></div>`).join("")
+    :`<div class="card"><p class="muted">لا تسجيلات بعد. ادخلي لقاء الحلقة واضغطي «🎙️ تسجيلي».</p><button class="btn sm" data-go="meetings" style="margin-top:8px">🎥 لقاءات الحلقة</button></div>`;
+  view.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  view.querySelectorAll("[data-id]").forEach(c=>{ const r=L.find(x=>x.id===c.dataset.id); let url=null;
+    const get=async()=>{ if(!url){ url=URL.createObjectURL(await MYREC.blob(r)); } return url; };
+    c.querySelector("[data-play]").onclick=async e=>{ const b=e.currentTarget; b.disabled=true; b.textContent="جارٍ التحميل…"; try{ const u=await get(); c.querySelector(".mrPlay").innerHTML=`<audio controls src="${u}" style="width:100%"></audio>`; c.querySelector("audio").play().catch(()=>{}); }catch(err){ b.disabled=false; b.textContent="▶ استماع"; toast(CLOUD.msg(err)); } };
+    c.querySelector("[data-dl]").onclick=async()=>{ try{ const blob=await MYREC.blob(r); downloadsSave(`${(r.title||"تسجيل").replace(/[\\/:*?"<>|]/g,"")}-${new Date(r.date).toISOString().slice(0,10)}.${String(r.type).includes("mp4")?"m4a":"webm"}`,blob); }catch(err){ toast(CLOUD.msg(err)); } };
+    c.querySelector("[data-del]").onclick=async e=>{ const b=e.currentTarget; if(b.dataset.sure!=="1"){ b.dataset.sure="1"; b.textContent="تأكيد الحذف؟"; setTimeout(()=>{ if(b.isConnected){ b.dataset.sure=""; b.textContent="🗑 حذف"; } },4000); return; }
+      b.disabled=true; try{ await MYREC.remove(r); c.remove(); toast("حُذف التسجيل"); }catch(err){ b.disabled=false; toast(CLOUD.msg(err)); } }; });
 };
 
 // ===== غرفة اللقاء داخل الموقع — نموذج «المعلمة محور الاتصال» يتسع لنحو 50 مشاركة =====
@@ -2425,13 +2478,13 @@ function roomRender(){ const stage=$("#rStage"); if(!stage||!ROOM.id) return; co
 function roomRenderBar(){ const bar=$("#roomBar"); if(!bar||!ROOM.id) return; const hands=Object.values(ROOM.peers).filter(P=>P.info&&P.info.hand).length;
   bar.innerHTML=`<button class="rbtn ${ROOM.mic?"":"off"}" id="rMic" title="المايك">${ROOM.mic?"🎙️":"🔇"}<span>${ROOM.mic?"كتم":(ROOM.host||ROOM.canSpeak?"تحدّث":"المايك")}</span></button>
     <button class="rbtn ${ROOM.cam?"":"off"}" id="rCam">📷<span>${ROOM.cam?"إيقاف":"الكاميرا"}</span></button>
-    ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button>`}
+    ${ROOM.host?`<button class="rbtn ${ROOM.screenTrack?"on":""}" id="rScreen">🖥️<span>${ROOM.screenTrack?"إيقاف المشاركة":"مشاركة الشاشة"}</span></button>`:`<button class="rbtn ${ROOM.hand?"on":""}" id="rHand">✋<span>${ROOM.hand?"إنزال":"رفع اليد"}</span></button><button class="rbtn" data-myrec title="تسجيل خاص بك لا يسمعه غيرك"></button>`}
     ${ROOM.host?`<button class="rbtn ${ROOM.rec?"rec":ROOM.tools||ROOM.board||ROOM.state.poll?"on":""}" id="rTools">${ROOM.rec?"⏺":"🧰"}<span>${ROOM.rec?roomRecTime():"أدوات"}</span></button>`:""}
     <button class="rbtn" id="rReact">😊<span>تفاعل</span></button>
     <button class="rbtn ${ROOM.panel==="people"?"on":""}" id="rPeople">👥<span>المشاركات${ROOM.host&&hands?` (${hands}✋)`:""}</span></button>
     <button class="rbtn ${ROOM.panel==="chat"?"on":""}" id="rChat">💬<span>المحادثة${ROOM.unread?` (${ROOM.unread})`:""}</span></button>
     <button class="rbtn leave" id="rLeave">📞<span>${ROOM.host?"إنهاء":"مغادرة"}</span></button>`;
-  $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
+  MYREC.wire(($(".rtop b")||{}).textContent?$(".rtop b").textContent.replace("🎥","").trim():""); $("#rMic").onclick=roomToggleMic; $("#rCam").onclick=roomToggleCam; const s=$("#rScreen"); if(s) s.onclick=roomToggleScreen; const h=$("#rHand"); if(h) h.onclick=roomToggleHand;
   const tl=$("#rTools"); if(tl) tl.onclick=()=>{ const ex=$("#rToolBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rToolBox" class="rtools"><button id="rBoardB">🖊️ ${ROOM.board?"إغلاق السبورة":"السبورة"}</button><button id="rPollB">📊 ${ROOM.state.poll?(ROOM.state.poll.reveal?"إخفاء الاستطلاع":"إظهار النتيجة"):"استطلاع سريع"}</button><button id="rRec" class="${ROOM.rec?"recon":""}">⏺ ${ROOM.rec?"إيقاف التسجيل":"تسجيل اللقاء"}</button></div>`); const close=()=>{ const b=$("#rToolBox"); if(b) b.remove(); };
     $("#rBoardB").onclick=()=>{ close(); roomToggleBoard(); }; $("#rPollB").onclick=()=>{ close(); ROOM.state.poll?roomEndPoll():roomPollForm(); }; $("#rRec").onclick=()=>{ close(); ROOM.rec?roomRecStop():roomRecStart(); }; };
   $("#rReact").onclick=()=>{ const ex=$("#rReactBox"); if(ex){ ex.remove(); return; } bar.insertAdjacentHTML("beforebegin",`<div id="rReactBox" class="rreact">${REACTIONS.map(e=>`<button data-re="${e}">${e}</button>`).join("")}</div>`); $("#rReactBox").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{ rref().collection("chat").add({from:ROOM.me,name:ST.fullName||ST.name||"",react:b.dataset.re,at:Date.now()}).catch(()=>{}); $("#rReactBox").remove(); }); };

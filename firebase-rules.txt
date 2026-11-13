@@ -12,6 +12,11 @@ service cloud.firestore {
     }
     match /pub/{uid} { allow read: if signedIn(); allow write: if (signedIn() && request.auth.uid == uid) || isAdmin(); }
     match /tasmeeNotes/{id} { allow read: if signedIn() && (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid || isTeacher() || isAdmin()); allow create: if isAdmin() || signedIn() && request.resource.data.from == request.auth.uid; allow update, delete: if isAdmin() || (signedIn() && resource.data.from == request.auth.uid); }
+    match /privRecs/{id} {
+      allow read, update, delete: if signedIn() && resource.data.owner == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.owner == request.auth.uid;
+      match /parts/{n} { allow read, delete: if signedIn() && resource.data.owner == request.auth.uid; allow create, update: if signedIn() && request.resource.data.owner == request.auth.uid && (resource == null || resource.data.owner == request.auth.uid); }
+    }
     match /homework/{id} { allow read: if signedIn(); allow create, update, delete: if isTeacher(); }
     match /submissions/{id} {
       allow read: if signedIn();
