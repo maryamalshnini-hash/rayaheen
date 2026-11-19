@@ -589,13 +589,21 @@ function compareLetter(stuSig,refs){ // refs: [{letter,sig}]
 // ---- تطبيع نص عربي للمقارنة الكلامية ----
 function normAr(s){ return String(s||"").replace(/[ؤ]/g,"و").replace(/[ئ]/g,"ي").replace(/ٰ/g,"ا").replace(/[ً-ْٰٓ-ٕۖ-ۭـ۟]/g,"").replace(/[أإآٱ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[^ء-ي\s]/g,"").replace(/\s+/g," ").trim(); }
 // نسبة المطابقة: الكلمة الصحيحة 1، والقريبة 0.6
-function matchPct(st){ if(!st.length) return 0; return Math.round(st.reduce((t,x)=>t+(x==="ok"?1:x==="warn"?0.6:0),0)/st.length*100); }
+function matchPct(st){ const s2=st.filter(x=>x!==null); if(!s2.length) return 0; return Math.round(s2.reduce((t,x)=>t+(x==="ok"?1:x==="warn"?0.6:0),0)/s2.length*100); }
+// صور مقبولة لكلمة المصحف: الألف الخنجرية تُحذف أو تُكتب ألفًا (ذَٰلِكَ: ذلك/ذالك)، والواو والياء الصغيرتان، وصلة هاء الضمير (مالهُ: ماله/مالهو)
+function normRef(w){ const s=String(w||""); const A=normAr(s.replace(/\u0670/g,"").replace(/[\u06E5\u06E6]/g,"")), B=normAr(s.replace(/\u06E5/g,"و").replace(/\u06E6/g,"ي"));
+  const set=new Set([A,B,normAr(s)]); [A,B].forEach(x=>{ if(x.length>=2&&/ه$/.test(x)){ set.add(x+"و"); set.add(x+"ي"); } }); set.delete(""); return [...set].join("|"); }
+function refSim(r,h){ let best=0; for(const x of String(r).split("|")){ const v=x===h?1:similar(x,h); if(v>best) best=v; if(best===1) break; } return best; }
+function refLen(r){ return String(r).split("|")[0].length; }
 function alignWords(ref,hyp){ // LCS alignment → status per ref word, extras
+  // رموز الوقف ونحوها (كلمة تصير فارغة بعد التطبيع) لا تُطابق ولا تُحسب: تأخذ حالة ما قبلها إن كان مقروءًا
+  if(ref.some(x=>!x)){ const idx=[]; ref.forEach((x,i)=>{ if(x) idx.push(i); }); const r=alignWords(idx.map(i=>ref[i]),hyp); const st=new Array(ref.length).fill(null); idx.forEach((i,k)=>st[i]=r.st[k]); for(let i=0;i<st.length;i++) if(!ref[i]) st[i]=i>0&&(st[i-1]==="ok"||st[i-1]==="warn")?"ok":null; return {st,extra:r.extra}; }
   const n=ref.length,m=hyp.length; const L=Array.from({length:n+1},()=>new Int16Array(m+1));
-  const eq=(a,b)=>a===b||(a.length>2&&b.length>2&&similar(a,b)>=0.75);
+  const sim=new Map(); const S=(a,b)=>{ const k=a+"\u0000"+b; let v=sim.get(k); if(v==null){ v=refSim(a,b); sim.set(k,v); } return v; };
+  const eq=(a,b)=>{ const v=S(a,b); return v===1||(refLen(a)>2&&b.length>2&&v>=0.75); };
   for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--) L[i][j]=eq(ref[i],hyp[j])?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
   const st=new Array(n).fill("miss"); const extra=[]; let i=0,j=0;
-  while(i<n&&j<m){ if(eq(ref[i],hyp[j])&&L[i][j]===L[i+1][j+1]+1){ st[i]=(ref[i]===hyp[j]||similar(ref[i],hyp[j])>=0.85)?"ok":"warn"; i++;j++; } else if(L[i+1][j]>=L[i][j+1]){i++;} else {extra.push(hyp[j]);j++;} }
+  while(i<n&&j<m){ if(eq(ref[i],hyp[j])&&L[i][j]===L[i+1][j+1]+1){ st[i]=S(ref[i],hyp[j])>=0.85?"ok":"warn"; i++;j++; } else if(L[i+1][j]>=L[i][j+1]){i++;} else {extra.push(hyp[j]);j++;} }
   while(j<m)extra.push(hyp[j++]);
   return {st,extra};
 }
@@ -612,9 +620,10 @@ function makeRecognizer(onResult){
   const mk=()=>{ const x=new SR(); x.lang="ar-SA"; x.continuous=true; x.interimResults=true; x.maxAlternatives=1;
     x.onresult=e=>{ interim=""; for(let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if(e.results[i].isFinal) final+=" "+t; else interim+=" "+t; } onResult((final+" "+interim).trim(),false); };
     x.onerror=e=>{ lastErr=e.error||""; };
-    x.onend=()=>{ if(active&&lastErr!=="not-allowed"&&lastErr!=="service-not-allowed"){ try{ r=mk(); r.start(); }catch(e){} } else onResult(final.trim(),true); };
+    x.onend=()=>{ if(active&&lastErr!=="not-allowed"&&lastErr!=="service-not-allowed"){ try{ r=mk(); r.start(); }catch(e){} } else if(fin) fin(); else onResult((final+" "+interim).trim(),true); };
     return x; };
-  return {start:()=>{ active=true; lastErr=""; try{ r=mk(); r.start(); }catch(e){} },stop:()=>{ active=false; try{ r&&r.stop(); }catch(e){} setTimeout(()=>onResult(final.trim(),true),300); },get text(){return final.trim();},get error(){return lastErr;}};
+  let fin=null; const txt=()=>(final+" "+interim).replace(/\s+/g," ").trim();
+  return {start:()=>{ active=true; lastErr=""; try{ r=mk(); r.start(); }catch(e){} },stop:()=>new Promise(res=>{ active=false; let done=false; fin=()=>{ if(done) return; done=true; onResult(txt(),true); res(); }; try{ r&&r.stop(); }catch(e){} setTimeout(fin,1800); }),get text(){return txt();},get error(){return lastErr;}};
 }
 // ---- مسجّل ----
 class Recorder{
@@ -668,8 +677,8 @@ async function bestTranscript(blob,srText,onStatus,refWords,opts={}){
   if(refWords&&refWords.length&&typeof AI!=="undefined"&&AI.reciteReady()){ try{ onStatus&&onStatus("🤖 المصحّح الذكي يستمع إلى تلاوتك…"); ai=await AI.recite(blob,refWords.join(" "),opts); if(ai&&ai.heard) cands.push({text:String(ai.heard),engine:"ai"}); }catch(e){ console.warn("AI recite",e); } }
   if(QASR.available()&&!ai&&!lowMemDevice()){ try{ const t=await QASR.transcribe(blob,onStatus); if(t) cands.push({text:t,engine:"quran"}); }catch(e){ console.warn("QASR",e); } }
   if(!cands.length) return {text:"",engine:"none",ai};
-  if(ai&&ai.heard) return Object.assign(cands.find(c=>c.engine==="ai"),{ai});
-  if(refWords&&refWords.length&&cands.length>1){ const ref=refWords.map(normAr); cands.forEach(c=>{ const hyp=normAr(c.text).split(" ").filter(Boolean); c.score=matchPct(alignWords(ref,hyp).st); }); cands.sort((a,b)=>b.score-a.score); return Object.assign(cands[0],{ai}); }
+  if(ai&&ai.heard&&!(refWords&&refWords.length&&cands.length>1)) return Object.assign(cands.find(c=>c.engine==="ai"),{ai});
+  if(refWords&&refWords.length&&cands.length>1){ const ref=refWords.map(normRef); cands.forEach(c=>{ const hyp=normAr(c.text).split(" ").filter(Boolean); const st=alignWords(ref,hyp).st; let last=-1; st.forEach((v,i)=>{ if(v==="ok"||v==="warn") last=i; }); c.score=matchPct(st)+(c.engine==="ai"?3:0); c.reach=last; }); cands.sort((a,b)=>b.score-a.score); return Object.assign(cands[0],{ai}); }
   return Object.assign(cands.find(c=>c.engine==="quran")||cands[0],{ai});
 }
 
@@ -987,7 +996,7 @@ function wireRecorder(id,{onDone,recognize=false,onText}={}){
   const btn=$("#"+id+"Btn"), T=$("#"+id+"T"), M=$("#"+id+"M"); let rec=null, sr=null;
   if(!Audio_.canRecord()){ btn.disabled=true; $("#"+id+"Out").innerHTML=`<div class="note bad">التسجيل غير متاح هنا. افتحي ملف التطبيق في متصفح Chrome أو Edge على الحاسب أو الجوال (وليس داخل صفحة claude.ai).</div>`; return; }
   btn.onclick=async()=>{
-    if(rec){ btn.disabled=true; if(sr)sr.stop(); const blob=await rec.stop(); rec=null; btn.classList.remove("on"); btn.disabled=false; M.style.width="0"; if(blob) drawWave(blob,$("#"+id+"W")); const srT=sr?sr.text:"", srE=sr?sr.error:(makeRecognizer?"":"unsupported"); sr=null; if(onDone){ try{ await onDone(blob,srT,srE); }catch(e){ console.warn("onDone",e); const host=btn.closest(".card,.q")||btn.parentElement; const n=document.createElement("div"); n.className="note bad"; n.textContent="تعذّر إكمال التصحيح، لكن تسجيلك محفوظ. أعيدي المحاولة، وإن تكرّر أخبري المعلمة. ("+(e&&e.message||e)+")"; host&&host.appendChild(n); } } return; }
+    if(rec){ btn.disabled=true; T.textContent="… جارٍ الإنهاء"; await new Promise(z=>setTimeout(z,700)); const srP=sr?sr.stop():null; const blob=await rec.stop(); try{ if(srP&&srP.then) await srP; }catch(e){} rec=null; btn.classList.remove("on"); btn.disabled=false; M.style.width="0"; if(blob) drawWave(blob,$("#"+id+"W")); const srT=sr?sr.text:"", srE=sr?sr.error:(makeRecognizer?"":"unsupported"); sr=null; if(onDone){ try{ await onDone(blob,srT,srE); }catch(e){ console.warn("onDone",e); const host=btn.closest(".card,.q")||btn.parentElement; const n=document.createElement("div"); n.className="note bad"; n.textContent="تعذّر إكمال التصحيح، لكن تسجيلك محفوظ. أعيدي المحاولة، وإن تكرّر أخبري المعلمة. ("+(e&&e.message||e)+")"; host&&host.appendChild(n); } } return; }
     try{ rec=new Recorder({onLevel:v=>M.style.width=(v*100)+"%",onTick:t=>T.textContent=`${String(Math.floor(t/60)).padStart(2,"0")}:${String(Math.floor(t%60)).padStart(2,"0")}`}); await rec.start(); btn.classList.add("on");
       if(recognize){ sr=makeRecognizer((txt,fin)=>onText&&onText(txt,fin)); if(sr)sr.start(); }
     }catch(e){ rec=null; $("#"+id+"Out").innerHTML=`<div class="note bad">لم يُسمح باستخدام الميكروفون. اسمحي للمتصفح بالوصول إلى الميكروفون ثم أعيدي المحاولة.</div>`; }
@@ -1170,8 +1179,8 @@ VIEWS.practice=async function(arg){
       const notes=[]; let wordPct=null;
       const bt=await bestTranscript(blob,text,m=>{ const el=$("#anStatus"); if(el) el.textContent=m; },words); text=bt.text; if(bt.engine==="quran") notes.push({k:"info",t:"صُحّحت الكلمات بمحرك التعرف القرآني داخل الجهاز."}); const aiN=aiNotesOf(bt);
       // 1) مقارنة الكلمات
-      const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normAr);
-      if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>similar(x,refW[i])>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } });
+      const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normRef);
+      if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>refSim(refW[i],x)>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } });
         wordPct=matchPct(st);
         document.querySelectorAll("#prBox .quran .w").forEach((el,i)=>{ el.className="w "+(st[i]==="ok"?"ok":st[i]==="warn"?"warn":"miss"); });
         if(missed.length){ const names=missed.slice(0,6).map(m=>`«${words[m.i]}»${m.near?" (سُمعت: "+m.near+")":""}`).join("، "); notes.push({k:missed.length>2?"bad":"warn",t:`كلمات لم تُسمع صحيحة أو سقطت: ${names}${missed.length>6?" وغيرها":""}. قد يكون ذلك لحنًا جليًا في الحروف أو الحركات، أو ضعف التقاط الميكروفون.`}); }
@@ -1282,8 +1291,8 @@ function lessonHomeworkCardHtml(l){ const h=ensureLessonHomework(l); return `<di
   ${recorderHtml("lhw","سجّلي قراءة العبارات كلها ثم أوقفي.")}<div id="lhwRes"></div></div>`; }
 function wireLessonHomework(l){ const h=ensureLessonHomework(l); const words=h.phrases.join(" ").split(/\s+/).filter(Boolean);
   wireRecorder("lhw",{recognize:true,onDone:async(blob,text)=>{ $("#lhwOut").innerHTML=audioTag(blob); const res=$("#lhwRes"); res.innerHTML=`<div class="note info" id="lhwSt">جارٍ التصحيح…</div>`;
-    const bt=await bestTranscript(blob,text,m=>{ const el=$("#lhwSt"); if(el) el.textContent=m; },words); text=bt.text; const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normAr); let wordPct=null; const notes=[];
-    if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>similar(x,refW[i])>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } }); wordPct=matchPct(st);
+    const bt=await bestTranscript(blob,text,m=>{ const el=$("#lhwSt"); if(el) el.textContent=m; },words); text=bt.text; const hyp=normAr(text||"").split(" ").filter(Boolean); const refW=words.map(normRef); let wordPct=null; const notes=[];
+    if(hyp.length){ const {st,extra}=alignWords(refW,hyp); const missed=[]; st.forEach((v,i)=>{ if(v==="miss"){ const near=extra.find(x=>refSim(refW[i],x)>=0.6); if(near){ st[i]="warn"; extra.splice(extra.indexOf(near),1); missed.push({i,near}); } else missed.push({i}); } }); wordPct=matchPct(st);
       if(missed.length) notes.push({k:missed.length>2?"bad":"warn",t:`كلمات سقطت أو حُرّفت: ${missed.slice(0,8).map(m=>`«${words[m.i]}»${m.near?" سُمعت: "+m.near:""}`).join("، ")}`}); else notes.push({k:"good",t:"جميع الكلمات مطابقة. أحسنتِ."}); }
     else notes.push({k:"info",t:"لم يُتعرَّف على الكلام؛ سُجّل الواجب وسيُقيَّم بالسماع."});
     let S=null; try{ S=extractFeatures(await Audio_.decode(blob)); }catch(e){}
@@ -1325,7 +1334,7 @@ VIEWS.leveltest=async function(lv){
   for(const [s,a1,a2] of L.recite){ const ay=await getAyahs(s,a1,a2); const words=ay.filter(o=>o.text).flatMap(o=>o.text.split(/\s+/)); const id="rt"+(k++); const d=document.createElement("div"); d.className="q"; d.innerHTML=`<div class="eyebrow">سورة ${SURAH_NAMES[s-1]} ${a1===a2?`الآية ${a1}`:`الآيات ${a1}–${a2}`}</div>${ayahHtml(ay)}${recorderHtml(id,"سجّلي المقطع كاملًا.")}<div data-r></div>`; recBox.appendChild(d);
     wireRecorder(id,{recognize:true,onDone:async(blob,text)=>{ $("#"+id+"Out").innerHTML=audioTag(blob); const rr=d.querySelector("[data-r]"); rr.innerHTML=`<div class="note info">جارٍ التحليل…</div>`;
       const bt=await bestTranscript(blob,text,m=>{ rr.innerHTML=`<div class="note info">${esc(m)}</div>`; },words); text=bt.text;
-      let wordPct=null; const hyp=normAr(text||"").split(" ").filter(Boolean); if(hyp.length){ const {st}=alignWords(words.map(normAr),hyp); wordPct=matchPct(st); }
+      let wordPct=null; const hyp=normAr(text||"").split(" ").filter(Boolean); if(hyp.length){ const {st}=alignWords(words.map(normRef),hyp); wordPct=matchPct(st); }
       let ac=null; try{ let ref=await getReference(s,a1,a2,"teacher"); let rs=await decodeReference(ref); if(!rs){ ref=await getReference(s,a1,a2,ST.reciter); rs=await decodeReference(ref); } const r=analyzeRecitation(await Audio_.decode(blob),rs,words); ac=r.acoustic; rr.innerHTML=`<div class="stack">${r.notes.concat(aiNotesOf(bt)).map(n=>`<div class="note ${n.k}">${esc(n.t)}</div>`).join("")}</div>`; }catch(e){ rr.innerHTML=`<div class="stack">${aiNotesOf(bt).map(n=>`<div class="note ${n.k}">${esc(n.t)}</div>`).join("")}</div>`; }
       const parts=[wordPct,ac].filter(x=>x!=null); const sc=parts.length?Math.round(parts.reduce((a,b)=>a+b,0)/parts.length):null; scores[k-1]=sc; await DB.put(`lt:${lv}:${s}:${a1}`,blob);
       rr.insertAdjacentHTML("afterbegin",`<div class="row"><span class="pill ${sc==null?"":sc>=ST.passPct?"good":"warn"}">تقدير هذا المقطع: ${sc==null?"—":sc+"٪"}</span></div>`);
@@ -1648,7 +1657,7 @@ function tasmeeKeys(ay){ const out=[]; ay.forEach(o=>{ if(!o.text) return; const
 function tasmeeTrack(refW,hyp){ if(!hyp.length) return {st:refW.map(()=>null),last:-1}; const {st}=alignWords(refW,hyp); let last=-1; st.forEach((v,i)=>{ if(v==="ok"||v==="warn") last=i; }); return {st:st.map((v,i)=>i<=last?v:null),last}; }
 
 function tasmeeWidget(host,{ay,words,hidden=true,title="",onGraded,kind="quran"}){
-  const refW=words.map(normAr); const id="tsm"+Date.now().toString(36); const peeks=new Set(); let hide=hidden, live=null;
+  const refW=words.map(normRef); const id="tsm"+Date.now().toString(36); const peeks=new Set(); let hide=hidden, live=null;
   host.innerHTML=`<div class="row between"><h3>🎙️ التسميع ${title?"· "+esc(title):""}</h3><label class="switch small"><input type="checkbox" id="${id}H" ${hide?"checked":""}> إخفاء النص</label></div>
     <p class="small muted">اقرئي من حفظك فتظهر الكلمات مع تلاوتك. الدرجة من ${tasmeeFull()}، و−${fmtGrade(tasmeeStep())} لكل خطأ. <details class="tinfo"><summary>كيف تُحسب؟</summary>تُحسب أخطاء الحفظ (كلمة سقطت أو أُبدلت أو كُشفت بلمسها)، وتغيير الحروف، والحركات (بالمصحّح الذكي). ملاحظات التجويد تظهر ولا تُخصم.</details></p>
     <div id="${id}Txt" class="tbox ${hide?"hide":""}">${tasmeeTextHtml(ay)}</div>
@@ -1684,11 +1693,11 @@ function tasmeeGrade({words,refW,text,ai,peeks}){
   st.forEach((v,i)=>{ if(i>last) return; if(v==="miss") errs.push({i,type:"حفظ",t:"سقطت أو نُسيت"}); else if(v==="warn") errs.push({i,type:"حرف",t:"نُطقت بتغيير في حروفها"}); });
   (peeks||new Set()).forEach(i=>{ if(!has(i,"حفظ")) errs.push({i,type:"حفظ",t:"كُشفت (تلقين)"}); });
   const tajweed=[];
-  if(ai&&Array.isArray(ai.mistakes)){ const used=new Set(); ai.mistakes.forEach(m=>{ const w=normAr(m.word||""); let i=-1; for(let k=0;k<refW.length;k++){ if(!used.has(k)&&(refW[k]===w||(w.length>2&&similar(refW[k],w)>=0.8))){ i=k; break; } } if(i>=0) used.add(i);
+  if(ai&&Array.isArray(ai.mistakes)){ const used=new Set(); ai.mistakes.forEach(m=>{ const w=normAr(m.word||""); let i=-1; for(let k=0;k<refW.length;k++){ if(!used.has(k)&&(refSim(refW[k],w)===1||(w.length>2&&refSim(refW[k],w)>=0.8))){ i=k; break; } } if(i>=0) used.add(i);
       const type=m.type==="حركة"||m.type==="حرف"||m.type==="حفظ"?m.type:(m.type==="تجويد"?"تجويد":(m.kind==="جلي"?"حركة":"تجويد"));
       if(type==="تجويد"){ tajweed.push({i,t:m.note||"",w:m.word}); return; }
       if(i<0){ errs.push({i:-1,type,t:m.note||"",w:m.word,ai:true}); return; }
-      if(i>last&&heard) return; if(type==="حفظ"&&has(i,"حفظ")) return; if(type==="حرف"&&(has(i,"حرف")||has(i,"حفظ"))) return; if(type==="حركة"&&(has(i,"حركة")||has(i,"حفظ"))) return;
+      if(i>last&&heard) return; if(type==="حفظ"&&(has(i,"حفظ")||st[i]==="ok")) return; if(type==="حرف"&&(has(i,"حرف")||has(i,"حفظ"))) return; if(type==="حركة"&&(has(i,"حركة")||has(i,"حفظ"))) return;
       errs.push({i,type,t:m.note||"",ai:true}); }); }
   errs.sort((a,b)=>(a.i<0?1e9:a.i)-(b.i<0?1e9:b.i));
   const full=tasmeeFull(), step=tasmeeStep(); const grade=heard?Math.max(0,full-step*errs.length):null;
